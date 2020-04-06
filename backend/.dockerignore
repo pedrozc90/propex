@@ -1,0 +1,14 @@
+# prevent docker of copying unwanted files
+dist
+node_modules
+npm-debug.log
+package-lock.json
+
+# docker files
+Dockerfile
+.dockerignore
+
+# git files
+.git
+.gitignore
+.gitattributes

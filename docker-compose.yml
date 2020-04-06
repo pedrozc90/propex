@@ -1,0 +1,61 @@
+# docker network: https://docs.docker.com/engine/reference/commandline/network_create/
+# docker volume: https://docs.docker.com/engine/reference/commandline/volume_create/
+# mongodb docker: https://hub.docker.com/_/mongo?tab=description
+
+version: "3.7"
+
+services:
+
+    # app:
+    #     build:
+    #         context: .
+    #         dockerfile: Dockerfile
+    #     name: tsed_typeorm_image
+    #     container_name: tsed
+    #     restart: always
+    #     expose:
+    #         - 9000
+    #     environment:
+    #         NODE_ENV: "production"
+    #         PORT: 9000
+    #         POSTGRES_URL: 127.0.0.1
+    #         POSTGRES_PORT: 5432
+    #         POSTGRES_NAME: master
+    #         POSTGRES_USERNAME: root
+    #         POSTGRES_PASSWORD: xBeWvDvv
+    #     ports:
+    #         - "9000:9000"
+    #     # volumes:
+    #     #     - .:/app
+    #     #     - web-logs:/var/log/web
+    #     networks:
+    #         - backend
+    #     depends_on:
+    #         - db
+    
+    db:
+        container_name: mysql
+        image: mysql:8.0
+        restart: unless-stopped
+        volumes:
+            - mysql-volume:/var/lib/mysql
+        ports:
+            - 3306:3306
+        hostname: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: xBeWvDvv
+            MYSQL_DATABASE: propex
+            MYSQL_USER: root
+            MYSQL_PASSWORD: xBeWvDvv
+        networks:
+            - backend
+
+volumes:
+    mysql-volume:
+        name: mysql-volume
+        driver: local
+
+networks:
+    backend:
+        name: backend
+        driver: bridge

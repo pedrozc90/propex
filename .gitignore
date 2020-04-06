@@ -1,0 +1,4 @@
+# IDE's files
+.idea
+
+backend/node_modules
