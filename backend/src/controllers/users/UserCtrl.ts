@@ -1,10 +1,8 @@
 import { Controller, Get, QueryParams } from "@tsed/common";
 
-import { UserRepository } from "../../repositories/UserRepository";
-
-import { User } from "../../entities/User";
-import { Page } from "../../entities/generics/Page";
-import { IOptions } from "../../types/types";
+import { UserRepository } from "../../repositories";
+import { User, Page } from "../../entities";
+import { IOptions } from "../../types";
 
 @Controller("/users")
 export class UserCtrl {

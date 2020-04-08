@@ -1,8 +1,8 @@
 import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/common";
 import { Forbidden, Unauthorized } from "ts-httpexceptions";
 
-import { ICustomAuthOptions, IJwt } from "../types/types";
 import { AuthenticationService } from "../services/authentication/AuthenticationService";
+import { ICustomAuthOptions, IJwt } from "../types";
 
 @Middleware()
 export class CustomAuthMiddleware implements IMiddleware {

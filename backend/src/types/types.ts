@@ -1,4 +1,6 @@
 import { IAuthOptions } from "@tsed/common";
+
+import { User, Permission } from "../entities";
 import { Role } from "./enums";
 
 // --------------------------------------------------
@@ -12,6 +14,11 @@ export interface IOptions {
 
 export interface IEntity {
     id?: number | string;
+}
+
+export interface IContext {
+    user?: User;
+    permissions?: Permission[];
 }
 
 // --------------------------------------------------

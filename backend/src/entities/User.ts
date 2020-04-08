@@ -3,7 +3,7 @@ import { Description, Example } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, VersionColumn, Index, ManyToMany } from "typeorm";
 
 import { Permission } from "./Permission";
-import { Role } from "../types/enums";
+import { Role } from "../types";
 
 export class UserCredentials {
 
@@ -11,14 +11,14 @@ export class UserCredentials {
     @Example("yourname@domain.com")
     @Required()
     @Property({ name: "email" })
-    @Column({ name: "email", type: "varchar", nullable: true })
+    @Column({ name: "email", type: "varchar", length: 255, nullable: false })
     public email: string;
 
     @Description("User password")
     @Example("abcdef")
     @Required()
     @Property({ name: "password" })
-    @Column({ name: "password", nullable: true })
+    @Column({ name: "password", type: "varchar", length: 255, nullable: false })
     public password: string;
     
 }
@@ -29,7 +29,7 @@ export class UserBasic extends UserCredentials {
     @Example("yourname")
     @Required()
     @Property({ name: "name" })
-    @Column({ name: "name", nullable: true })
+    @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     public name: string;
     
 }
@@ -39,7 +39,7 @@ export class UserBasic extends UserCredentials {
 export class User extends UserBasic {
 
     @Property({ name: "id" })
-    @PrimaryGeneratedColumn({ name: "id", type: "bigint" })
+    @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id!: number;
 
     @IgnoreProperty()
@@ -49,7 +49,7 @@ export class User extends UserBasic {
     @Example("(48) 3433-0000")
     @Required()
     @Property({ name: "phone" })
-    @Column({ name: "phone", nullable: true })
+    @Column({ name: "phone", type: "varchar", length: 255, nullable: false })
     public phone: string;
 
     @Required()

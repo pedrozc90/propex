@@ -1,7 +1,7 @@
 import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./GenericRepository";
-import { User, UserCredentials } from "../entities/User";
+import { User, UserCredentials } from "../entities";
 
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {

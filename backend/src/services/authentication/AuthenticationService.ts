@@ -2,8 +2,8 @@ import { Service } from "@tsed/common";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 import { BadRequest } from "ts-httpexceptions";
 
-import { User, UserCredentials, UserBasic } from "../../entities/User";
-import { UserRepository } from "../../repositories/UserRepository";
+import { User, UserCredentials, UserBasic } from "../../entities";
+import { UserRepository } from "../../repositories";
 
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION: number = 1 * 60 * 60; // seconds

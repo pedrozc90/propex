@@ -4,9 +4,8 @@ import { InternalServerError, Unauthorized } from "ts-httpexceptions";
 import { AuthenticationService } from "../../services/authentication/AuthenticationService";
 import { CustomAuth } from "../../services/authentication/CustomAuth";
 
-import { User, UserBasic, UserCredentials } from "../../entities/User";
-import { IToken } from "../../types/types";
-import { Role } from "../../types/enums";
+import { User, UserBasic, UserCredentials } from "../../entities";
+import { IToken, Role } from "../../types";
 
 @Controller("/auth")
 export class AuthenticationCtrl {

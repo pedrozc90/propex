@@ -2,8 +2,8 @@ import { UseAuth } from "@tsed/common";
 import { applyDecorators } from "@tsed/core";
 import { Operation, Responses, Security } from "@tsed/swagger";
 
-import { ICustomAuthOptions } from "../../types/types";
 import { CustomAuthMiddleware } from "../../middlewares/CustomAuthMiddleware";
+import { ICustomAuthOptions } from "../../types";
 
 export function CustomAuth(options: ICustomAuthOptions = {}): Function {
     return applyDecorators(
