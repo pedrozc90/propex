@@ -1,7 +1,7 @@
 import { EntityRepository } from "@tsed/typeorm";
 
-import { User } from "../models/User";
 import { GenericRepository } from "./GenericRepository";
+import { User, UserCredentials } from "../entities/User";
 
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {
@@ -11,8 +11,8 @@ export class UserRepository extends GenericRepository<User> {
      * @param name      -- user name inserted on login form.
      * @param password  -- user password inserted on login form.
      */
-    public async findByCredentials(name: string, password: string): Promise<User | undefined> {
-        return this.findOne({ name, password });
+    public async findByCredentials(credentials: UserCredentials): Promise<User | undefined> {
+        return this.findOne({ email: credentials.email, password: credentials.password });
     }
 
 }

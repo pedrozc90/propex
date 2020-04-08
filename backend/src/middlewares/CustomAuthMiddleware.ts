@@ -1,7 +1,6 @@
 import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/common";
 import { Forbidden, Unauthorized } from "ts-httpexceptions";
 
-import { User } from "../models/User";
 import { ICustomAuthOptions, IJwt } from "../types/types";
 import { AuthenticationService } from "../services/authentication/AuthenticationService";
 
@@ -27,13 +26,13 @@ export class CustomAuthMiddleware implements IMiddleware {
         }
 
         // verify and decode jwt token
-        await this.authenticationService.verifyJwtToken(token).then((decodeJwt: IJwt) => {
+        await this.authenticationService.verifyJwtToken(token).then(async (decodeJwt: IJwt) => {
             if (decodeJwt) {
                 // update thread local
                 // this.authenticationService.setContext(token, decodeJwt);
 
                 // shared user information by response locals
-                response.locals.user = new User();
+                response.locals.user = await this.authenticationService.findContext(decodeJwt.id as number);
 
                 // check if endpoint requires a role permission.
                 if (options.scope && !options.scope.includes(decodeJwt.role)) {

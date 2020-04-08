@@ -4,9 +4,4 @@ export enum Role {
     MEMBER = "member"
 }
 
-export enum Permission {
-    ALL = "all"
-}
-
 export type RoleKey = keyof typeof Role;
-export type PermissionKey = keyof typeof Permission;

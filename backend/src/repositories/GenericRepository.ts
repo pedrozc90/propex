@@ -1,6 +1,6 @@
 import { Repository, ObjectLiteral } from "typeorm";
 
-import { Page } from "../models/generics/Page";
+import { Page } from "../entities/generics/Page";
 import { IOptions } from "../types/types";
 
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {

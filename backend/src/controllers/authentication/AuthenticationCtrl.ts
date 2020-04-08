@@ -1,9 +1,12 @@
 import { $log, BodyParams, Controller, Get, Post, Required, Res } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "ts-httpexceptions";
 
-import { User } from "../../models/User";
-import { IToken } from "../../types/types";
 import { AuthenticationService } from "../../services/authentication/AuthenticationService";
+import { CustomAuth } from "../../services/authentication/CustomAuth";
+
+import { User, UserBasic, UserCredentials } from "../../entities/User";
+import { IToken } from "../../types/types";
+import { Role } from "../../types/enums";
 
 @Controller("/auth")
 export class AuthenticationCtrl {
@@ -16,10 +19,9 @@ export class AuthenticationCtrl {
      * @param password      -- password from login form.
      */
     @Post("/login")
-    public async login(@Required() @BodyParams("username") username: string,
-        @Required() @BodyParams("password") password: string): Promise<IToken> {
+    public async login(@Required() @BodyParams("credentials") credentials: UserCredentials): Promise<IToken> {
         // retrive user information
-        const user = await this.authenticationService.findByCredentials(username, password);
+        const user = await this.authenticationService.findByCredentials(credentials);
         if (!user) {
             throw new Unauthorized("Invalid username or password!");
         }
@@ -53,7 +55,7 @@ export class AuthenticationCtrl {
      * @param user      -- user instance
      */
     @Post("/register")
-    public async register(@Required() @BodyParams("user") user: User): Promise<User | null> {
+    public async register(@Required() @BodyParams("user") user: UserBasic): Promise<User | null> {
         const tmp = await this.authenticationService.register(user);
         if (!tmp) {
             throw new InternalServerError("Sorry, but a error occured during registration.");
@@ -66,8 +68,9 @@ export class AuthenticationCtrl {
      * @param req       -- express request object.
      */
     @Get("/context")
-    public async context(): Promise<any> {
-        return { message: "Sanity Check" };
+    @CustomAuth({ scope: [ Role.MEMBER, Role.MASTER ] })
+    public async context(@Res() response: Res): Promise<any> {
+        return { message: "Sanity Check", context: response.locals.user };
     }
 
 }

@@ -52,9 +52,9 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             password: process.env.DB_PASSWORD || "1",
             logging: false,
             synchronize: true,
-            entities: [ `${rootDir}/core/models/*.ts` ],
-            migrations: [ `${rootDir}/core/migrations/*.ts` ],
-            subscribers: [ `${rootDir}/core/subscribers/*.ts` ]
+            entities: [ `${rootDir}/entities/*.ts` ],
+            migrations: [ `${rootDir}/migrations/*.ts` ],
+            subscribers: [ `${rootDir}/subscribers/*.ts` ]
             // debug: [ "query" ]
         } as ConnectionOptions
     ]

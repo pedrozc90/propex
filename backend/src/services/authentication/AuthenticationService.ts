@@ -2,7 +2,7 @@ import { Service } from "@tsed/common";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 import { BadRequest } from "ts-httpexceptions";
 
-import { User } from "../../models/User";
+import { User, UserCredentials, UserBasic } from "../../entities/User";
 import { UserRepository } from "../../repositories/UserRepository";
 
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
@@ -15,18 +15,25 @@ export class AuthenticationService {
 
     /**
      * Find user by credentials.
-     * @param username  -- username inserted on login form.
-     * @param password  -- password inserted on login form.
+     * @param credentials   -- user credentials.
      */
-    public async findByCredentials(username: string, password: string): Promise<User | undefined> {
-        return this.userRepository.findByCredentials(username, password);
+    public async findByCredentials(credentials: UserCredentials): Promise<User | undefined> {
+        return this.userRepository.findByCredentials(credentials);
+    }
+
+    /**
+     * Find user by credentials.
+     * @param credentials   -- user credentials.
+     */
+    public async findContext(id: number): Promise<User | undefined> {
+        return this.userRepository.findById(id);
     }
 
     /**
      * Register a new user.
      * @param user      -- user information.
      */
-    public async register(user: User): Promise<User | null> {
+    public async register(user: UserBasic): Promise<User | null> {
         return this.userRepository.save(user);
     }
 
