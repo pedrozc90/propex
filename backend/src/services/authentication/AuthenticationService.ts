@@ -57,7 +57,7 @@ export class AuthenticationService {
             expiresIn: JWT_EXPIRATION || "1h"
         };
         return new Promise((resolve, reject) => {
-            sign(payload, secret, options, (err: Error, token: string): void => {
+            sign(payload, secret, options, (err: Error | null, token: string | undefined): void => {
                 if (err) {
                     reject(err);
                 } else {
@@ -74,7 +74,7 @@ export class AuthenticationService {
     public async verifyJwtToken(token: string): Promise<any> {
         if (!JWT_SECRET_KEY) return;
         return new Promise((resolve, reject) => {
-            verify(this.getJwtToken(token), JWT_SECRET_KEY, (err: VerifyErrors, decoded: object | string): any => {
+            verify(this.getJwtToken(token), JWT_SECRET_KEY, (err: VerifyErrors | null, decoded: object | undefined): any => {
                 if (err) {
                     reject(err);
                 } else {

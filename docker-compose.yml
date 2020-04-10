@@ -52,7 +52,7 @@ services:
 
 volumes:
     mysql-volume:
-        name: mysql-volume
+        name: propex-vol
         driver: local
 
 networks:
