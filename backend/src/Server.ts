@@ -49,7 +49,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             port: process.env.DB_PORT || 3306,
             database: process.env.DB_NAME || "propex",
             username: process.env.DB_USERNAME || "root",
-            password: process.env.DB_PASSWORD || "1",
+            password: process.env.DB_PASSWORD || "",
             logging: false,
             synchronize: true,
             entities: [ `${rootDir}/entities/*.ts` ],

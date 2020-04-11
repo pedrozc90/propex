@@ -19,6 +19,16 @@ npm install
 npm run start
 ```
 
+## Open MySQL Console
+
+```bash
+# execute mysql bash
+docker exec -it mysql bash
+
+# open mysql console
+mysql --user=root --password=wuyqwISlr2PxJUxu
+```
+
 ## License
 
 Please, see [LINCESE](https://github.com/PedroZC90/propex/blob/master/LICENSE) file.

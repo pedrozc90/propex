@@ -38,21 +38,21 @@ services:
         image: mysql:8.0
         restart: unless-stopped
         volumes:
-            - mysql-volume:/var/lib/mysql
+            - mysqlvolume:/var/lib/mysql
         ports:
             - 3306:3306
         hostname: mysql
         environment:
-            MYSQL_ROOT_PASSWORD: xBeWvDvv
+            MYSQL_ROOT_PASSWORD: wuyqwISlr2PxJUxu
             MYSQL_DATABASE: propex
             MYSQL_USER: root
-            MYSQL_PASSWORD: xBeWvDvv
+            MYSQL_PASSWORD: wuyqwISlr2PxJUxu
         networks:
             - backend
 
 volumes:
-    mysql-volume:
-        name: propex-vol
+    mysqlvolume:
+        name: mysqlvolume
         driver: local
 
 networks:
