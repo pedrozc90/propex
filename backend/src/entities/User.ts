@@ -1,9 +1,10 @@
 import { Default, Enum, Format, Property, Required, IgnoreProperty } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, VersionColumn, Index, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, VersionColumn, Index, ManyToMany, JoinTable, OneToOne } from "typeorm";
 
 import { Permission } from "./Permission";
 import { Role } from "../types";
+import { Collaborator } from "./Collaborator";
 
 export class UserCredentials {
 
@@ -79,6 +80,14 @@ export class User extends UserBasic {
     public version!: number;
 
     @ManyToMany(() => Permission, (permission) => permission.users)
+    @JoinTable({
+        name: "users_permissions",
+        joinColumn: { name: "permission_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "user_id", referencedColumnName: "id" }
+    })
     public permissions: Permission[];
+
+    @OneToOne(() => Collaborator, (collaborator) => collaborator.user, { nullable: false })
+    public collaborator: Collaborator;
     
 }

@@ -1,8 +1,11 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Activity } from "./Activity";
+import { DisclosureMedia } from "./DisclosureMedia";
+import { EventPresentation } from "./EventPresentation";
+import { FinishedProject } from "./FinishedProject";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -58,5 +61,14 @@ export class Project extends Audit {
 
     @OneToMany(() => Activity, (activity) => activity.project)
     public activities: Activity[];
+
+    @OneToOne(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
+    public disclosureMedia: DisclosureMedia;
+
+    @OneToOne(() => EventPresentation, (eventPresentation) => eventPresentation.project, { nullable: false })
+    public eventPresentation: EventPresentation;
+
+    @OneToOne(() => FinishedProject, (finishedProject) => finishedProject.project)
+    public finishedProject: FinishedProject;
 
 }

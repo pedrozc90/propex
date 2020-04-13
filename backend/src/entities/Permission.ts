@@ -1,5 +1,5 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
@@ -22,11 +22,6 @@ export class Permission extends Audit {
     public url: string;
 
     @ManyToMany(() => User, (user) => user.permissions)
-    @JoinTable({
-        name: "users_permissions",
-        joinColumn: { name: "user_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "permission_id", referencedColumnName: "id" }
-    })
     public users: User[];
 
 }

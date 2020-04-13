@@ -1,8 +1,9 @@
 import { Property, Required, Format } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
+import { Attachment } from "./Attachment";
 
 @Entity({ name: "activities" })
 export class Activity extends Audit {
@@ -56,9 +57,16 @@ export class Activity extends Audit {
     @Column({ name: "results", type: "varchar", length: 180, nullable: false })
     public results: string;
 
-    // public project_id bigint(20) unsigned NOT NULL,
     @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
+
+    @ManyToMany(() => Attachment, (attachment) => attachment.activities)
+    @JoinTable({
+        name: "activities_attachments",
+        joinColumn: { name: "attachment_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "activity_id", referencedColumnName: "id" }
+    })
+    public attachments: Attachment[];
 
 }
