@@ -6,6 +6,7 @@ import { Activity } from "./Activity";
 import { DisclosureMedia } from "./DisclosureMedia";
 import { EventPresentation } from "./EventPresentation";
 import { FinishedProject } from "./FinishedProject";
+import { ProjectThemeArea } from "./ProjectThemeArea";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -70,5 +71,8 @@ export class Project extends Audit {
 
     @OneToOne(() => FinishedProject, (finishedProject) => finishedProject.project)
     public finishedProject: FinishedProject;
+
+    @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
+    public projectThemeAreas: ProjectThemeArea[];
 
 }

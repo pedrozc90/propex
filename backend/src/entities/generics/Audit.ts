@@ -14,8 +14,8 @@ export class Audit {
     @CreateDateColumn({ name: "updated_at", type: "timestamp" })
     public updatedAt!: Date;
 
-    @Property({ name: "version" })
-    @VersionColumn({ name: "version", type: "int", default: 0 })
-    public version!: number;
+    // @Property({ name: "version" })
+    // @VersionColumn({ name: "version", type: "int", default: 0 })
+    // public version!: number;
     
 }
