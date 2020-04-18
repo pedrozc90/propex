@@ -1,12 +1,16 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { Activity } from "./Activity";
 import { DisclosureMedia } from "./DisclosureMedia";
 import { EventPresentation } from "./EventPresentation";
-import { FinishedProject } from "./FinishedProject";
-import { ProjectThemeArea } from "./ProjectThemeArea";
+import { Evaluation } from "./Evaluation";
+import { FutureDevelopmentPlan } from "./FutureDevelopmentPlan";
+import { Partner } from "./Partner";
+import { Demand } from "./Demand";
+import { Publication } from "./Publication";
+import { ProjectAttachment } from "./ProjectAttachment";
+import { ExtensionLine } from "./ExtensionLine";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -60,19 +64,42 @@ export class Project extends Audit {
     @Column({ name: "accompaniment_and_evaluation", type: "longtext", nullable: false })
     public accompanimentAndEvaluation: string;
 
-    @OneToMany(() => Activity, (activity) => activity.project)
-    public activities: Activity[];
+    @OneToMany(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
+    public disclosureMedias: DisclosureMedia[];
 
-    @OneToOne(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
-    public disclosureMedia: DisclosureMedia;
+    @OneToMany(() => EventPresentation, (eventPresentation) => eventPresentation.project)
+    public eventPresentations: EventPresentation[];
 
-    @OneToOne(() => EventPresentation, (eventPresentation) => eventPresentation.project, { nullable: false })
-    public eventPresentation: EventPresentation;
+    @OneToMany(() => Evaluation, (evaluation) => evaluation.project)
+    public evaluations: Evaluation[];
 
-    @OneToOne(() => FinishedProject, (finishedProject) => finishedProject.project)
-    public finishedProject: FinishedProject;
+    @OneToMany(() => FutureDevelopmentPlan, (futureDevelopmentPlan) => futureDevelopmentPlan.project)
+    public futureDevelopmentPlans: FutureDevelopmentPlan[];
 
-    @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
-    public projectThemeAreas: ProjectThemeArea[];
+    @OneToMany(() => Partner, (partner) => partner.project)
+    public partners: Partner[];
+
+    @OneToMany(() => Demand, (demand) => demand.project)
+    public demands: Demand[];
+
+    @OneToMany(() => Publication, (publication) => publication.project)
+    public publications: Publication[];
+
+    @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.project)
+    public projectAttachments: ProjectAttachment[];
+
+    @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
+    @JoinTable({
+        name: "project_extension_lines",
+        joinColumn: { name: "extension_line_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+    })
+    public extensionLines: ExtensionLine[];
+
+    // @OneToMany(() => Activity, (activity) => activity.project)
+    // public activities: Activity[];
+
+    // @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
+    // public projectThemeAreas: ProjectThemeArea[];
 
 }

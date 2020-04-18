@@ -1,5 +1,5 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
@@ -26,7 +26,7 @@ export class Collaborator extends Audit {
     @Column({ name: "link_format", type: "varchar", length: 255, nullable: false })
     public linkFormat: string;
 
-    @OneToOne(() => User, (user) => user.collaborator, { nullable: false })
+    @ManyToOne(() => User, (user) => user.collaborators, { nullable: false })
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })
     public user: User;
 

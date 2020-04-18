@@ -1,5 +1,6 @@
 import { ValueTransformer } from "typeorm";
-import { AgeRangeEnum } from "src/types";
+
+import { AgeRangeEnum } from "../../types";
 
 export class EnumValueTransformer implements ValueTransformer {
 

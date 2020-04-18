@@ -1,8 +1,7 @@
 import { Property, Required, Format } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { Project } from "./Project";
 import { Attachment } from "./Attachment";
 
 @Entity({ name: "activities" })
@@ -18,28 +17,28 @@ export class Activity extends Audit {
     public name: string;
 
     @Required()
-    @Property({ name: "activity" })
-    @Column({ name: "activity", type: "varchar", length: 255, nullable: false })
-    public activity: string;
+    @Property({ name: "description" })
+    @Column({ name: "description", type: "varchar", length: 255, nullable: false })
+    public description: string;
 
     @Required()
-    @Property({ name: "externalActivity" })
-    @Column({ name: "external_activity", type: "tinyint", default: 0, nullable: false }) // length: 4
-    public externalActivity: number;
+    @Property({ name: "external" })
+    @Column({ name: "external", type: "tinyint", width: 4, nullable: false })
+    public external: number;
 
     @Required()
     @Property({ name: "numberOfMembers" })
-    @Column({ name: "number_of_members", type: "int", default: 0, nullable: false }) // length: 11
+    @Column({ name: "number_of_members", type: "int", width: 11, default: 0, nullable: false })
     public numberOfMembers: number;
 
-    @Format("date-time")
+    @Format("date")
     @Property({ name: "date" })
-    @CreateDateColumn({ name: "date", type: "datetime", nullable: false })
-    public date: Date;
+    @Column({ name: "date", type: "date", nullable: false })
+    public date: string;
 
     @Required()
     @Property({ name: "period" })
-    @Column({ name: "period", type: "int", nullable: false }) // length: 11
+    @Column({ name: "period", type: "int", width: 11, nullable: false })
     public period: number;
 
     @Required()
@@ -57,13 +56,16 @@ export class Activity extends Audit {
     @Column({ name: "results", type: "varchar", length: 180, nullable: false })
     public results: string;
 
-    @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
-    @JoinColumn({ name: "project_id", referencedColumnName: "id" })
-    public project: Project;
+    // @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
+    // @JoinColumn({ name: "project_id", referencedColumnName: "id" })
+    // public project: Project;
+    @Property({ name: "projecIdd" })
+    @Column({ name: "project_id", type: "bigint", unsigned: true })
+    public projectId: number;
 
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
-        name: "activities_attachments",
+        name: "activity_attachments",
         joinColumn: { name: "attachment_id", referencedColumnName: "id" },
         inverseJoinColumn: { name: "activity_id", referencedColumnName: "id" }
     })

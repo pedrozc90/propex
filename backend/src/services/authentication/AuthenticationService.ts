@@ -47,7 +47,6 @@ export class AuthenticationService {
         const now: number = Math.floor(Date.now() / 1000);
         const payload: any = {
             id: user.id,
-            role: user.role,
             iat: now
             // exp: now + JWT_EXPIRATION
         };

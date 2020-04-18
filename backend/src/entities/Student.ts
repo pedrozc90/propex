@@ -1,10 +1,11 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
 
 @Entity({ name: "students" })
+@Index("idx_user_id", [ "user" ])
 export class Student extends Audit {
 
     @Property({ name: "id" })
@@ -23,7 +24,7 @@ export class Student extends Audit {
 
     @Required()
     @Property({ name: "period" })
-    @Column({ name: "period", type: "int", nullable: false })
+    @Column({ name: "period", type: "int", width: 11, nullable: false })
     public period: string;
 
     @Required()

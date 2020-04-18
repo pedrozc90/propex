@@ -34,6 +34,7 @@ export interface IJwt {
 export interface IToken {
     token?: string;
     role?: Role;
+    permissions?: Permission[];
 }
 
 export interface ICustomAuthOptions extends IAuthOptions {

@@ -1,10 +1,11 @@
 import { Property, Required, Format } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
 @Entity({ name: "event_presentations" })
+@Index("idx_project_id", [ "project" ])
 export class EventPresentation extends Audit {
 
     @Property({ name: "id" })
@@ -27,7 +28,7 @@ export class EventPresentation extends Audit {
     @Column({ name: "modality", type: "varchar", length: 255, nullable: false })
     public modality: string;
 
-    @OneToOne(() => Project, (project) => project.eventPresentation, { nullable: false })
+    @ManyToOne(() => Project, (project) => project.eventPresentations, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 

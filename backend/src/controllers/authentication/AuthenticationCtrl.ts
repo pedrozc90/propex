@@ -35,7 +35,7 @@ export class AuthenticationCtrl {
         // update context information
         // await this.authenticationService.setContext(token, { role: user.role, _id: user._id } as IJwt);
 
-        return { token, role: user.role };
+        return { token };
     }
 
     /**

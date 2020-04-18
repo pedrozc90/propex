@@ -1,8 +1,10 @@
 import { Property, Required } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Activity } from "./Activity";
+import { Publication } from "./Publication";
+import { ProjectAttachment } from "./ProjectAttachment";
 
 @Entity({ name: "attachments" })
 export class Attachment extends Audit {
@@ -28,7 +30,7 @@ export class Attachment extends Audit {
 
     @Required()
     @Property({ name: "originalFileSize" })
-    @Column({ name: "original_file_size", type: "double", nullable: false })
+    @Column({ name: "original_file_size", type: "double", precision: 8, scale: 2, nullable: false })
     public originalFileSize: number;
 
     @Required()
@@ -38,10 +40,16 @@ export class Attachment extends Audit {
 
     @Required()
     @Property({ name: "fileSize" })
-    @Column({ name: "file_size", type: "double", nullable: false })
+    @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: false })
     public fileSize: number;
 
     @ManyToMany(() => Activity, (activity) => activity.attachments)
     public activities: Activity[];
+
+    @OneToMany(() => Publication, (publication) => publication.attachment)
+    public publications: Publication[];
+
+    @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.attachment)
+    public projectAttachments: ProjectAttachment[];
 
 }

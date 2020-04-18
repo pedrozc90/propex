@@ -1,10 +1,21 @@
 import { EntityRepository } from "@tsed/typeorm";
 
-import { GenericRepository } from "./GenericRepository";
+import { GenericRepository } from "./generics/GenericRepository";
 import { User, UserCredentials } from "../entities";
 
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {
+
+    public async init(): Promise<any> {
+        const user = new User();
+        user.name = "Pedro";
+        user.email = "pedro@domain.com";
+        user.password = "123456";
+        user.phone = "(48) 99999-9999";
+        user.permissions = [];
+
+        return this.save(user);
+    }
 
     /**
      * Find user by credentials.

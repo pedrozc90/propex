@@ -54,8 +54,11 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             synchronize: true,
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
-            subscribers: [ `${rootDir}/subscribers/*.ts` ]
+            subscribers: [ `${rootDir}/subscribers/*.ts` ],
             // debug: [ "query" ]
+            charset: "UTF8_GENERAL_CI",
+            dropSchema: true,
+            timezone: "local"
         } as ConnectionOptions
     ]
 })
