@@ -308,10 +308,6 @@ CREATE TABLE IF NOT EXISTS project_extension_lines (
     CONSTRAINT project_extension_lines_project_id_foreign FOREIGN KEY (project_id) REFERENCES projects (id)
 );
 
-########################
-########################
-########################
-
 -- -----------------------------------------------------
 -- TABLE PROJECT_HUMAN_RESOURCES
 -- -----------------------------------------------------
@@ -320,9 +316,9 @@ CREATE TABLE IF NOT EXISTS project_human_resources (
     user_id BIGINT(20) UNSIGNED NOT NULL,
     project_id BIGINT(20) UNSIGNED NOT NULL,
     human_resource_type_id BIGINT(20) UNSIGNED NOT NULL,
-    is_coordinate TINYINT(4) NOT NULL DEFAULT 0,
+    coordinate TINYINT(4) NOT NULL DEFAULT 0,
     workload INT(11) NOT NULL,
-    is_exclusive INT(11) NOT NULL DEFAULT 0,
+    exclusive TINYINT(4) NOT NULL DEFAULT 0,
     init_date DATE NOT NULL,
     created_at TIMESTAMP NULL DEFAULT (CUREENT_TIMESTAMP()),
     updated_at TIMESTAMP NULL DEFAULT NULL,
@@ -397,7 +393,7 @@ CREATE TABLE IF NOT EXISTS project_targets (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS theme_areas (
     id BIGINT(20) UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    area VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NULL DEFAULT (CUREENT_TIMESTAMP()),
     updated_at TIMESTAMP NULL DEFAULT NULL
 );

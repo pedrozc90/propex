@@ -11,6 +11,11 @@ import { Demand } from "./Demand";
 import { Publication } from "./Publication";
 import { ProjectAttachment } from "./ProjectAttachment";
 import { ExtensionLine } from "./ExtensionLine";
+import { ProjectHumanResource } from "./ProjectHumanResource";
+import { KnowledgeArea } from "./KnowledgeArea";
+import { ProjectPublic } from "./ProjectPublic";
+import { ProjectTarget } from "./ProjectTarget";
+import { ProjectThemeArea } from "./ProjectThemeArea";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -88,6 +93,18 @@ export class Project extends Audit {
     @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.project)
     public projectAttachments: ProjectAttachment[];
 
+    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project)
+    public projectHumanResources: ProjectHumanResource[];
+
+    @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.project)
+    public projectPublics: ProjectPublic[];
+
+    @OneToMany(() => ProjectTarget, (projectTarget) => projectTarget.project)
+    public projectTargets: ProjectTarget[];
+
+    @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
+    public projectThemeAreas: ProjectThemeArea[];
+
     @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
     @JoinTable({
         name: "project_extension_lines",
@@ -96,10 +113,16 @@ export class Project extends Audit {
     })
     public extensionLines: ExtensionLine[];
 
+    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects)
+    @JoinTable({
+        name: "project_knowledge_areas",
+        joinColumn: { name: "knowledge_area_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+    })
+    public knowledgeAreas: KnowledgeArea[];
+
+    // NÃO SEI PORQUE NAO HÁ ESTE RELACIONAMENTO
     // @OneToMany(() => Activity, (activity) => activity.project)
     // public activities: Activity[];
-
-    // @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
-    // public projectThemeAreas: ProjectThemeArea[];
 
 }

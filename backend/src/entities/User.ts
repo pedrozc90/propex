@@ -5,6 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, J
 import { Permission } from "./Permission";
 import { Collaborator } from "./Collaborator";
 import { Student } from "./Student";
+import { ProjectHumanResource } from "./ProjectHumanResource";
 // import { Student } from "./Student";
 
 export class UserCredentials {
@@ -83,5 +84,8 @@ export class User extends UserBasic {
 
     @OneToOne(() => Student, (student) => student.user)
     public student: Student;
+
+    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.user)
+    public projectHumanResources: ProjectHumanResource[];
     
 }

@@ -56,13 +56,6 @@ export class Activity extends Audit {
     @Column({ name: "results", type: "varchar", length: 180, nullable: false })
     public results: string;
 
-    // @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
-    // @JoinColumn({ name: "project_id", referencedColumnName: "id" })
-    // public project: Project;
-    @Property({ name: "projecIdd" })
-    @Column({ name: "project_id", type: "bigint", unsigned: true })
-    public projectId: number;
-
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
         name: "activity_attachments",
@@ -70,5 +63,12 @@ export class Activity extends Audit {
         inverseJoinColumn: { name: "activity_id", referencedColumnName: "id" }
     })
     public attachments: Attachment[];
+
+    // @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
+    // @JoinColumn({ name: "project_id", referencedColumnName: "id" })
+    // public project: Project;
+    @Property({ name: "projecId" })
+    @Column({ name: "project_id", type: "bigint", unsigned: true })
+    public projectId: number;
 
 }

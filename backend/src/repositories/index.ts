@@ -1,6 +1,6 @@
 export * from "./generics/GenericRepository";
 
-export * from "./AtivityRepository";
+export * from "./ActivityRepository";
 export * from "./AttachmentRepository";
 export * from "./CollaboratorRepository";
 export * from "./DemandRepository";
@@ -14,4 +14,13 @@ export * from "./KnowledgeAreaRepository";
 export * from "./PartnerRepository";
 export * from "./PermissionRepository";
 export * from "./ProjectRepository";
+export * from "./ProjectAttachmentRepository";
+export * from "./ProjectHumanResourceRepository";
+export * from "./ProjectPublicRepository";
+export * from "./ProjectTargetRepository";
+export * from "./ProjectThemeAreaRepository";
+export * from "./PublicRepository";
+export * from "./PublicationRepository";
+export * from "./StudentRepository";
+export * from "./ThemeAreaRepository";
 export * from "./UserRepository";
