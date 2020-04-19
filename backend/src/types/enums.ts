@@ -35,3 +35,7 @@ export type RoleKey = keyof typeof Role;
 export type AgeRangeEnumKey = keyof typeof AgeRangeEnum;
 export type PublicationTypeEnumKey = keyof typeof PublicationTypeEnum;
 export type AttachmentTypeEnumKey = keyof typeof AttachmentTypeEnum;
+
+export function findEnumKey(e: any, v: any): any | null {
+    return Object.keys(e).filter((k) => e[k] === v)[0] || null;
+}

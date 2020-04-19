@@ -2,10 +2,10 @@ import { Property, Required, Enum } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { Project } from "./Project";
-
-import { AttachmentTypeEnum } from "../types";
 import { Attachment } from "./Attachment";
+import { Project } from "./Project";
+import { AttachmentTypeEnum } from "../types";
+import { TransformerAttachmentTypeEnum } from "../utils";
 
 @Index("idx_project_id", [ "project" ])
 @Index("idx_attachment_id", [ "attachment" ])
@@ -15,7 +15,8 @@ export class ProjectAttachment extends Audit {
     @Required()
     @Enum(AttachmentTypeEnum)
     @Property({ name: "type" })
-    @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
+    // @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
+    @Column({ name: "type", type: "varchar", transformer: TransformerAttachmentTypeEnum, nullable: false })
     public type: boolean;
 
     @ManyToOne(() => Project, (project) => project.projectAttachments, { nullable: false })

@@ -28,9 +28,9 @@ export class Student extends Audit {
     public period: string;
 
     @Required()
-    @Property({ name: "hasScholarship" })
-    @Column({ name: "has_scholarship", type: "boolean", default: false, nullable: false })
-    public hasScholarship: boolean;
+    @Property({ name: "scholarship" })
+    @Column({ name: "scholarship", type: "boolean", default: false, nullable: false })
+    public scholarship: boolean;
 
     @OneToOne(() => User, (user) => user.student, { nullable: true })
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })

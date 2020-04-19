@@ -34,7 +34,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
         ignoreUrlPatterns: [ "/api-docs" ],
         logRequest: true,
         logStart: true,
-        logEnd: false,
+        logEnd: true,
         jsonIndentation: 4
         // reqIdBuilder: () => string,
         // disableRoutesSummary: true,

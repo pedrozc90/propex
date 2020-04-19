@@ -5,6 +5,7 @@ import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { Attachment } from "./Attachment";
 import { PublicationTypeEnum } from "../types";
+import { TransformerPublicationTypeEnum } from "../utils";
 
 @Entity({ name: "publications" })
 export class Publication extends Audit {
@@ -15,7 +16,8 @@ export class Publication extends Audit {
     
     @Required()
     @Property({ name: "type" })
-    @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
+    // @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
+    @Column({ name: "age_range", transformer: TransformerPublicationTypeEnum, nullable: false })
     public type: PublicationTypeEnum;
 
     @Required()

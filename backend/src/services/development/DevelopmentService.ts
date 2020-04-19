@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable object-curly-newline */
 import { Service } from "@tsed/di";
-import { $log } from "@tsed/common";
 
 import {
     ActivityRepository,
@@ -28,8 +28,8 @@ import {
     ThemeAreaRepository,
     UserRepository
 } from "../../repositories";
-import { TransformerAgeRangeEnum } from "../../utils";
 import { AgeRangeEnum } from "../../types";
+import { EnumValueTransformer, TransformerAgeRangeEnum } from "../../utils";
 
 @Service()
 export class DevelopmentService {
@@ -108,10 +108,6 @@ export class DevelopmentService {
 
         const projectTargets = await this.ProjectTargetRepository.init(project);
         console.log(projectTargets);
-
-        $log.info(TransformerAgeRangeEnum.from(AgeRangeEnum.OLDER_THAN_70));
-        $log.info(TransformerAgeRangeEnum.to("Até 18 anos"));
-        $log.info(TransformerAgeRangeEnum.to("FROM_61_TO_70"));
 
         return {};
     }

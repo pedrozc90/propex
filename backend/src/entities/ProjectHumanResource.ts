@@ -1,12 +1,10 @@
-import { Property, Required, Enum, Format, Default } from "@tsed/common";
+import { Property, Required, Format, Default } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, Index, PrimaryGeneratedColumn } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { Project } from "./Project";
-
-import { AttachmentTypeEnum } from "../types";
-import { User } from "./User";
 import { HumanResourceType } from "./HumanResourceType";
+import { Project } from "./Project";
+import { User } from "./User";
 
 @Index("idx_project_id", [ "project" ])
 @Index("idx_user_id", [ "user" ])
@@ -17,12 +15,6 @@ export class ProjectHumanResource extends Audit {
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id!: number;
-    
-    @Required()
-    @Enum(AttachmentTypeEnum)
-    @Property({ name: "type" })
-    @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
-    public type: boolean;
 
     @Required()
     @Property({ name: "coordinate" })
