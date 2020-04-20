@@ -20,7 +20,7 @@ export class ThemeAreaRepository extends GenericRepository<ThemeArea> {
 
         const areas = data.map((value) => {
             const a = new ThemeArea();
-            a.description = value;
+            a.name = value;
             return a;
         });
 

@@ -20,7 +20,7 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
 
         const areas = data.map((value) => {
             const tmp = new KnowledgeArea();
-            tmp.description = value;
+            tmp.name = value;
             return tmp;
         });
 

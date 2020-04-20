@@ -23,7 +23,7 @@ export class Activity extends Audit {
 
     @Required()
     @Property({ name: "external" })
-    @Column({ name: "external", type: "tinyint", width: 4, nullable: false })
+    @Column({ name: "external", type: "boolean", default: false, nullable: false })
     public external: number;
 
     @Required()

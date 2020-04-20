@@ -22,9 +22,9 @@ export class ExtensionLine extends Audit {
     public name: string;
 
     @Required()
-    @Property({ name: "operationWay" })
-    @Column({ name: "operation_way", type: "longtext", nullable: false })
-    public operationWay: string;
+    @Property({ name: "operation" })
+    @Column({ name: "operation", type: "longtext", nullable: false })
+    public operation: string;
 
     @ManyToMany(() => Project, (project) => project.extensionLines)
     public projects: Project[];

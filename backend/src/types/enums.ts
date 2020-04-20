@@ -36,6 +36,11 @@ export type AgeRangeEnumKey = keyof typeof AgeRangeEnum;
 export type PublicationTypeEnumKey = keyof typeof PublicationTypeEnum;
 export type AttachmentTypeEnumKey = keyof typeof AttachmentTypeEnum;
 
+/**
+ * Returns enum key of a specified value.
+ * @param e -- enum type.
+ * @param v -- enum value to be found.
+ */
 export function findEnumKey(e: any, v: any): any | null {
     return Object.keys(e).filter((k) => e[k] === v)[0] || null;
 }

@@ -12,9 +12,9 @@ export class ThemeArea extends Audit {
     public id!: number;
     
     @Required()
-    @Property({ name: "description" })
-    @Column({ name: "description", type: "varchar", length: 255, nullable: false })
-    public description: string;
+    @Property({ name: "name" })
+    @Column({ name: "name", type: "varchar", length: 255, nullable: false })
+    public name: string;
 
     @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.themeArea)
     public projectThemeAreas: ProjectThemeArea[];
