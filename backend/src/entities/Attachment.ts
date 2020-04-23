@@ -1,10 +1,12 @@
-import { Property, Required } from "@tsed/common";
+import { Property, Required, Enum } from "@tsed/common";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Activity } from "./Activity";
 import { Publication } from "./Publication";
-import { ProjectAttachment } from "./ProjectAttachment";
+import { Project } from "./Project";
+import { AttachmentTypeEnum } from "../types";
+import { TransformerAttachmentTypeEnum } from "../utils";
 
 @Entity({ name: "attachments" })
 export class Attachment extends Audit {
@@ -14,8 +16,10 @@ export class Attachment extends Audit {
     public id!: number;
     
     @Required()
+    @Enum(AttachmentTypeEnum)
     @Property({ name: "type" })
-    @Column({ name: "type", type: "varchar", length: 255, nullable: false })
+    // @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
+    @Column({ name: "type", type: "varchar", transformer: TransformerAttachmentTypeEnum, nullable: false })
     public type: string;
 
     @Required()
@@ -43,13 +47,13 @@ export class Attachment extends Audit {
     @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: false })
     public fileSize: number;
 
-    @ManyToMany(() => Activity, (activity) => activity.attachments)
-    public activities: Activity[];
-
     @OneToMany(() => Publication, (publication) => publication.attachment)
     public publications: Publication[];
 
-    @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.attachment)
-    public projectAttachments: ProjectAttachment[];
+    @ManyToMany(() => Activity, (activity) => activity.attachments)
+    public activities: Activity[];
+
+    @ManyToMany(() => Project, (project) => project.activities)
+    public projects: Project[];
 
 }

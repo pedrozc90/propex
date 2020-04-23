@@ -9,13 +9,14 @@ import { FutureDevelopmentPlan } from "./FutureDevelopmentPlan";
 import { Partner } from "./Partner";
 import { Demand } from "./Demand";
 import { Publication } from "./Publication";
-import { ProjectAttachment } from "./ProjectAttachment";
 import { ExtensionLine } from "./ExtensionLine";
 import { ProjectHumanResource } from "./ProjectHumanResource";
 import { KnowledgeArea } from "./KnowledgeArea";
 import { ProjectPublic } from "./ProjectPublic";
 import { ProjectTarget } from "./ProjectTarget";
 import { ProjectThemeArea } from "./ProjectThemeArea";
+import { Activity } from "./Activity";
+import { Attachment } from "./Attachment";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -90,8 +91,8 @@ export class Project extends Audit {
     @OneToMany(() => Publication, (publication) => publication.project)
     public publications: Publication[];
 
-    @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.project)
-    public projectAttachments: ProjectAttachment[];
+    // @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.project)
+    // public projectAttachments: ProjectAttachment[];
 
     @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project)
     public projectHumanResources: ProjectHumanResource[];
@@ -104,6 +105,9 @@ export class Project extends Audit {
 
     @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
     public projectThemeAreas: ProjectThemeArea[];
+
+    @OneToMany(() => Activity, (activity) => activity.project)
+    public activities: Activity[];
 
     @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
     @JoinTable({
@@ -121,8 +125,12 @@ export class Project extends Audit {
     })
     public knowledgeAreas: KnowledgeArea[];
 
-    // NÃO SEI PORQUE NAO HÁ ESTE RELACIONAMENTO
-    // @OneToMany(() => Activity, (activity) => activity.project)
-    // public activities: Activity[];
+    @ManyToMany(() => Attachment, (attachment) => attachment.activities)
+    @JoinTable({
+        name: "project_attachments",
+        joinColumn: { name: "attachment_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+    })
+    public attachments: Attachment[];
 
 }

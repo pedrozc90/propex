@@ -1,64 +1,35 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable object-curly-newline */
 import { Service } from "@tsed/di";
 
-import {
-    ActivityRepository,
-    AttachmentRepository,
-    CollaboratorRepository,
-    DemandRepository,
-    DisclosureMediaRepository,
-    EvaluationRepository,
-    EventPresentationRepository,
-    ExtensionLineRepository,
-    FutureDevelopmentPlanRepository,
-    HumanResourceTypeRepository,
-    KnowledgeAreaRepository,
-    PartnerRepository,
-    PermissionRepository,
-    ProjectRepository,
-    ProjectAttachmentRepository,
-    ProjectHumanResourceRepository,
-    ProjectPublicRepository,
-    ProjectTargetRepository,
-    ProjectThemeAreaRepository,
-    PublicRepository,
-    PublicationRepository,
-    StudentRepository,
-    ThemeAreaRepository,
-    UserRepository
-} from "../../repositories";
+import * as Repo from "../../repositories";
 import { AgeRangeEnum } from "../../types";
-import { EnumValueTransformer, TransformerAgeRangeEnum } from "../../utils";
 
 @Service()
 export class DevelopmentService {
 
     constructor(
-        private ActivityRepository: ActivityRepository,
-        private AttachmentRepository: AttachmentRepository,
-        private CollaboratorRepository: CollaboratorRepository,
-        private DemandRepository: DemandRepository,
-        private DisclosureMediaRepository: DisclosureMediaRepository,
-        private EvaluationRepository: EvaluationRepository,
-        private EventPresentationRepository: EventPresentationRepository,
-        private ExtensionLineRepository: ExtensionLineRepository,
-        private FutureDevelopmentPlanRepository: FutureDevelopmentPlanRepository,
-        private HumanResourceTypeRepository: HumanResourceTypeRepository,
-        private KnowledgeAreaRepository: KnowledgeAreaRepository,
-        private PartnerRepository: PartnerRepository,
-        private PermissionRepository: PermissionRepository,
-        private ProjectRepository: ProjectRepository,
-        private ProjectAttachmentRepository: ProjectAttachmentRepository,
-        private ProjectHumanResourceRepository: ProjectHumanResourceRepository,
-        private ProjectPublicRepository: ProjectPublicRepository,
-        private ProjectTargetRepository: ProjectTargetRepository,
-        private ProjectThemeAreaRepository: ProjectThemeAreaRepository,
-        private PublicRepository: PublicRepository,
-        private PublicationRepository: PublicationRepository,
-        private StudentRepository: StudentRepository,
-        private ThemeAreaRepository: ThemeAreaRepository,
-        private UserRepository: UserRepository) {
+        private ActivityRepository: Repo.ActivityRepository,
+        private AttachmentRepository: Repo.AttachmentRepository,
+        private CollaboratorRepository: Repo.CollaboratorRepository,
+        private DemandRepository: Repo.DemandRepository,
+        private DisclosureMediaRepository: Repo.DisclosureMediaRepository,
+        private EvaluationRepository: Repo.EvaluationRepository,
+        private EventPresentationRepository: Repo.EventPresentationRepository,
+        private ExtensionLineRepository: Repo.ExtensionLineRepository,
+        private FutureDevelopmentPlanRepository: Repo.FutureDevelopmentPlanRepository,
+        private HumanResourceTypeRepository: Repo.HumanResourceTypeRepository,
+        private KnowledgeAreaRepository: Repo.KnowledgeAreaRepository,
+        private PartnerRepository: Repo.PartnerRepository,
+        private PermissionRepository: Repo.PermissionRepository,
+        private ProjectRepository: Repo.ProjectRepository,
+        private ProjectHumanResourceRepository: Repo.ProjectHumanResourceRepository,
+        private ProjectPublicRepository: Repo.ProjectPublicRepository,
+        private ProjectTargetRepository: Repo.ProjectTargetRepository,
+        private ProjectThemeAreaRepository: Repo.ProjectThemeAreaRepository,
+        private PublicRepository: Repo.PublicRepository,
+        private PublicationRepository: Repo.PublicationRepository,
+        private StudentRepository: Repo.StudentRepository,
+        private ThemeAreaRepository: Repo.ThemeAreaRepository,
+        private UserRepository: Repo.UserRepository) {
         // initialize stuff here
     }
 
@@ -108,6 +79,8 @@ export class DevelopmentService {
 
         const projectTargets = await this.ProjectTargetRepository.init(project);
         console.log(projectTargets);
+
+        console.log(Object.keys(AgeRangeEnum).join(", "));
 
         return {};
     }

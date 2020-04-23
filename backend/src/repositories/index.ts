@@ -14,7 +14,6 @@ export * from "./KnowledgeAreaRepository";
 export * from "./PartnerRepository";
 export * from "./PermissionRepository";
 export * from "./ProjectRepository";
-export * from "./ProjectAttachmentRepository";
 export * from "./ProjectHumanResourceRepository";
 export * from "./ProjectPublicRepository";
 export * from "./ProjectTargetRepository";

@@ -17,7 +17,7 @@ export class Publication extends Audit {
     @Required()
     @Property({ name: "type" })
     // @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
-    @Column({ name: "age_range", transformer: TransformerPublicationTypeEnum, nullable: false })
+    @Column({ name: "type", transformer: TransformerPublicationTypeEnum, nullable: false })
     public type: PublicationTypeEnum;
 
     @Required()
@@ -39,7 +39,7 @@ export class Publication extends Audit {
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 
-    @ManyToOne(() => Attachment, (attachment) => attachment.publications, { nullable: false })
+    @ManyToOne(() => Attachment, (attachment) => attachment.publications, { nullable: true })
     @JoinColumn({ name: "attachment_id", referencedColumnName: "id" })
     public attachment: Attachment;
 

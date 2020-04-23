@@ -16,7 +16,6 @@ export * from "./KnowledgeArea";
 export * from "./Partner";
 export * from "./Permission";
 export * from "./Project";
-export * from "./ProjectAttachment";
 export * from "./ProjectHumanResource";
 export * from "./ProjectPublic";
 export * from "./ProjectTarget";
