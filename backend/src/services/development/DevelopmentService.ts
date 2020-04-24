@@ -2,6 +2,7 @@ import { Service } from "@tsed/di";
 
 import * as Repo from "../../repositories";
 import { AgeRangeEnum } from "../../types";
+import { ExtensionLine } from "src/entities";
 
 @Service()
 export class DevelopmentService {
@@ -34,53 +35,56 @@ export class DevelopmentService {
     }
 
     public async $onReady(): Promise<any> {
-        const knowledgeAreas = await this.KnowledgeAreaRepository.init();
-        console.log(knowledgeAreas);
-
-        let user = await this.UserRepository.init();
-        console.log(user);
-
-        const permissions = await this.PermissionRepository.init();
-        console.log(permissions);
-
-        const collaborators = await this.CollaboratorRepository.init(user);
-        console.log(collaborators);
-
-        user.permissions = permissions;
-        user = await this.UserRepository.save(user);
-
-        // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[1]);
-        // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[0]);
-        // await this.permissionRepository.delete(permissions[1].id);
-
-        const project = await this.ProjectRepository.init();
-        console.log(project);
-
-        const medias = await this.DisclosureMediaRepository.init(project);
-        console.log(medias);
-
-        const events = await this.EventPresentationRepository.init(project);
-        console.log(events);
-
-        const lines = await this.ExtensionLineRepository.init();
-        console.log(lines);
-
-        const evaluations = await this.EvaluationRepository.init(project);
-        console.log(evaluations);
-
-        const futurePlans = await this.FutureDevelopmentPlanRepository.init(project);
-        console.log(futurePlans);
-
-        const hrTypes = await this.HumanResourceTypeRepository.init();
-        console.log(hrTypes);
-
+        const extensionLines = await this.ExtensionLineRepository.init();
+        const humanResourceTypes = await this.HumanResourceTypeRepository.init();
         const publics = await this.PublicRepository.init();
-        console.log(publics);
+        const knowledgeAreas = await this.KnowledgeAreaRepository.init();
 
-        const projectTargets = await this.ProjectTargetRepository.init(project);
-        console.log(projectTargets);
+        // const knowledgeAreas = await this.KnowledgeAreaRepository.init();
+        // console.log(knowledgeAreas);
 
-        console.log(Object.keys(AgeRangeEnum).join(", "));
+        // let user = await this.UserRepository.init();
+        // console.log(user);
+
+        // const permissions = await this.PermissionRepository.init();
+        // console.log(permissions);
+
+        // const collaborators = await this.CollaboratorRepository.init(user);
+        // console.log(collaborators);
+
+        // user.permissions = permissions;
+        // user = await this.UserRepository.save(user);
+
+        // // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[1]);
+        // // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[0]);
+        // // await this.permissionRepository.delete(permissions[1].id);
+
+        // const project = await this.ProjectRepository.init();
+        // console.log(project);
+
+        // const medias = await this.DisclosureMediaRepository.init(project);
+        // console.log(medias);
+
+        // const events = await this.EventPresentationRepository.init(project);
+        // console.log(events);
+
+        // const lines = await this.ExtensionLineRepository.init();
+        // console.log(lines);
+
+        // const evaluations = await this.EvaluationRepository.init(project);
+        // console.log(evaluations);
+
+        // const futurePlans = await this.FutureDevelopmentPlanRepository.init(project);
+        // console.log(futurePlans);
+
+        // const hrTypes = await this.HumanResourceTypeRepository.init();
+        // console.log(hrTypes);
+
+        // const publics = await this.PublicRepository.init();
+        // console.log(publics);
+
+        // const projectTargets = await this.ProjectTargetRepository.init(project);
+        // console.log(projectTargets);
 
         return {};
     }

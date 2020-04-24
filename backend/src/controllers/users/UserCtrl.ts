@@ -19,7 +19,7 @@ export class UserCtrl {
     // @ReturnsArray(User)
     // @CustomAuth({ scope: [ Role.MASTER ] })
     public async fetch(@QueryParams("page") page: number, @QueryParams("rpp") rpp: number,
-        @QueryParams("q") q: string): Promise<Page<User> | User[]> {
+        @QueryParams("q") q: string): Promise<Page<User>> {
         const options: IOptions = {};
         options.page = page || 1;
         options.rpp = rpp || 0;

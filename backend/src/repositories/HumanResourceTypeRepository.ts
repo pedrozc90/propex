@@ -7,17 +7,19 @@ import { HumanResourceType } from "../entities";
 export class HumanResourceTypeRepository extends GenericRepository<HumanResourceType> {
     
     public async init(): Promise<any> {
-        const hrt = [];
-        hrt[0] = new HumanResourceType();
-        hrt[0].description = "Informar coordenador e professores com horas/aula e/ou voluntários";
+        const data = [
+            "Informar coordenador e professores com horas/aula e/ou voluntários",
+            "Discentes com bolsa",
+            "Discentes sem bolsa"
+        ];
 
-        hrt[1] = new HumanResourceType();
-        hrt[1].description = "Discentes com bolsa";
-        
-        hrt[2] = new HumanResourceType();
-        hrt[2].description = "Discentes sem bolsa";
+        const hrts = data.map((d) => {
+            const t = new HumanResourceType();
+            t.description = d;
+            return t;
+        });
 
-        return this.save([ ...hrt ]);
+        return this.save([ ...hrts ]);
     }
     
 }

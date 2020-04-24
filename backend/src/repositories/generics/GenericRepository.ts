@@ -9,18 +9,22 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      * Fetch a list of documents from a collection.
      * @param options   -- pagination and search options
      */
-    public async fetch(options: IOptions): Promise<Page<T> | T[]> {
+    public async fetch(options: IOptions): Promise<Page<T>> {
         const page: number = options.page || 1;
         const rpp: number = options.rpp || 0;
 
-        const query = this.createQueryBuilder();
+        const query = this.createQueryBuilder()
+            .skip((page - 1) * rpp).limit(rpp);
+        
+        return Page.of(await query.getMany(), page, rpp);
+    }
 
-        let content: Page<T> | T[];
-        if (rpp > 0) {
-            content = await query.skip((page - 1) * rpp).limit(rpp).getMany();
-            return Page.of(content, page, rpp);
-        }
-        return query.getMany();
+    /**
+     * Fetch a list of documents from a collection.
+     * @param options   -- pagination and search options
+     */
+    public async list(options: IOptions): Promise<T[]> {
+        return this.find({});
     }
 
     /**
