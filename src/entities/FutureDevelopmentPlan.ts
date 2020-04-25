@@ -1,9 +1,9 @@
 import { Property, Required } from "@tsed/common";
+import { Description } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
-import { Description } from "@tsed/swagger";
 
 @Entity({ name: "future_development_plans" })
 @Index("idx_project_id", [ "project" ])

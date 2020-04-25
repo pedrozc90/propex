@@ -2,7 +2,6 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { User, UserCredentials } from "../entities";
-import { UserRole } from "../types";
 
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {
@@ -13,14 +12,12 @@ export class UserRepository extends GenericRepository<User> {
         usr.email = "admin@domain.com";
         usr.password = "123456";
         usr.phone = "(48) 99999-9999";
-        usr.role = UserRole.ADMINISTRATOR;
 
         const usr2 = new User();
         usr2.name = "Pedro";
         usr2.email = "pedro@domain.com";
         usr2.password = "123456";
         usr2.phone = "(48) 99999-9999";
-        usr2.role = UserRole.COORDENATOR;
 
         return this.save([ usr, usr2 ]);
     }

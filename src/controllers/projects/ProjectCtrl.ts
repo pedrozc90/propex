@@ -2,7 +2,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams } fr
 
 import { ProjectRepository } from "../../repositories";
 import { Page, Project } from "../../entities";
-import { IOptions, UserRole } from "../../types";
+import { IOptions } from "../../types";
 import { CustomAuth } from "../../services";
 
 @Controller("/project")

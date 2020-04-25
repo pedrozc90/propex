@@ -1,23 +1,23 @@
 import { Property, Required } from "@tsed/common";
+import { Description } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { DisclosureMedia } from "./DisclosureMedia";
-import { EventPresentation } from "./EventPresentation";
-import { Evaluation } from "./Evaluation";
-import { FutureDevelopmentPlan } from "./FutureDevelopmentPlan";
-import { Partner } from "./Partner";
+import { Activity } from "./Activity";
+import { Attachment } from "./Attachment";
 import { Demand } from "./Demand";
-import { Publication } from "./Publication";
+import { DisclosureMedia } from "./DisclosureMedia";
+import { Evaluation } from "./Evaluation";
+import { EventPresentation } from "./EventPresentation";
 import { ExtensionLine } from "./ExtensionLine";
-import { ProjectHumanResource } from "./ProjectHumanResource";
+import { FutureDevelopmentPlan } from "./FutureDevelopmentPlan";
 import { KnowledgeArea } from "./KnowledgeArea";
+import { Partner } from "./Partner";
+import { ProjectHumanResource } from "./ProjectHumanResource";
 import { ProjectPublic } from "./ProjectPublic";
 import { ProjectTarget } from "./ProjectTarget";
 import { ProjectThemeArea } from "./ProjectThemeArea";
-import { Activity } from "./Activity";
-import { Attachment } from "./Attachment";
-import { Description } from "@tsed/swagger";
+import { Publication } from "./Publication";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {

@@ -3,10 +3,9 @@ import { ValueTransformer } from "typeorm";
 
 import {
     findEnumKey,
-    AgeRangeEnum, AgeRangeEnumKey,
-    AttachmentTypeEnum, AttachmentTypeEnumKey,
-    PublicationTypeEnum, PublicationTypeEnumKey,
-    UserRole, UserRoleKey
+    AgeRange, AgeRangeKey,
+    AttachmentType, AttachmentTypeKey,
+    PublicationType, PublicationTypeKey
 } from "../../types";
 
 export class EnumValueTransformer<T, K> implements ValueTransformer {
@@ -40,7 +39,7 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
 
 }
 
-export const UserRoleEnumTransformer = new EnumValueTransformer<UserRole, UserRoleKey>(UserRole);
-export const AgeRangeEnumTransformer = new EnumValueTransformer<AgeRangeEnum, AgeRangeEnumKey>(AgeRangeEnum);
-export const AttachmentTypeEnumTransformer = new EnumValueTransformer<AttachmentTypeEnum, AttachmentTypeEnumKey>(AttachmentTypeEnum);
-export const PublicationTypeEnumTransformer = new EnumValueTransformer<PublicationTypeEnum, PublicationTypeEnumKey>(PublicationTypeEnum);
+// export const UserRoleEnumTransformer = new EnumValueTransformer<Role, string>(Role);
+export const AgeRangeEnumTransformer = new EnumValueTransformer<AgeRange, AgeRangeKey>(AgeRange);
+export const AttachmentTypeEnumTransformer = new EnumValueTransformer<AttachmentType, AttachmentTypeKey>(AttachmentType);
+export const PublicationTypeEnumTransformer = new EnumValueTransformer<PublicationType, PublicationTypeKey>(PublicationType);

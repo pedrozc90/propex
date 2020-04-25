@@ -39,7 +39,7 @@ services:
         restart: unless-stopped
         volumes:
             - mysqlvolume:/var/lib/mysql
-            - ./docs:/home/files
+            - ./docs/scripts:/home/scripts
         ports:
             - 3306:3306
         hostname: mysql

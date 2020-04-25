@@ -1,8 +1,6 @@
 import { Service } from "@tsed/di";
 
 import * as Repo from "../../repositories";
-import { AgeRangeEnum } from "../../types";
-import { ExtensionLine } from "src/entities";
 
 @Service()
 export class DevelopmentService {
@@ -17,10 +15,8 @@ export class DevelopmentService {
         private EventPresentationRepository: Repo.EventPresentationRepository,
         private ExtensionLineRepository: Repo.ExtensionLineRepository,
         private FutureDevelopmentPlanRepository: Repo.FutureDevelopmentPlanRepository,
-        private HumanResourceTypeRepository: Repo.HumanResourceTypeRepository,
         private KnowledgeAreaRepository: Repo.KnowledgeAreaRepository,
         private PartnerRepository: Repo.PartnerRepository,
-        private PermissionRepository: Repo.PermissionRepository,
         private ProjectRepository: Repo.ProjectRepository,
         private ProjectHumanResourceRepository: Repo.ProjectHumanResourceRepository,
         private ProjectPublicRepository: Repo.ProjectPublicRepository,
@@ -36,14 +32,14 @@ export class DevelopmentService {
 
     public async $onReady(): Promise<any> {
         const extensionLines = await this.ExtensionLineRepository.init();
-        const humanResourceTypes = await this.HumanResourceTypeRepository.init();
         const publics = await this.PublicRepository.init();
         const knowledgeAreas = await this.KnowledgeAreaRepository.init();
 
         // const knowledgeAreas = await this.KnowledgeAreaRepository.init();
         // console.log(knowledgeAreas);
 
-        const user = await this.UserRepository.init();
+        const users = await this.UserRepository.init();
+        console.log(users);
 
         // const permissions = await this.PermissionRepository.init();
         // console.log(permissions);

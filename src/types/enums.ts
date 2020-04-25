@@ -1,11 +1,4 @@
-export enum UserRole {
-    ADMINISTRATOR = "administrador",
-    COORDENATOR = "coordenador",
-    PROFESSOR = "professor",
-    STUDENT = "estudante"
-}
-
-export enum AgeRangeEnum {
+export enum AgeRange {
     UNTIL_12 = "Até 12 anos incompletos",
     UNTIL_18 = "Até 18 anos",
     FROM_19_TO_25 = "De 19 a 25 anos",
@@ -16,13 +9,13 @@ export enum AgeRangeEnum {
     OLDER_THAN_70 = "Acima de 70 anos"
 }
 
-export enum PublicationTypeEnum {
+export enum PublicationType {
     ARTIGO = "artigo",
     CAPTULO = "captulo",
     RESUMO = "resumo"
 }
 
-export enum AttachmentTypeEnum {
+export enum AttachmentType {
     DOCUMENT = "document",
     IMAGE = "image",
     VIDEO = "video",
@@ -32,10 +25,9 @@ export enum AttachmentTypeEnum {
     OTHER = "other"
 }
 
-export type UserRoleKey = keyof typeof UserRole;
-export type AgeRangeEnumKey = keyof typeof AgeRangeEnum;
-export type PublicationTypeEnumKey = keyof typeof PublicationTypeEnum;
-export type AttachmentTypeEnumKey = keyof typeof AttachmentTypeEnum;
+export type AgeRangeKey = keyof typeof AgeRange;
+export type PublicationTypeKey = keyof typeof PublicationType;
+export type AttachmentTypeKey = keyof typeof AttachmentType;
 
 /**
  * Returns enum key of a specified value.

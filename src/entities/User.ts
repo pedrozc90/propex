@@ -1,13 +1,9 @@
-import { Default, Format, Property, Required, IgnoreProperty, Enum } from "@tsed/common";
+import { Default, Format, Property, Required, IgnoreProperty } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany, JoinTable, OneToMany, Unique, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne } from "typeorm";
 
-import { Permission } from "./Permission";
 import { Collaborator } from "./Collaborator";
 import { Student } from "./Student";
-import { ProjectHumanResource } from "./ProjectHumanResource";
-import { UserRole } from "../types";
-import { UserRoleEnumTransformer } from "../utils";
 
 export class UserCredentials {
 
@@ -50,17 +46,11 @@ export class User extends UserBasic {
     password: string;
 
     @Description("User phone")
-    @Example("(48) 3433-0000")
+    @Example("(48) 99999-9999")
     @Required()
     @Property({ name: "phone" })
     @Column({ name: "phone", type: "varchar", length: 255, nullable: false })
     public phone: string;
-
-    @Required()
-    @Enum(UserRole)
-    @Property({ name: "role" })
-    @Column({ name: "role", type: "varchar", transformer: UserRoleEnumTransformer, nullable: false })
-    public role: UserRole = UserRole.STUDENT;
 
     @Description("Mark if user is active")
     @Property({ name: "active" })
@@ -78,21 +68,10 @@ export class User extends UserBasic {
     @CreateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
-    @ManyToMany(() => Permission, (permission) => permission.users)
-    @JoinTable({
-        name: "users_permissions",
-        joinColumn: { name: "permission_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "user_id", referencedColumnName: "id" }
-    })
-    public permissions: Permission[];
-
-    @OneToMany(() => Collaborator, (collaborator) => collaborator.user, { nullable: false })
-    public collaborators: Collaborator[];
+    @OneToOne(() => Collaborator, (collaborator) => collaborator.user)
+    public collaborator: Collaborator;
 
     @OneToOne(() => Student, (student) => student.user)
     public student: Student;
-
-    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.user)
-    public projectHumanResources: ProjectHumanResource[];
     
 }

@@ -1,9 +1,9 @@
 import { Property, Required, Format } from "@tsed/common";
+import { Description } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { ProjectPublic } from "./ProjectPublic";
-import { Description } from "@tsed/swagger";
 
 @Entity({ name: "publics" })
 export class Public extends Audit {

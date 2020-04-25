@@ -1,13 +1,7 @@
---------------------------------------------------
--- USUARIOS
---------------------------------------------------
 INSERT INTO users (name, email, password, phone, role) VALUES
     ("admin", "admin@domain.com", "123456", "(48) 99999-9999", "ADMINISTRATOR"),
     ("Pedro", "pedro@domain.com", "123456", "(48) 99999-9999", "COORDENATOR");
 
---------------------------------------------------
--- AREAS DO CONHECIMENTO
---------------------------------------------------
 INSERT INTO knowledge_areas (name) VALUES
     ("Ciências Exatas e da Terra"),
     ("Ciências Biológicas"),
@@ -18,9 +12,6 @@ INSERT INTO knowledge_areas (name) VALUES
     ("Ciências Humanas"),
     ("Lingüística, Letras e Artes");
 
---------------------------------------------------
--- ÁREAS TEMÁTICAS
---------------------------------------------------
 INSERT INTO theme_areas (name) VALUES
     ("Comunicação"),
     ("Cultura"),
@@ -31,9 +22,6 @@ INSERT INTO theme_areas (name) VALUES
     ("Tecnologia e Produção"),
     ("Trabalho");
 
---------------------------------------------------
--- LINHAS DE EXTENSÃO
---------------------------------------------------
 INSERT INTO extension_lines (number, name, operation) VALUES
     ( 1, "2006 – Alfabetização, leitura e escrita"                                  , "Alfabetização e letramento de crianças, jovens e adultos; formação do leitor e do produtor de textos; incentivo à leitura; literatura; desenvolvimento de metodologias de ensino da leitura e da escrita e sua inclusão nos projetos político-pedagógicos das escolas."),
     ( 2, "2006 – Artes cênicas"                                                     , "Dança, teatro, técnicas circenses, performance; formação, capacitação e qualificação de pessoas que atuam na área; memória, produção e difusão cultural e artística."),
@@ -84,14 +72,11 @@ INSERT INTO extension_lines (number, name, operation) VALUES
     (47, "2006 – Segurança alimentar e nutricional"                                 , "Incentivo à produção de alimentos básicos, auto-abastecimento, agricultura urbana, hortas escolares e comunitárias, nutrição, educação para o consumo, regulação do mercado de alimentos, promoção e defesa do consumo alimentar."),
     (48, "2006 – Segurança pública e defesa social"                                 , "Planejamento, implementação e avaliação de processos e metodologias, dentro de uma compreensão global do conceito de segurança pública, visando proporcionar soluções e tratamento de problemas relacionados; orientação e assistência jurídica, judiciária, psicológica e social à população carcerária e seus familiares; assessoria a projetos de educação, saúde e trabalho aos apenados e familiares; questão penitenciária; violência; mediação de conflitos; atenção a vítimas de crimes violentos; proteção a testemunhas; policiamento comunitário."),
     (49, "2006 – Tecnologia da informação"                                          , "Desenvolvimento de competência informacional para identificar, localizar, interpretar, relacionar, analisar, sintetizar, avaliar e comunicar informação em fontes impressas ou eletrônicas; inclusão digital."),
-    (50, "2006 – Temas específicos / Desenvolvimento humano"                        , "Temas das diversas áreas do conhecimento, especialmente de ciências humanas, biológicas, sociais aplicadas, exatas e da terra, da saúde, ciências agrárias, engenharias, lingüística, (letras e artes), visando a reflexão, discussão, atualização e aperfeiçoamento humano.");
-    (51, "2006 – Terceira idade"                                                    , "Planejamento, implementação e avaliação de processos de atenção (educação, saúde, assistência social, etc), de emancipação e inclusão; promoção, defesa e garantia de direitos; desenvolvimento de metodologias de intervenção, tendo como objeto enfocado na ação pessoas idosas e suas famílias.");
-    (52, "2006 – Turismo"                                                           , "Planejamento e implementação do turismo (ecológico, cultural, de lazer, de negócios, religioso, etc) como setor gerador de emprego e renda; desenvolvimento de novas tecnologias para avaliações de potencial turístico; produção e divulgação de imagens em acordo com as especificidades culturais das populações locais.");
+    (50, "2006 – Temas específicos / Desenvolvimento humano"                        , "Temas das diversas áreas do conhecimento, especialmente de ciências humanas, biológicas, sociais aplicadas, exatas e da terra, da saúde, ciências agrárias, engenharias, lingüística, (letras e artes), visando a reflexão, discussão, atualização e aperfeiçoamento humano."),
+    (51, "2006 – Terceira idade"                                                    , "Planejamento, implementação e avaliação de processos de atenção (educação, saúde, assistência social, etc), de emancipação e inclusão; promoção, defesa e garantia de direitos; desenvolvimento de metodologias de intervenção, tendo como objeto enfocado na ação pessoas idosas e suas famílias."),
+    (52, "2006 – Turismo"                                                           , "Planejamento e implementação do turismo (ecológico, cultural, de lazer, de negócios, religioso, etc) como setor gerador de emprego e renda; desenvolvimento de novas tecnologias para avaliações de potencial turístico; produção e divulgação de imagens em acordo com as especificidades culturais das populações locais."),
     (53, "2006 – Uso de drogas e dependência química"                               , "Prevenção e limitação da incidência e do consumo de drogas; tratamento de dependentes; assistência e orientação a usuários de drogas; recuperação e reintegração social.");
 
---------------------------------------------------
--- PUBLICOS
---------------------------------------------------
 INSERT INTO publics (name) VALUES 
     ("Escolas públicas"),
     ("Escolas particulares"),

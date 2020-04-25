@@ -3,7 +3,7 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Index } 
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
-import { AgeRangeEnum } from "../types";
+import { AgeRange } from "../types";
 import { AgeRangeEnumTransformer } from "../utils";
 
 @Index("idx_project_id", [ "project" ])
@@ -25,11 +25,11 @@ export class ProjectTarget extends Audit {
     public womenNumber: number | null;
 
     @Required()
-    @Enum(AgeRangeEnum)
+    @Enum(AgeRange)
     @Property({ name: "ageRange" })
-    // @Column({ name: "age_range", type: "enum", enum: AgeRangeEnum, default: AgeRangeEnum.UNTIL_12, nullable: false })
+    // @Column({ name: "age_range", type: "enum", enum: AgeRange, default: AgeRange.UNTIL_12, nullable: false })
     @Column({ name: "age_range", transformer: AgeRangeEnumTransformer, nullable: false })
-    public ageRange: AgeRangeEnum;
+    public ageRange: AgeRange;
 
     @ManyToOne(() => Project, (project) => project.projectTargets, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })

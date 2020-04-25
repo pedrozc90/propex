@@ -3,7 +3,7 @@ import { InternalServerError, Unauthorized } from "ts-httpexceptions";
 
 import { AuthenticationService, CustomAuth } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";
-import { IToken, UserRole } from "../../types";
+import { IToken } from "../../types";
 
 @Controller("/auth")
 export class AuthenticationCtrl {
@@ -37,7 +37,7 @@ export class AuthenticationCtrl {
         // update context information
         // await this.authenticationService.setContext(token, { role: user.role, _id: user._id } as IJwt);
 
-        return { token, role: user.role };
+        return { token };
     }
 
     /**

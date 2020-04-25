@@ -1,52 +1,57 @@
 import { Property, Required, Format, Default } from "@tsed/common";
+import { Description } from "@tsed/swagger";
 import { Entity, Column, ManyToOne, JoinColumn, Index, PrimaryGeneratedColumn } from "typeorm";
 
 import { Audit } from "./generics/Audit";
-import { HumanResourceType } from "./HumanResourceType";
+import { Collaborator } from "./Collaborator";
 import { Project } from "./Project";
-import { User } from "./User";
+import { Student } from "./Student";
 
+@Index("idx_collaborator_id", [ "collaborator" ])
+@Index("idx_student_id", [ "student" ])
 @Index("idx_project_id", [ "project" ])
-@Index("idx_user_id", [ "user" ])
-@Index("idx_human_resource_type_id", [ "humanResourceType" ])
 @Entity({ name: "project_human_resources" })
 export class ProjectHumanResource extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
 
     @Required()
+    @Description("Marca o coordenador do projecto")
     @Property({ name: "coordinate" })
     @Column({ name: "coordinate", type: "boolean", default: false, nullable: false })
     public coordinate: boolean;
 
     @Required()
+    @Description("Carga horária")
     @Property({ name: "workload" })
     @Column({ name: "workload", type: "int", width: 11, nullable: false })
     public workload: number;
 
     @Required()
+    @Description("Dedicação exclusiva")
     @Property({ name: "exclusive" })
     @Column({ name: "exclusive", type: "boolean", default: false, nullable: false })
     public exclusive: boolean;
 
     @Format("date")
+    @Description("Data de Admissão")
     @Default(Date.now)
-    @Property({ name: "initiatedAt" })
-    @Column({ name: "initiated_at", type: "date", nullable: false })
-    public initiatedAt: string;
+    @Property({ name: "dateAdmission" })
+    @Column({ name: "dt_admission", type: "date", nullable: false })
+    public dateAdmission: string;
 
     @ManyToOne(() => Project, (project) => project.projectHumanResources, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 
-    @ManyToOne(() => User, (user) => user.projectHumanResources, { nullable: false })
-    @JoinColumn({ name: "user_id", referencedColumnName: "id" })
-    public user: User;
+    @ManyToOne(() => Collaborator, (collaborator) => collaborator.projectHumanResources, { nullable: false })
+    @JoinColumn({ name: "collaborator_id", referencedColumnName: "id" })
+    public collaborator: Collaborator;
 
-    @ManyToOne(() => HumanResourceType, (humanResourceType) => humanResourceType.projectHumanResources, { nullable: false })
-    @JoinColumn({ name: "human_resource_type_id", referencedColumnName: "id" })
-    public humanResourceType: HumanResourceType;
+    @ManyToOne(() => Student, (student) => student.projectHumanResources, { nullable: false })
+    @JoinColumn({ name: "student_id", referencedColumnName: "id" })
+    public student: Student;
 
 }

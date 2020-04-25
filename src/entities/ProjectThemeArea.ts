@@ -1,10 +1,10 @@
 import { Property, Required } from "@tsed/common";
+import { Description } from "@tsed/swagger";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { ThemeArea } from "./ThemeArea";
-import { Description } from "@tsed/swagger";
 
 @Index("idx_project_id", [ "project" ])
 @Index("idx_theme_area_id", [ "themeArea" ])
