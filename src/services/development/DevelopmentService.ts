@@ -44,7 +44,6 @@ export class DevelopmentService {
         // console.log(knowledgeAreas);
 
         const user = await this.UserRepository.init();
-        console.log(user);
 
         // const permissions = await this.PermissionRepository.init();
         // console.log(permissions);

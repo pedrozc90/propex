@@ -101,9 +101,6 @@ export class Project extends Audit {
     @OneToMany(() => Publication, (publication) => publication.project)
     public publications: Publication[];
 
-    // @OneToMany(() => ProjectAttachment, (projectAttachment) => projectAttachment.project)
-    // public projectAttachments: ProjectAttachment[];
-
     @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project)
     public projectHumanResources: ProjectHumanResource[];
 

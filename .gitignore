@@ -1,4 +1,6 @@
 # IDE's files
 .idea
 
-backend/node_modules
+# npm files
+node_modules
+dist

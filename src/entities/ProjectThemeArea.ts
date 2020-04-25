@@ -4,6 +4,7 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typ
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { ThemeArea } from "./ThemeArea";
+import { Description } from "@tsed/swagger";
 
 @Index("idx_project_id", [ "project" ])
 @Index("idx_theme_area_id", [ "themeArea" ])
@@ -11,9 +12,10 @@ import { ThemeArea } from "./ThemeArea";
 export class ProjectThemeArea extends Audit {
 
     @Required()
-    @Property({ name: "mainArea" })
-    @Column({ name: "main_area", type: "boolean", default: false, nullable: false })
-    public mainArea: boolean;
+    @Description("Marca a área temática principal.")
+    @Property({ name: "main" })
+    @Column({ name: "main", type: "boolean", default: false, nullable: false })
+    public main: boolean;
 
     @ManyToOne(() => Project, (project) => project.projectThemeAreas, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
