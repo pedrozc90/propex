@@ -6,7 +6,7 @@ import { Activity } from "./Activity";
 import { Publication } from "./Publication";
 import { Project } from "./Project";
 import { AttachmentTypeEnum } from "../types";
-import { TransformerAttachmentTypeEnum } from "../utils";
+import { AttachmentTypeEnumTransformer } from "../utils";
 
 @Entity({ name: "attachments" })
 export class Attachment extends Audit {
@@ -19,8 +19,8 @@ export class Attachment extends Audit {
     @Enum(AttachmentTypeEnum)
     @Property({ name: "type" })
     // @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
-    @Column({ name: "type", type: "varchar", transformer: TransformerAttachmentTypeEnum, nullable: false })
-    public type: string;
+    @Column({ name: "type", type: "varchar", transformer: AttachmentTypeEnumTransformer, nullable: false })
+    public type: AttachmentTypeEnum;
 
     @Required()
     @Property({ name: "url" })

@@ -3,6 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { ProjectPublic } from "./ProjectPublic";
+import { Description } from "@tsed/swagger";
 
 @Entity({ name: "publics" })
 export class Public extends Audit {
@@ -17,6 +18,7 @@ export class Public extends Audit {
     public name: string;
 
     @Required()
+    @Description("Centro de Referência de Assitência Social - CRAS")
     @Property({ name: "cras" })
     @Column({ name: "cras", type: "varchar", length: 255, nullable: true, default: null })
     public cras: string;

@@ -1,7 +1,8 @@
-export enum Role {
-    MASTER = "master",
-    ADMIN = "admin",
-    MEMBER = "member"
+export enum UserRole {
+    ADMINISTRATOR = "administrador",
+    COORDENATOR = "coordenador",
+    PROFESSOR = "professor",
+    STUDENT = "estudante"
 }
 
 export enum AgeRangeEnum {
@@ -31,7 +32,7 @@ export enum AttachmentTypeEnum {
     OTHER = "other"
 }
 
-export type RoleKey = keyof typeof Role;
+export type UserRoleKey = keyof typeof UserRole;
 export type AgeRangeEnumKey = keyof typeof AgeRangeEnum;
 export type PublicationTypeEnumKey = keyof typeof PublicationTypeEnum;
 export type AttachmentTypeEnumKey = keyof typeof AttachmentTypeEnum;

@@ -1,11 +1,11 @@
-import { Property, Required } from "@tsed/common";
+import { Property, Required, Enum } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { Attachment } from "./Attachment";
 import { PublicationTypeEnum } from "../types";
-import { TransformerPublicationTypeEnum } from "../utils";
+import { PublicationTypeEnumTransformer } from "../utils";
 
 @Entity({ name: "publications" })
 export class Publication extends Audit {
@@ -15,9 +15,10 @@ export class Publication extends Audit {
     public id!: number;
     
     @Required()
+    @Enum(PublicationTypeEnum)
     @Property({ name: "type" })
     // @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
-    @Column({ name: "type", transformer: TransformerPublicationTypeEnum, nullable: false })
+    @Column({ name: "type", transformer: PublicationTypeEnumTransformer, nullable: false })
     public type: PublicationTypeEnum;
 
     @Required()

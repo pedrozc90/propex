@@ -17,6 +17,7 @@ import { ProjectTarget } from "./ProjectTarget";
 import { ProjectThemeArea } from "./ProjectThemeArea";
 import { Activity } from "./Activity";
 import { Attachment } from "./Attachment";
+import { Description } from "@tsed/swagger";
 
 @Entity({ name: "projects" })
 export class Project extends Audit {
@@ -26,46 +27,55 @@ export class Project extends Audit {
     public id!: number;
     
     @Required()
-    @Property({ name: "name" })
-    @Column({ name: "name", type: "varchar", length: 255, nullable: false })
-    public name: string;
+    @Description("Título do Projeto")
+    @Property({ name: "title" })
+    @Column({ name: "title", type: "varchar", length: 255, nullable: false })
+    public title: string;
 
-    @Required()
-    @Property({ name: "institutionalLinkName" })
-    @Column({ name: "institutional_link_name", type: "varchar", length: 255, nullable: false })
-    public institutionalLinkName: string;
+    // @Required()
+    @Description("Nome do programa institucional vinculado ao pejeto")
+    @Property({ name: "program" })
+    @Column({ name: "program", type: "varchar", length: 255, nullable: true })
+    public program: string;
 
-    @Required()
+    // @Required()
+    @Description("")
     @Property({ name: "startSeason" })
     @Column({ name: "start_season", type: "varchar", length: 15, nullable: false })
     public startSeason: string;
 
-    @Required()
-    @Property({ name: "involvedClasses" })
-    @Column({ name: "involved_classes", type: "longtext", nullable: false })
-    public involvedClasses: string;
+    // @Required()
+    @Description("Cursos envolvidos")
+    @Property({ name: "includedCourses" })
+    @Column({ name: "included_courses", type: "longtext", nullable: false })
+    public includedCourses: string;
 
-    @Required()
-    @Property({ name: "pccCalendarClassesArticulation" })
-    @Column({ name: "pcc_calendar_classes_articulation", type: "longtext", nullable: false })
-    public pccCalendarClassesArticulation: string;
+    // @Required()
+    @Description("PPC e Calendário do(s) curso(s)")
+    @Property({ name: "ppcAndCourseCalendar" })
+    @Column({ name: "ppc_and_course_calendar", type: "longtext", nullable: false })
+    public pccAndCourseCalendar: string;
 
-    @Required()
-    @Property({ name: "previewCreditsClasses" })
-    @Column({ name: "preview_credits_classes", type: "longtext", nullable: false })
-    public previewCreditsClasses: string;
+    // @Required()
+    @Description("Créditos previstos na matriz curricular")
+    @Property({ name: "requiredCreditsClasses" })
+    @Column({ name: "required_credits_classes", type: "longtext", nullable: false })
+    public requiredCreditsClasses: string;
 
-    @Required()
+    // @Required()
+    @Description("Espaço físico e equipamentos utilizados para o desencolvimento das atividades")
     @Property({ name: "infrastructure" })
-    @Column({ name: "infrastructure", type: "longtext", nullable: false })
+    @Column({ name: "infrastructure", type: "longtext", nullable: true })
     public infrastructure: string;
 
-    @Required()
+    // @Required()
+    @Description("Forma na qual o público participou das atividades")
     @Property({ name: "publicParticipation" })
-    @Column({ name: "publicParticipation", type: "longtext", nullable: false })
+    @Column({ name: "publicParticipation", type: "longtext", nullable: true })
     public publicParticipation: string;
 
-    @Required()
+    // @Required()
+    @Description("Acompanhamento e avalização pelo coordenador do projeto")
     @Property({ name: "accompanimentAndEvaluation" })
     @Column({ name: "accompaniment_and_evaluation", type: "longtext", nullable: false })
     public accompanimentAndEvaluation: string;

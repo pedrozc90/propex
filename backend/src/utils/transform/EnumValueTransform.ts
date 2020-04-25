@@ -5,7 +5,8 @@ import {
     findEnumKey,
     AgeRangeEnum, AgeRangeEnumKey,
     AttachmentTypeEnum, AttachmentTypeEnumKey,
-    PublicationTypeEnum, PublicationTypeEnumKey
+    PublicationTypeEnum, PublicationTypeEnumKey,
+    UserRole, UserRoleKey
 } from "../../types";
 
 export class EnumValueTransformer<T, K> implements ValueTransformer {
@@ -39,6 +40,7 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
 
 }
 
-export const TransformerAgeRangeEnum = new EnumValueTransformer<AgeRangeEnum, AgeRangeEnumKey>(AgeRangeEnum);
-export const TransformerAttachmentTypeEnum = new EnumValueTransformer<AttachmentTypeEnum, AttachmentTypeEnumKey>(AttachmentTypeEnum);
-export const TransformerPublicationTypeEnum = new EnumValueTransformer<PublicationTypeEnum, PublicationTypeEnumKey>(PublicationTypeEnum);
+export const UserRoleEnumTransformer = new EnumValueTransformer<UserRole, UserRoleKey>(UserRole);
+export const AgeRangeEnumTransformer = new EnumValueTransformer<AgeRangeEnum, AgeRangeEnumKey>(AgeRangeEnum);
+export const AttachmentTypeEnumTransformer = new EnumValueTransformer<AttachmentTypeEnum, AttachmentTypeEnumKey>(AttachmentTypeEnum);
+export const PublicationTypeEnumTransformer = new EnumValueTransformer<PublicationTypeEnum, PublicationTypeEnumKey>(PublicationTypeEnum);

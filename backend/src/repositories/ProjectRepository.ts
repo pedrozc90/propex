@@ -8,15 +8,15 @@ export class ProjectRepository extends GenericRepository<Project> {
     
     public async init(): Promise<any> {
         const p = new Project();
-        p.name = "Project A";
-        p.institutionalLinkName = "Project A Link";
-        p.startSeason = "T1";
-        p.involvedClasses = "debug";
-        p.pccCalendarClassesArticulation = "debug";
-        p.previewCreditsClasses = "debug";
-        p.infrastructure = "debug";
-        p.publicParticipation = "debug";
-        p.accompanimentAndEvaluation = "debug";
+        p.title = "Pilot";
+        p.program = "Debugging";
+        p.startSeason = "2016/01";
+        p.includedCourses = "Ciências da Computação";
+        p.pccAndCourseCalendar = "???";
+        p.requiredCreditsClasses = "Banco de Dados I e II";
+        // p.infrastructure = "debug";
+        // p.publicParticipation = "debug";
+        p.accompanimentAndEvaluation = "sim";
 
         return this.save(p);
     }

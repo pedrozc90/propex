@@ -3,7 +3,7 @@ import { InternalServerError, Unauthorized } from "ts-httpexceptions";
 
 import { AuthenticationService, CustomAuth } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";
-import { IToken, Role } from "../../types";
+import { IToken, UserRole } from "../../types";
 
 @Controller("/auth")
 export class AuthenticationCtrl {
@@ -23,17 +23,21 @@ export class AuthenticationCtrl {
             throw new Unauthorized("Invalid username or password!");
         }
 
+        if (!user.active) {
+            throw new Unauthorized("User is not active. Please, contact the administrator.");
+        }
+
         // sign jwt token
         const token = await this.authenticationService.signJwtToken(user);
         if (!token) {
             throw new Unauthorized("Unable to create token!");
         }
 
-        $log.warn("token:", token);
+        $log.warn(`[Authentication] user: ${user.email}, token: ${token}`);
         // update context information
         // await this.authenticationService.setContext(token, { role: user.role, _id: user._id } as IJwt);
 
-        return { token };
+        return { token, role: user.role };
     }
 
     /**
@@ -58,16 +62,6 @@ export class AuthenticationCtrl {
             throw new InternalServerError("Sorry, but a error occured during registration.");
         }
         return tmp;
-    }
-
-    /**
-     * Fetch user context information.
-     * @param req       -- express request object.
-     */
-    @Get("/context")
-    @CustomAuth({ scope: [ Role.MEMBER, Role.MASTER ] })
-    public async context(@Res() response: Res): Promise<any> {
-        return { message: "Sanity Check", context: response.locals.user };
     }
 
 }

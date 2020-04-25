@@ -43,8 +43,8 @@ export class DevelopmentService {
         // const knowledgeAreas = await this.KnowledgeAreaRepository.init();
         // console.log(knowledgeAreas);
 
-        // let user = await this.UserRepository.init();
-        // console.log(user);
+        const user = await this.UserRepository.init();
+        console.log(user);
 
         // const permissions = await this.PermissionRepository.init();
         // console.log(permissions);
@@ -59,8 +59,8 @@ export class DevelopmentService {
         // // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[0]);
         // // await this.permissionRepository.delete(permissions[1].id);
 
-        // const project = await this.ProjectRepository.init();
-        // console.log(project);
+        const project = await this.ProjectRepository.init();
+        console.log(project);
 
         // const medias = await this.DisclosureMediaRepository.init(project);
         // console.log(medias);

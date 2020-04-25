@@ -19,12 +19,12 @@ export class ProjectPublic extends Audit {
 
     @Required()
     @Property({ name: "otherPublicTitle" })
-    @Column({ name: "other_public_title", type: "varchar", length: 255, nullable: false })
+    @Column({ name: "other_public_title", type: "varchar", length: 255 })
     public otherPublicTitle: number;
 
     @Required()
     @Property({ name: "otherPublicCras" })
-    @Column({ name: "other_public_cras", type: "varchar", length: 255, nullable: false })
+    @Column({ name: "other_public_cras", type: "varchar", length: 255 })
     public otherPublicCras: number;
     
     @ManyToOne(() => Project, (project) => project.projectPublics, { nullable: false })

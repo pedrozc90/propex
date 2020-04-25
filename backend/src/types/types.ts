@@ -1,7 +1,7 @@
 import { IAuthOptions } from "@tsed/common";
 
 import { User, Permission } from "../entities";
-import { Role } from "./enums";
+import { UserRole } from "./enums";
 
 // --------------------------------------------------
 // GENERAL:
@@ -26,18 +26,18 @@ export interface IContext {
 // --------------------------------------------------
 export interface IJwt {
     id: number | string;
-    role: Role;
+    role: UserRole;
     iat: number;
     exp: number;
 }
 
 export interface IToken {
     token?: string;
-    role?: Role;
+    role?: UserRole;
     permissions?: Permission[];
 }
 
 export interface ICustomAuthOptions extends IAuthOptions {
-    role?: Role;
-    scope?: Role[];
+    role?: UserRole;
+    scope?: UserRole[];
 }

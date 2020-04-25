@@ -10,7 +10,7 @@ export class FutureDevelopmentPlanRepository extends GenericRepository<FutureDev
         const fdp = new FutureDevelopmentPlan();
         fdp.activities = "bla bla bla ...";
         fdp.expectedResults = "bla bla bla ...";
-        fdp.participantsNumberForecast = "bla bla bla ...";
+        fdp.participantsNumber = "10";
         fdp.project = project;
 
         return this.save(fdp);

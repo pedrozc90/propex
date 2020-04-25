@@ -7,7 +7,7 @@ import { IOptions } from "../../types";
 @Controller("/extension_lines")
 export class ExtensionLineCtrl {
 
-    constructor(private ExtensionLineRepository: ExtensionLineRepository) {}
+    constructor(private extensionLineRepository: ExtensionLineRepository) {}
 
     @Get("/")
     public async fetch(@QueryParams("page") page: number, @QueryParams("rpp") rpp: number, @QueryParams("q") q: string): Promise<Page<ExtensionLine>> {
@@ -16,27 +16,27 @@ export class ExtensionLineCtrl {
         options.rpp = rpp || 0;
         options.q = q || undefined;
 
-        return this.ExtensionLineRepository.fetch({ ...options });
+        return this.extensionLineRepository.fetch({ ...options });
     }
 
     @Get("/list")
     public async list(@QueryParams("q") q: string): Promise<ExtensionLine[]> {
-        return this.ExtensionLineRepository.list({ q });
+        return this.extensionLineRepository.list({ q });
     }
 
     @Post("")
     public async create(@BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ExtensionLine | undefined> {
-        return this.ExtensionLineRepository.save(extensionLine);
+        return this.extensionLineRepository.save(extensionLine);
     }
 
     @Get("/:id")
     public async get(@PathParams("id") id: number): Promise<ExtensionLine | undefined> {
-        return this.ExtensionLineRepository.findById(id);
+        return this.extensionLineRepository.findById(id);
     }
 
     @Delete("/:id")
     public async delete(@PathParams("id") id: number): Promise<any> {
-        return this.ExtensionLineRepository.delete(id);
+        return this.extensionLineRepository.delete(id);
     }
 
 }

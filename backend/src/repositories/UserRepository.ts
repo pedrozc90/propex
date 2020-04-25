@@ -2,19 +2,27 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { User, UserCredentials } from "../entities";
+import { UserRole } from "../types";
 
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {
 
     public async init(): Promise<any> {
-        const user = new User();
-        user.name = "Pedro";
-        user.email = "pedro@domain.com";
-        user.password = "123456";
-        user.phone = "(48) 99999-9999";
-        user.permissions = [];
+        const usr = new User();
+        usr.name = "admin";
+        usr.email = "admin@domain.com";
+        usr.password = "123456";
+        usr.phone = "(48) 99999-9999";
+        usr.role = UserRole.ADMINISTRATOR;
 
-        return this.save(user);
+        const usr2 = new User();
+        usr2.name = "Pedro";
+        usr2.email = "pedro@domain.com";
+        usr2.password = "123456";
+        usr2.phone = "(48) 99999-9999";
+        usr2.role = UserRole.COORDENATOR;
+
+        return this.save([ usr, usr2 ]);
     }
 
     /**
