@@ -2,7 +2,7 @@ import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/com
 import { Forbidden, Unauthorized } from "ts-httpexceptions";
 
 import { AuthenticationService } from "../services";
-import { ICustomAuthOptions, IJwt } from "../types";
+import { ICustomAuthOptions, IJwt, Scope } from "../types";
 
 @Middleware()
 export class CustomAuthMiddleware implements IMiddleware {
@@ -28,16 +28,17 @@ export class CustomAuthMiddleware implements IMiddleware {
         // verify and decode jwt token
         await this.authenticationService.verifyJwtToken(token).then(async (decodeJwt: IJwt) => {
             if (decodeJwt) {
-                // update thread local
-                // this.authenticationService.setContext(token, decodeJwt);
-
                 // shared user information by response locals
-                response.locals.user = await this.authenticationService.findContext(decodeJwt.id as number);
+                response.locals.context = await this.authenticationService.context(decodeJwt.id || 0);
 
                 // check if endpoint requires a role permission.
-                // if (options.scope && !options.scope.includes(decodeJwt.role.name)) {
-                //     throw new Forbidden("Forbidden");
-                // }
+                if (options.role && (Scope as any)[options.role] !== response.locals.context.scope) {
+                    throw new Forbidden("You are not allowed here.");
+                }
+
+                if (options.scope && !options.scope.includes(response.locals.context.scope)) {
+                    throw new Forbidden("You are not allowed here.");
+                }
             } else {
                 throw new Unauthorized("Unauthorized, Invalid Token!");
             }

@@ -3,7 +3,8 @@ import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 import { BadRequest } from "ts-httpexceptions";
 
 import { User, UserCredentials, UserBasic } from "../../entities";
-import { UserRepository } from "../../repositories";
+import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
+import { Scope, IContext } from "../../types";
 
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION: number = 1 * 60 * 60; // seconds
@@ -11,7 +12,9 @@ const JWT_EXPIRATION: number = 1 * 60 * 60; // seconds
 @Service()
 export class AuthenticationService {
 
-    constructor(private userRepository: UserRepository) {}
+    constructor(private userRepository: UserRepository,
+        private collaboratorRepository: CollaboratorRepository,
+        private studentRepository: StudentRepository) {}
 
     /**
      * Find user by credentials.
@@ -25,8 +28,29 @@ export class AuthenticationService {
      * Find user by credentials.
      * @param credentials   -- user credentials.
      */
-    public async findContext(id: number): Promise<User | undefined> {
-        return this.userRepository.findById(id);
+    public async context(id: number): Promise<IContext> {
+        const context: IContext = {};
+        context.user = await this.userRepository.findById(id);
+        context.collaborator = await this.collaboratorRepository.createQueryBuilder("c")
+            .innerJoin("c.user", "users", "c.user_id = :userId", { userId: context?.user?.id })
+            .getOne();
+        context.student = await this.studentRepository.createQueryBuilder("s")
+            .innerJoin("s.user", "users", "s.user_id = :userId", { userId: context?.user?.id })
+            .getOne();
+        
+        if (context.user && context.user.id === 1) {
+            context.scope = Scope.ADMINISTRATOR;
+        }
+
+        if (context.collaborator) {
+            context.scope = Scope.COLLABORATOR;
+        }
+
+        if (context.student) {
+            context.scope = Scope.STUDENT;
+        }
+
+        return context;
     }
 
     /**

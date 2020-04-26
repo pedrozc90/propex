@@ -1,6 +1,7 @@
 import { IAuthOptions } from "@tsed/common";
 
-import { User } from "../entities";
+import { User, Collaborator, Student } from "../entities";
+import { Scope } from "./enums/Scope";
 
 // --------------------------------------------------
 // GENERAL:
@@ -17,13 +18,16 @@ export interface IEntity {
 
 export interface IContext {
     user?: User;
+    collaborator?: Collaborator;
+    student?: Student;
+    scope?: Scope;
 }
 
 // --------------------------------------------------
 // AUTHENTICATION:
 // --------------------------------------------------
 export interface IJwt {
-    id?: number | string;
+    id?: number;
     email?: string;
     iat?: number;
     exp?: number;
