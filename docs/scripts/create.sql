@@ -1,66 +1,75 @@
 -- -----------------------------------------------------
+-- Schema propex
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS propex DEFAULT CHARACTER SET utf8mb4;
+
+USE propex ;
+
+-- -----------------------------------------------------
 -- TABLE PROJECTS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS projects (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    program VARCHAR(255) NULL,
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    program VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
     start_season VARCHAR(15) NOT NULL,
-    included_courses LONGTEXT NOT NULL,
-    pcc_and_course_calendar LONGTEXT NOT NULL,
-    required_courses_credits LONGTEXT NOT NULL,
-    infrastructure LONGTEXT NOT NULL,
-    public_participation LONGTEXT NOT NULL,
-    accompaniment_and_evaluation LONGTEXT NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    included_courses LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    ppc_and_course_calendar LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    required_courses_credits LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    infrastructure LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    public_participation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    accompaniment_and_evaluation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE ACTIVITIES
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS activities (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
+    projects_id BIGINT(20) UNSIGNED NOT NULL,
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     external TINYINT(1) NOT NULL DEFAULT 0,
     number_of_members INT(11) NOT NULL,
     date DATE NOT NULL,
     period INT(11) NOT NULL,
-    execution_weekday VARCHAR(255) NOT NULL,
+    execution_weekday VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     execution_hour TIME NOT NULL,
-    results VARCHAR(180) NOT NULL,
-    projects_id BIGINT(20) UNSIGNED NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    results VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX fk_activities_projects1_idx (projects_id ASC) VISIBLE,
-    CONSTRAINT fk_activities_projects1
-        FOREIGN KEY (projects_id)
-        REFERENCES projects (id)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION
-);
-
+    INDEX idx_project_id (projects_id ASC) VISIBLE,
+    CONSTRAINT fk_activities_to_projects FOREIGN KEY (projects_id) REFERENCES projects (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE ATTACHMENTS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS attachments (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    type ENUM('document', 'image', 'video', 'publication', 'event', 'assigns_list', 'other') NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    original_file_name VARCHAR(255) NOT NULL,
+    type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL DEFAULT 'DOCUMENT',
+    url VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    original_file_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     original_file_size DOUBLE(8,2) NOT NULL,
-    file_name VARCHAR(255) NOT NULL,
+    file_name INT NOT NULL,
     file_size DOUBLE(8,2) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE ACTIVITY_ATTACHMENTS
@@ -69,75 +78,52 @@ CREATE TABLE IF NOT EXISTS activity_attachments (
     activity_id BIGINT(20) UNSIGNED NOT NULL,
     attachment_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (activity_id, attachment_id),
-    INDEX activity_attachments_activity_id_foreign (activity_id ASC) VISIBLE,
-    INDEX activity_attachments_attachment_id_foreign (attachment_id ASC) VISIBLE,
-    CONSTRAINT activity_attachments_activity_id_foreign
-        FOREIGN KEY (activity_id)
-        REFERENCES activities (id),
-    CONSTRAINT activity_attachments_attachment_id_foreign
-        FOREIGN KEY (attachment_id)
-        REFERENCES attachments (id)
-);
-
-
--- -----------------------------------------------------
--- TABLE STUDENTS
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS students (
-    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    code VARCHAR(255) NOT NULL,
-    course VARCHAR(255) NOT NULL,
-    period INT(11) NOT NULL,
-    scholarship TINYINT(1) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-    updated_at TIMESTAMP NULL,
-    PRIMARY KEY (id)
-);
-
+    INDEX idx_activity_id (activity_id ASC) VISIBLE,
+    INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
+    CONSTRAINT fk_activity_attachments_activitys FOREIGN KEY (activity_id) REFERENCES activities (id),
+    CONSTRAINT fk_activity_attachments_attachments FOREIGN KEY (attachment_id) REFERENCES attachments (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE USERS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    email VARCHAR(128) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    password VARCHAR(32) NOT NULL,
     active TINYINT(1) NOT NULL DEFAULT 1,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
-    students_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (id),
-    UNIQUE INDEX users_email_unique (email ASC) VISIBLE,
-    INDEX fk_users_students1_idx (students_id ASC) VISIBLE,
-    CONSTRAINT fk_users_students1
-        FOREIGN KEY (students_id)
-        REFERENCES students (id)
-        ON DELETE NO ACTION
-        ON UPDATE NO ACTION
-);
-
+    UNIQUE INDEX uk_users_email (email ASC) VISIBLE
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE COLLABORATORS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS collaborators (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT(20) UNSIGNED NOT NULL,
-    academic_function VARCHAR(255) NOT NULL,
-    profissional_registry VARCHAR(255) NOT NULL,
-    link_format VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    academic_function VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    profissional_registry VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    affiliation VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
+    users_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (id),
-    INDEX collaborators_user_id_foreign (user_id ASC) VISIBLE,
-    CONSTRAINT collaborators_user_id_foreign
-        FOREIGN KEY (user_id)
-        REFERENCES users (id)
-);
-
+    INDEX fk_collaborators_users1_idx (users_id ASC) VISIBLE,
+    CONSTRAINT fk_collaborators_users FOREIGN KEY (users_id) REFERENCES users (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE DISCLOSURE_MEDIAS
@@ -145,18 +131,18 @@ CREATE TABLE IF NOT EXISTS collaborators (
 CREATE TABLE IF NOT EXISTS disclosure_medias (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     date DATE NOT NULL,
-    link VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX disclosure_medias_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT disclosure_medias_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    CONSTRAINT fk_disclosure_medias_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE EVENT_PRESENTATIONS
@@ -164,18 +150,18 @@ CREATE TABLE IF NOT EXISTS disclosure_medias (
 CREATE TABLE IF NOT EXISTS event_presentations (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    modality VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     date DATE NOT NULL,
-    modality VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX event_presentations_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT event_presentations_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    CONSTRAINT fk_event_presentations_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE EXTENSION_LINES
@@ -183,13 +169,15 @@ CREATE TABLE IF NOT EXISTS event_presentations (
 CREATE TABLE IF NOT EXISTS extension_lines (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     number INT(11) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    operation LONGTEXT NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    operation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE EVALUATION
@@ -197,16 +185,16 @@ CREATE TABLE IF NOT EXISTS extension_lines (
 CREATE TABLE IF NOT EXISTS evaluation (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    description LONGTEXT NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    description LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX finished_projects_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT finished_projects_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX fk_evaluation_projects (project_id ASC) VISIBLE,
+    CONSTRAINT fk_evaluation_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE FUTURE_DEVELOPMENT_PLANS
@@ -214,30 +202,18 @@ CREATE TABLE IF NOT EXISTS evaluation (
 CREATE TABLE IF NOT EXISTS future_development_plans (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    activities LONGTEXT NOT NULL,
-    expected_results LONGTEXT NOT NULL,
-    participants_number VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    activities LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    expected_results LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    participants_number VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX future_development_plans_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT future_development_plans_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
-
--- -----------------------------------------------------
--- TABLE HUMAN_RESOURCE_TYPES
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS human_resource_types (
-    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-    updated_at TIMESTAMP NULL,
-    PRIMARY KEY (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    CONSTRAINT fk_future_development_plans_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PARTNERS
@@ -245,43 +221,34 @@ CREATE TABLE IF NOT EXISTS human_resource_types (
 CREATE TABLE IF NOT EXISTS partners (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    contact VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    name VARCHAR(128) NOT NULL,
+    contact VARCHAR(128) NOT NULL,
+    email VARCHAR(128) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX involved_partners_project_id_foreign (project_id ASC) VISIBLE,
-    UNIQUE INDEX email_UNIQUE (email ASC) VISIBLE,
-    CONSTRAINT involved_partners_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    UNIQUE INDEX uk_partner_email (email ASC) VISIBLE,
+    CONSTRAINT fk_partners_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE KNOWLEDGE_AREAS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS knowledge_areas (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id)
-);
-
-
--- -----------------------------------------------------
--- TABLE MIGRATIONS
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS migrations (
-    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    migration VARCHAR(255) NOT NULL,
-    batch INT(11) NOT NULL,
-    PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE DEMANDS
@@ -289,17 +256,17 @@ CREATE TABLE IF NOT EXISTS migrations (
 CREATE TABLE IF NOT EXISTS demands (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    justification LONGTEXT NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    justification LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX new_demands_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT new_demands_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    CONSTRAINT fk_demands_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PUBLICATIONS
@@ -307,37 +274,22 @@ CREATE TABLE IF NOT EXISTS demands (
 CREATE TABLE IF NOT EXISTS publications (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    attachment_id BIGINT(20) UNSIGNED NULL,
-    type ENUM('artigo','capitulo','resumo') NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    journal_name VARCHAR(255) NOT NULL,
-    link VARCHAR(255) NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    attachment_id BIGINT(20) UNSIGNED NOT NULL,
+    type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    journal_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX performed_publications_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX performed_publications_attachment_id_foreign (attachment_id ASC) VISIBLE,
-    CONSTRAINT performed_publications_attachment_id_foreign
-        FOREIGN KEY (attachment_id)
-        REFERENCES attachments (id),
-    CONSTRAINT performed_publications_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
-
--- -----------------------------------------------------
--- TABLE PERMISSIONS
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS permissions (
-    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    url VARCHAR(180) NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-    updated_at TIMESTAMP NULL,
-    PRIMARY KEY (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
+    CONSTRAINT fk_publications_attachments FOREIGN KEY (attachment_id) REFERENCES attachments (id),
+    CONSTRAINT fk_publications_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_ATTACHMENTS
@@ -346,16 +298,14 @@ CREATE TABLE IF NOT EXISTS project_attachments (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     attachment_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (project_id, attachment_id),
-    INDEX project_attachments_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_attachments_attachment_id_foreign (attachment_id ASC) VISIBLE,
-    CONSTRAINT project_attachments_attachment_id_foreign
-        FOREIGN KEY (attachment_id)
-        REFERENCES attachments (id),
-    CONSTRAINT project_attachments_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
+    CONSTRAINT fk_project_attachments_attachments FOREIGN KEY (attachment_id) REFERENCES attachments (id),
+    CONSTRAINT fk_project_attachments_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_EXTENSION_LINES
@@ -364,46 +314,60 @@ CREATE TABLE IF NOT EXISTS project_extension_lines (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     extension_line_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (project_id, extension_line_id),
-    INDEX project_extension_lines_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_extension_lines_extension_line_id_foreign (extension_line_id ASC) VISIBLE,
-    CONSTRAINT project_extension_lines_extension_line_id_foreign
-        FOREIGN KEY (extension_line_id)
-        REFERENCES extension_lines (id),
-    CONSTRAINT project_extension_lines_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_extension_line_id (extension_line_id ASC) VISIBLE,
+    CONSTRAINT fk_project_extension_lines_extension_lines FOREIGN KEY (extension_line_id) REFERENCES extension_lines (id),
+    CONSTRAINT fk_project_extension_lines_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
+-- -----------------------------------------------------
+-- TABLE STUDENTS
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS students (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    code VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    course VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    period INT(11) NOT NULL,
+    scholarship TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
+    updated_at TIMESTAMP NULL,
+    users_id BIGINT(20) UNSIGNED NOT NULL,
+    PRIMARY KEY (id),
+    INDEX fk_students_users1_idx (users_id ASC) VISIBLE,
+    CONSTRAINT fk_students_users1 FOREIGN KEY (users_id) REFERENCES users (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_HUMAN_RESOURCES
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS project_human_resources (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    user_id BIGINT(20) UNSIGNED NOT NULL,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    human_resource_type_id BIGINT(20) UNSIGNED NOT NULL,
+    collaborators_id BIGINT(20) UNSIGNED NOT NULL,
+    students_id BIGINT(20) UNSIGNED NOT NULL,
     coordinate TINYINT(1) NOT NULL DEFAULT 0,
     exclusive TINYINT(1) NOT NULL DEFAULT 0,
     workload INT(11) NOT NULL,
-    initiated_at DATE NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT NULL,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
+    dt_admission DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
+    updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX project_human_resources_user_id_foreign (user_id ASC) VISIBLE,
-    INDEX project_human_resources_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_human_resources_human_resource_type_id_foreign (human_resource_type_id ASC) VISIBLE,
-    CONSTRAINT project_human_resources_human_resource_type_id_foreign
-        FOREIGN KEY (human_resource_type_id)
-        REFERENCES human_resource_types (id),
-    CONSTRAINT project_human_resources_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id),
-    CONSTRAINT project_human_resources_user_id_foreign
-        FOREIGN KEY (user_id)
-        REFERENCES users (id)
-);
-
+    UNIQUE INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_collaborator_id (collaborators_id ASC) VISIBLE,
+    INDEX idx_student_id (students_id ASC) VISIBLE,
+    CONSTRAINT fk_project_human_resources_projects FOREIGN KEY (project_id) REFERENCES projects (id),
+    CONSTRAINT fk_project_human_resources_collaborators FOREIGN KEY (collaborators_id) REFERENCES collaborators (id) ON DELETE NO ACTION ON UPDATE NO ACTION,
+    CONSTRAINT fk_project_human_resources_students FOREIGN KEY (students_id) REFERENCES students (id) ON DELETE NO ACTION ON UPDATE NO ACTION
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_KNOWLEDGE_AREAS
@@ -412,30 +376,30 @@ CREATE TABLE IF NOT EXISTS project_knowledge_areas (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     knowledge_area_id BIGINT(20) UNSIGNED NOT NULL,
     PRIMARY KEY (project_id, knowledge_area_id),
-    INDEX project_knowledge_areas_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_knowledge_areas_knowledge_area_id_foreign (knowledge_area_id ASC) VISIBLE,
-    CONSTRAINT project_knowledge_areas_knowledge_area_id_foreign
-        FOREIGN KEY (knowledge_area_id)
-        REFERENCES knowledge_areas (id),
-    CONSTRAINT project_knowledge_areas_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_knowledge_area_id (knowledge_area_id ASC) VISIBLE,
+    CONSTRAINT fk_project_knowledge_areas_knowledge_areas FOREIGN KEY (knowledge_area_id) REFERENCES knowledge_areas (id),
+    CONSTRAINT fk_project_knowledge_areas_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PUBLICS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS publics (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    cras VARCHAR(180) NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     deleted_at TIMESTAMP NULL,
     PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_PUBLICS
@@ -444,21 +408,19 @@ CREATE TABLE IF NOT EXISTS project_publics (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     public_id BIGINT(20) UNSIGNED NOT NULL,
     directly TINYINT(1) NOT NULL DEFAULT 0,
-    other_public_title VARCHAR(255) NULL,
-    other_public_cras VARCHAR(255) NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    others_title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    others_cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (project_id, public_id),
-    INDEX project_publics_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_publics_public_id_foreign (public_id ASC) VISIBLE,
-    CONSTRAINT project_publics_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id),
-    CONSTRAINT project_publics_public_id_foreign
-        FOREIGN KEY (public_id)
-        REFERENCES publics (id)
-);
-
+    INDEX fk_project_publics_projects (project_id ASC) VISIBLE,
+    INDEX fk_project_publics_publics (public_id ASC) VISIBLE,
+    CONSTRAINT fk_project_publics_projects FOREIGN KEY (project_id) REFERENCES projects (id),
+    CONSTRAINT fk_project_publics_publics FOREIGN KEY (public_id) REFERENCES publics (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_TARGETS
@@ -468,28 +430,30 @@ CREATE TABLE IF NOT EXISTS project_targets (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     men_number INT(11) NULL DEFAULT 0,
     women_number INT(11) NULL DEFAULT 0,
-    age_range ENUM('Até 12 anos incompletos','Até 18 anos','De 19 a 25 anos','De 26 a 30 anos','De 31 a 50 anos','De 51 a 60 anos','De 61a 70 anos','Acima de 70 anos') NOT NULL,
-    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+    age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (id),
-    INDEX project_targets_project_id_foreign (project_id ASC) VISIBLE,
-    CONSTRAINT project_targets_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id)
-);
-
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    CONSTRAINT fk_project_targets_projects FOREIGN KEY (project_id) REFERENCES projects (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE THEME_AREAS
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS theme_areas (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
     created_at TIMESTAMP NULL DEFAULT NULL,
     updated_at TIMESTAMP NULL DEFAULT NULL,
     PRIMARY KEY (id)
-);
-
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
 
 -- -----------------------------------------------------
 -- TABLE PROJECT_THEME_AREAS
@@ -498,33 +462,14 @@ CREATE TABLE IF NOT EXISTS project_theme_areas (
     project_id BIGINT(20) UNSIGNED NOT NULL,
     theme_area_id BIGINT(20) UNSIGNED NOT NULL,
     main TINYINT(1) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NULL DEFAULT CUREENT_TIMESTAMP,
+    created_at TIMESTAMP NULL DEFAULT (CURRENT_TIMESTAMP(6)),
     updated_at TIMESTAMP NULL,
     PRIMARY KEY (project_id, theme_area_id),
-    INDEX project_theme_areas_project_id_foreign (project_id ASC) VISIBLE,
-    INDEX project_theme_areas_theme_area_id_foreign (theme_area_id ASC) VISIBLE,
-    CONSTRAINT project_theme_areas_project_id_foreign
-        FOREIGN KEY (project_id)
-        REFERENCES projects (id),
-    CONSTRAINT project_theme_areas_theme_area_id_foreign
-        FOREIGN KEY (theme_area_id)
-        REFERENCES theme_areas (id)
-);
-
-
--- -----------------------------------------------------
--- TABLE USER_PERMISSIONS
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS user_permissions (
-    user_id BIGINT(20) UNSIGNED NOT NULL,
-    permission_id BIGINT(20) UNSIGNED NOT NULL,
-    PRIMARY KEY (user_id, permission_id),
-    INDEX user_permissions_user_id_foreign (user_id ASC) VISIBLE,
-    INDEX user_permissions_permission_id_foreign (permission_id ASC) VISIBLE,
-    CONSTRAINT user_permissions_permission_id_foreign
-        FOREIGN KEY (permission_id)
-        REFERENCES permissions (id),
-    CONSTRAINT user_permissions_user_id_foreign
-        FOREIGN KEY (user_id)
-        REFERENCES users (id)
-);
+    INDEX idx_project_id (project_id ASC) VISIBLE,
+    INDEX idx_theme_area_id (theme_area_id ASC) VISIBLE,
+    CONSTRAINT fk_project_theme_areas_projects FOREIGN KEY (project_id) REFERENCES projects (id),
+    CONSTRAINT fk_project_theme_areas_theme_areas FOREIGN KEY (theme_area_id) REFERENCES theme_areas (id)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;

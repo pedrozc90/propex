@@ -1,6 +1,6 @@
-INSERT INTO users (name, email, password, phone, role) VALUES
-    ("admin", "admin@domain.com", "123456", "(48) 99999-9999", "ADMINISTRATOR"),
-    ("Pedro", "pedro@domain.com", "123456", "(48) 99999-9999", "COORDENATOR");
+INSERT INTO users (name, email, password, phone) VALUES
+    ("admin", "admin@domain.com", "123456", "(48) 99999-9999"),
+    ("Pedro", "pedro@domain.com", "123456", "(48) 99999-9999");
 
 INSERT INTO knowledge_areas (name) VALUES
     ("Ciências Exatas e da Terra"),
