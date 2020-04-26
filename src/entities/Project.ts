@@ -80,42 +80,55 @@ export class Project extends Audit {
     @Column({ name: "accompaniment_and_evaluation", type: "longtext", nullable: false })
     public accompanimentAndEvaluation: string;
 
+    @Property("disclosureMedias")
     @OneToMany(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
     public disclosureMedias: DisclosureMedia[];
 
+    @Property("eventPresentations")
     @OneToMany(() => EventPresentation, (eventPresentation) => eventPresentation.project)
     public eventPresentations: EventPresentation[];
 
+    @Property("evaluations")
     @OneToMany(() => Evaluation, (evaluation) => evaluation.project)
     public evaluations: Evaluation[];
 
+    @Property("futureDevelopmentPlans")
     @OneToMany(() => FutureDevelopmentPlan, (futureDevelopmentPlan) => futureDevelopmentPlan.project)
     public futureDevelopmentPlans: FutureDevelopmentPlan[];
 
+    @Property("partners")
     @OneToMany(() => Partner, (partner) => partner.project)
     public partners: Partner[];
 
+    @Property("demands")
     @OneToMany(() => Demand, (demand) => demand.project)
     public demands: Demand[];
 
+    @Property("publications")
     @OneToMany(() => Publication, (publication) => publication.project)
     public publications: Publication[];
 
+    @Property("projectHumanResources")
     @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project)
     public projectHumanResources: ProjectHumanResource[];
 
+    @Property("projectPublics")
     @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.project)
     public projectPublics: ProjectPublic[];
 
+    @Property("projectTargets")
     @OneToMany(() => ProjectTarget, (projectTarget) => projectTarget.project)
     public projectTargets: ProjectTarget[];
 
+    @Property("projectThemeAreas")
     @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
     public projectThemeAreas: ProjectThemeArea[];
 
+    @Property("activities")
     @OneToMany(() => Activity, (activity) => activity.project)
     public activities: Activity[];
 
+    @Property("extensionLines")
     @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
     @JoinTable({
         name: "project_extension_lines",
@@ -124,6 +137,7 @@ export class Project extends Audit {
     })
     public extensionLines: ExtensionLine[];
 
+    @Property("knowledgeAreas")
     @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects)
     @JoinTable({
         name: "project_knowledge_areas",
@@ -132,6 +146,7 @@ export class Project extends Audit {
     })
     public knowledgeAreas: KnowledgeArea[];
 
+    @Property("attachments")
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
         name: "project_attachments",

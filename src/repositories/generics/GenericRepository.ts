@@ -5,6 +5,10 @@ import { IOptions } from "../../types";
 
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
 
+    constructor(protected relations: string []) {
+        super();
+    }
+
     /**
      * Fetch a list of documents from a collection.
      * @param options   -- pagination and search options
@@ -32,7 +36,7 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      * @param _id       -- document id
      */
     public async findById(id: number | string): Promise<T | undefined> {
-        return this.findOne(id);
+        return this.findOne(id, { relations: this.relations });
     }
 
 }

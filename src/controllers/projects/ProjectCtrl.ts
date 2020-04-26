@@ -5,7 +5,7 @@ import { Page, Project } from "../../entities";
 import { IOptions } from "../../types";
 import { CustomAuth } from "../../services";
 
-@Controller("/project")
+@Controller("/projects")
 export class ProjectCtrl {
 
     constructor(private projectRepository: ProjectRepository) {}
@@ -21,19 +21,22 @@ export class ProjectCtrl {
         return this.projectRepository.fetch({ ...options });
     }
 
+    @Post("/")
+    public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
+        return this.projectRepository.save(project);
+    }
+
     @Get("/list")
     public async list(@QueryParams("q") q: string): Promise<Project[]> {
         return this.projectRepository.list({ q });
     }
 
-    @Post("")
-    public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
-        return this.projectRepository.save(project);
-    }
-
     @Get("/:id")
     public async get(@PathParams("id") id: number): Promise<Project | undefined> {
-        return this.projectRepository.findById(id);
+        return this.projectRepository.findById(id).then((p) => {
+            console.log(p);
+            return p;
+        });
     }
 
     @Delete("/:id")

@@ -1,7 +1,6 @@
 import { IAuthOptions } from "@tsed/common";
 
 import { User } from "../entities";
-import { Scope } from "./enums/Scope";
 
 // --------------------------------------------------
 // GENERAL:
