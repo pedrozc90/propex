@@ -1,7 +1,3 @@
-INSERT INTO users (name, email, password, phone) VALUES
-    ("admin", "admin@domain.com", "123456", "(48) 99999-9999"),
-    ("Pedro", "pedro@domain.com", "123456", "(48) 99999-9999");
-
 INSERT INTO knowledge_areas (name) VALUES
     ("Ciências Exatas e da Terra"),
     ("Ciências Biológicas"),
@@ -97,3 +93,19 @@ INSERT INTO publics (name) VALUES
     ("Outras ONG’s"),
     ("Organizações/movimentos populares"),
     ("Outros");
+
+-- -----------------------------------------------------
+-- TESTING
+-- -----------------------------------------------------
+INSERT INTO users (name, email, password, phone) VALUES
+    ("admin", "admin@domain.com", "123456", "(48) 00000-0000"),
+    ("user1", "user1@domain.com", "123456", "(48) 00000-0001"),
+    ("user2", "user2@domain.com", "123456", "(48) 00000-0002"),
+    ("user3", "user3@domain.com", "123456", "(48) 00000-0003");
+
+INSERT INTO collaborators (profissional_registry, affiliation, academic_function, user_id) VALUES 
+    ('x000001', 'AB', "Professor", 2);
+
+INSERT INTO students (code, course, period, scholarship, user_id) VALUES 
+    ("y000001", "Ciências da Computação", 6, false, 3),
+    ("y000002", "Ciências da Computação", 7, true, 4);

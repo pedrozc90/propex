@@ -71,7 +71,7 @@ export class Project extends Audit {
     // @Required()
     @Description("Forma na qual o público participou das atividades")
     @Property({ name: "publicParticipation" })
-    @Column({ name: "publicParticipation", type: "longtext", nullable: true })
+    @Column({ name: "public_participation", type: "longtext", nullable: true })
     public publicParticipation: string;
 
     // @Required()

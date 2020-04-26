@@ -33,10 +33,7 @@ export class ProjectCtrl {
 
     @Get("/:id")
     public async get(@PathParams("id") id: number): Promise<Project | undefined> {
-        return this.projectRepository.findById(id).then((p) => {
-            console.log(p);
-            return p;
-        });
+        return this.projectRepository.findById(id);
     }
 
     @Delete("/:id")

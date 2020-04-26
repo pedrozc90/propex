@@ -32,13 +32,13 @@ export class CustomAuthMiddleware implements IMiddleware {
                 response.locals.context = await this.authenticationService.context(decodeJwt.id || 0);
 
                 // check if endpoint requires a role permission.
-                if (options.role && (Scope as any)[options.role] !== response.locals.context.scope) {
-                    throw new Forbidden("You are not allowed here.");
-                }
+                // if (options.role && (Scope as any)[options.role] !== response.locals.context.scope) {
+                //     throw new Forbidden("You are not allowed here.");
+                // }
 
-                if (options.scope && !options.scope.includes(response.locals.context.scope)) {
-                    throw new Forbidden("You are not allowed here.");
-                }
+                // if (options.scope && !options.scope.includes(response.locals.context.scope)) {
+                //     throw new Forbidden("You are not allowed here.");
+                // }
             } else {
                 throw new Unauthorized("Unauthorized, Invalid Token!");
             }

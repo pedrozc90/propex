@@ -59,7 +59,9 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             // debug: [ "query" ]
             charset: "utf8mb4_general_ci",
             timezone: "local",
-            extra: { charset: "utf8mb4_general_ci" }
+            extra: { charset: "utf8mb4_general_ci" },
+            supportBigNumbers: false,
+            bigNumberStrings: true
         } as ConnectionOptions
     ]
 })

@@ -40,6 +40,7 @@ services:
         volumes:
             - mysqlvolume:/var/lib/mysql
             - ./docs/scripts:/home/scripts
+            # - ./docs/scripts:/docker-entrypoint-initdb.d/
         ports:
             - 3306:3306
         hostname: mysql

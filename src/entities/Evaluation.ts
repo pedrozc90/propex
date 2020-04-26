@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from "t
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Entity({ name: "evalutaions" })
+@Entity({ name: "evaluations" })
 export class Evaluation extends Audit {
 
     @Property({ name: "id" })
