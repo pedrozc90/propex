@@ -34,10 +34,12 @@ export class Student extends Audit {
     @Column({ name: "scholarship", type: "boolean", default: false, nullable: false })
     public scholarship: boolean;
 
+    @Property({ name: "user" })
     @OneToOne(() => User, (user) => user.student, { nullable: true })
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })
     public user: User;
 
+    @Property({ name: "projectHumanResources" })
     @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.student)
     public projectHumanResources: ProjectHumanResource[];
 

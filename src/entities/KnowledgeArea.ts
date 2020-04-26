@@ -16,6 +16,7 @@ export class KnowledgeArea extends Audit {
     @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     public name: string;
 
+    @Property({ name: "projects" })
     @ManyToMany(() => Project, (project) => project.knowledgeAreas)
     public projects: Project[];
 

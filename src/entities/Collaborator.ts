@@ -32,10 +32,12 @@ export class Collaborator extends Audit {
     @Column({ name: "affiliation", type: "varchar", length: 255, nullable: false })
     public affiliation: string;
 
+    @Property({ name: "user" })
     @OneToOne(() => User, (user) => user.collaborator)
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })
     public user: User;
 
+    @Property({ name: "projectHumanResources" })
     @OneToMany(() => ProjectHumanResource, (projectHumanResources) => projectHumanResources.collaborator)
     public projectHumanResources: ProjectHumanResource[];
 

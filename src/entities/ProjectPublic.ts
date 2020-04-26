@@ -32,6 +32,7 @@ export class ProjectPublic extends Audit {
     @PrimaryColumn({ name: "project_id", type: "bigint", unsigned: true, nullable: false })
     public project: Project;
 
+    @Property({ name: "public" })
     @ManyToOne(() => Public, (p) => p.projectPublics, { nullable: false })
     @JoinColumn({ name: "public_id", referencedColumnName: "id" })
     @PrimaryColumn({ name: "public_id", type: "bigint", unsigned: true, nullable: false })

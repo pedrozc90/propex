@@ -47,12 +47,15 @@ export class Attachment extends Audit {
     @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: false })
     public fileSize: number;
 
+    @Property({ name: "publications" })
     @OneToMany(() => Publication, (publication) => publication.attachment)
     public publications: Publication[];
 
+    @Property({ name: "activities" })
     @ManyToMany(() => Activity, (activity) => activity.attachments)
     public activities: Activity[];
 
+    @Property({ name: "projects" })
     @ManyToMany(() => Project, (project) => project.activities)
     public projects: Project[];
 

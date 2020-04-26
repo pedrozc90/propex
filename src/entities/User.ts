@@ -11,14 +11,14 @@ export class UserCredentials {
     @Example("yourname@domain.com")
     @Required()
     @Property({ name: "email" })
-    @Column({ name: "email", type: "varchar", length: 255, nullable: false })
+    @Column({ name: "email", type: "varchar", length: 128, nullable: false })
     public email: string;
 
     @Description("User password")
     @Example("abcdef")
     @Required()
     @Property({ name: "password" })
-    @Column({ name: "password", type: "varchar", length: 255, nullable: false })
+    @Column({ name: "password", type: "varchar", length: 32, nullable: false })
     public password: string;
     
 }
@@ -29,8 +29,15 @@ export class UserBasic extends UserCredentials {
     @Example("yourname")
     @Required()
     @Property({ name: "name" })
-    @Column({ name: "name", type: "varchar", length: 255, nullable: false })
+    @Column({ name: "name", type: "varchar", length: 128, nullable: false })
     public name: string;
+
+    @Description("User phone")
+    @Example("(48) 99999-9999")
+    @Required()
+    @Property({ name: "phone" })
+    @Column({ name: "phone", type: "varchar", length: 20, nullable: false })
+    public phone: string;
     
 }
 
@@ -43,15 +50,9 @@ export class User extends UserBasic {
     public id: number;
 
     @IgnoreProperty()
-    password: string;
+    public password: string;
 
-    @Description("User phone")
-    @Example("(48) 99999-9999")
-    @Required()
-    @Property({ name: "phone" })
-    @Column({ name: "phone", type: "varchar", length: 255, nullable: false })
-    public phone: string;
-
+    @IgnoreProperty()
     @Description("Mark if user is active")
     @Property({ name: "active" })
     @Column({ name: "active", type: "boolean", nullable: false, default: true })
@@ -68,9 +69,13 @@ export class User extends UserBasic {
     @CreateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
+    @IgnoreProperty()
+    @Property({ name: "collaborator" })
     @OneToOne(() => Collaborator, (collaborator) => collaborator.user)
     public collaborator: Collaborator;
 
+    @IgnoreProperty()
+    @Property({ name: "student" })
     @OneToOne(() => Student, (student) => student.user)
     public student: Student;
     

@@ -5,9 +5,5 @@ import { Attachment } from "../entities";
 
 @EntityRepository(Attachment)
 export class AttachmentRepository extends GenericRepository<Attachment> {
-    
-    public async init(): Promise<any> {
-        return null;
-    }
 
 }

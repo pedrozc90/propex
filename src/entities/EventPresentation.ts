@@ -28,6 +28,7 @@ export class EventPresentation extends Audit {
     @Column({ name: "modality", type: "varchar", length: 255, nullable: false })
     public modality: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.eventPresentations, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

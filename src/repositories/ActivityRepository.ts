@@ -5,9 +5,5 @@ import { Activity } from "../entities";
 
 @EntityRepository(Activity)
 export class ActivityRepository extends GenericRepository<Activity> {
-    
-    public async init(): Promise<any> {
-        return null;
-    }
 
 }

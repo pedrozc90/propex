@@ -31,56 +31,13 @@ export class DevelopmentService {
     }
 
     public async $onReady(): Promise<any> {
-        const extensionLines = await this.ExtensionLineRepository.init();
-        const publics = await this.PublicRepository.init();
-        const knowledgeAreas = await this.KnowledgeAreaRepository.init();
+        const users = await this.UserRepository.find({});
+        const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
+        const themeAreas = await this.ThemeAreaRepository.find({});
+        const extensionLines = await this.ExtensionLineRepository.find({});
+        const publics = await this.PublicRepository.find({});
 
-        // const knowledgeAreas = await this.KnowledgeAreaRepository.init();
-        // console.log(knowledgeAreas);
-
-        const users = await this.UserRepository.init();
-        console.log(users);
-
-        // const permissions = await this.PermissionRepository.init();
-        // console.log(permissions);
-
-        // const collaborators = await this.CollaboratorRepository.init(user);
-        // console.log(collaborators);
-
-        // user.permissions = permissions;
-        // user = await this.UserRepository.save(user);
-
-        // // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[1]);
-        // // await this.userRepository.createQueryBuilder("usr").relation(User, "permissions").of(user).remove(permissions[0]);
-        // // await this.permissionRepository.delete(permissions[1].id);
-
-        const project = await this.ProjectRepository.init();
-        console.log(project);
-
-        // const medias = await this.DisclosureMediaRepository.init(project);
-        // console.log(medias);
-
-        // const events = await this.EventPresentationRepository.init(project);
-        // console.log(events);
-
-        // const lines = await this.ExtensionLineRepository.init();
-        // console.log(lines);
-
-        // const evaluations = await this.EvaluationRepository.init(project);
-        // console.log(evaluations);
-
-        // const futurePlans = await this.FutureDevelopmentPlanRepository.init(project);
-        // console.log(futurePlans);
-
-        // const hrTypes = await this.HumanResourceTypeRepository.init();
-        // console.log(hrTypes);
-
-        // const publics = await this.PublicRepository.init();
-        // console.log(publics);
-
-        // const projectTargets = await this.ProjectTargetRepository.init(project);
-        // console.log(projectTargets);
-
+        console.log(publics);
         return {};
     }
 

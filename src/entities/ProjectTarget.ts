@@ -31,6 +31,7 @@ export class ProjectTarget extends Audit {
     @Column({ name: "age_range", transformer: AgeRangeEnumTransformer, nullable: false })
     public ageRange: AgeRange;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.projectTargets, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

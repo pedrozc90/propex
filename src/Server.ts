@@ -51,7 +51,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             username: process.env.DB_USERNAME || "root",
             password: process.env.DB_PASSWORD || "",
             logging: false,
-            synchronize: false,
+            synchronize: true,
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
             subscribers: [ `${rootDir}/subscribers/*.ts` ],

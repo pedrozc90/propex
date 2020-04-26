@@ -16,6 +16,7 @@ export class ThemeArea extends Audit {
     @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     public name: string;
 
+    @Property({ name: "projectThemeAreas" })
     @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.themeArea)
     public projectThemeAreas: ProjectThemeArea[];
 

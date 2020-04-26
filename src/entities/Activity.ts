@@ -57,6 +57,7 @@ export class Activity extends Audit {
     @Column({ name: "results", type: "varchar", length: 180, nullable: false })
     public results: string;
 
+    @Property({ name: "attachments" })
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
         name: "activity_attachments",
@@ -65,6 +66,7 @@ export class Activity extends Audit {
     })
     public attachments: Attachment[];
 
+    @Property({ name: "projects" })
     @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

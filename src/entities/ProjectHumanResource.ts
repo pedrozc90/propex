@@ -42,14 +42,17 @@ export class ProjectHumanResource extends Audit {
     @Column({ name: "dt_admission", type: "date", nullable: false })
     public dateAdmission: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.projectHumanResources, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 
+    @Property({ name: "collaborator" })
     @ManyToOne(() => Collaborator, (collaborator) => collaborator.projectHumanResources, { nullable: false })
     @JoinColumn({ name: "collaborator_id", referencedColumnName: "id" })
     public collaborator: Collaborator;
 
+    @Property({ name: "student" })
     @ManyToOne(() => Student, (student) => student.projectHumanResources, { nullable: false })
     @JoinColumn({ name: "student_id", referencedColumnName: "id" })
     public student: Student;

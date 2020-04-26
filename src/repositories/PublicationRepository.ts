@@ -6,8 +6,4 @@ import { Publication } from "../entities";
 @EntityRepository(Publication)
 export class PublicationRepository extends GenericRepository<Publication> {
     
-    public async init(): Promise<any> {
-        return null;
-    }
-
 }

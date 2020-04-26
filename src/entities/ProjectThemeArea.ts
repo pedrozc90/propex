@@ -17,11 +17,13 @@ export class ProjectThemeArea extends Audit {
     @Column({ name: "main", type: "boolean", default: false, nullable: false })
     public main: boolean;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.projectThemeAreas, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     @PrimaryColumn({ name: "project_id", type: "bigint", width: 20, unsigned: true, nullable: false })
     public project: Project;
 
+    @Property({ name: "themeArea" })
     @ManyToOne(() => ThemeArea, (themeArea) => themeArea.projectThemeAreas, { nullable: false })
     @JoinColumn({ name: "theme_area_id", referencedColumnName: "id" })
     @PrimaryColumn({ name: "theme_area_id", type: "bigint", width: 20, unsigned: true, nullable: false })

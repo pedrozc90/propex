@@ -36,10 +36,12 @@ export class Publication extends Audit {
     @Column({ name: "link", type: "varchar", length: 255, nullable: false })
     public link: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.publications, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 
+    @Property({ name: "attachment" })
     @ManyToOne(() => Attachment, (attachment) => attachment.publications, { nullable: true })
     @JoinColumn({ name: "attachment_id", referencedColumnName: "id" })
     public attachment: Attachment;

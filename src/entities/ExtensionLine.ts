@@ -26,6 +26,7 @@ export class ExtensionLine extends Audit {
     @Column({ name: "operation", type: "longtext", nullable: false })
     public operation: string;
 
+    @Property({ name: "projects" })
     @ManyToMany(() => Project, (project) => project.extensionLines)
     public projects: Project[];
 

@@ -16,6 +16,7 @@ export class Evaluation extends Audit {
     @Column({ name: "description", type: "longtext", nullable: false })
     public description: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.evaluations)
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

@@ -28,6 +28,7 @@ export class Public extends Audit {
     @Column({ name: "deleted_at", type: "timestamp", nullable: true })
     public deletedAt: Date;
 
+    @Property({ name: "projectPublics" })
     @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.public)
     public projectPublics: ProjectPublic[];
 

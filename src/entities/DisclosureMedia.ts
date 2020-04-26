@@ -27,6 +27,7 @@ export class DisclosureMedia extends Audit {
     @Column({ name: "link", type: "varchar", length: 255, nullable: false })
     public link: string;
 
+    @Property({ name: "projects" })
     @ManyToOne(() => Project, (project) => project.disclosureMedias, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

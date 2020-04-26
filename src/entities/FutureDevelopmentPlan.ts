@@ -31,6 +31,7 @@ export class FutureDevelopmentPlan extends Audit {
     @Column({ name: "participants_number", type: "varchar", length: 255, nullable: false })
     public participantsNumber: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.futureDevelopmentPlans)
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
