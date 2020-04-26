@@ -1,6 +1,6 @@
 import { Default, Format, Property, Required, IgnoreProperty } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn } from "typeorm";
 
 import { Collaborator } from "./Collaborator";
 import { Student } from "./Student";
@@ -66,7 +66,7 @@ export class User extends UserBasic {
 
     @Format("date-time")
     @Property({ name: "updatedAt" })
-    @CreateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
+    @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
     @IgnoreProperty()

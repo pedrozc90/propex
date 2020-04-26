@@ -1,11 +1,12 @@
 import { Property, Required, Format } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne, JoinColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Attachment } from "./Attachment";
 import { Project } from "./Project";
 
 @Entity({ name: "activities" })
+@Index("idx_project_id", [ "project" ])
 export class Activity extends Audit {
 
     @Property({ name: "id" })
@@ -54,7 +55,7 @@ export class Activity extends Audit {
 
     @Required()
     @Property({ name: "results" })
-    @Column({ name: "results", type: "varchar", length: 180, nullable: false })
+    @Column({ name: "results", type: "varchar", length: 255, nullable: false })
     public results: string;
 
     @Property({ name: "attachments" })

@@ -1,4 +1,4 @@
-import { Property, Required } from "@tsed/common";
+import { Property, Required, Default } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -13,18 +13,19 @@ export class ProjectPublic extends Audit {
     // public id!: number;
 
     @Required()
+    @Default(false)
     @Property({ name: "directly" })
     @Column({ name: "directly", type: "boolean", default: false, nullable: false })
-    public directly: boolean;
+    public directly: boolean = false;
 
     @Required()
-    @Property({ name: "otherPublicTitle" })
-    @Column({ name: "other_public_title", type: "varchar", length: 255 })
+    @Property({ name: "othersTitle" })
+    @Column({ name: "others_title", type: "varchar", length: 255 })
     public otherPublicTitle: number;
 
     @Required()
-    @Property({ name: "otherPublicCras" })
-    @Column({ name: "other_public_cras", type: "varchar", length: 255 })
+    @Property({ name: "othersCras" })
+    @Column({ name: "others_cras", type: "varchar", length: 255 })
     public otherPublicCras: number;
     
     @ManyToOne(() => Project, (project) => project.projectPublics, { nullable: false })

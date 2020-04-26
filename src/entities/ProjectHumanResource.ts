@@ -19,21 +19,23 @@ export class ProjectHumanResource extends Audit {
 
     @Required()
     @Description("Marca o coordenador do projecto")
+    @Default(false)
     @Property({ name: "coordinate" })
     @Column({ name: "coordinate", type: "boolean", default: false, nullable: false })
-    public coordinate: boolean;
+    public coordinate: boolean = false;
+
+    @Required()
+    @Description("Dedicação exclusiva")
+    @Default(false)
+    @Property({ name: "exclusive" })
+    @Column({ name: "exclusive", type: "boolean", default: false, nullable: false })
+    public exclusive: boolean = false;
 
     @Required()
     @Description("Carga horária")
     @Property({ name: "workload" })
     @Column({ name: "workload", type: "int", width: 11, nullable: false })
     public workload: number;
-
-    @Required()
-    @Description("Dedicação exclusiva")
-    @Property({ name: "exclusive" })
-    @Column({ name: "exclusive", type: "boolean", default: false, nullable: false })
-    public exclusive: boolean;
 
     @Format("date")
     @Description("Data de Admissão")

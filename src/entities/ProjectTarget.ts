@@ -28,7 +28,7 @@ export class ProjectTarget extends Audit {
     @Enum(AgeRange)
     @Property({ name: "ageRange" })
     // @Column({ name: "age_range", type: "enum", enum: AgeRange, default: AgeRange.UNTIL_12, nullable: false })
-    @Column({ name: "age_range", transformer: AgeRangeEnumTransformer, nullable: false })
+    @Column({ name: "age_range", type: "varchar", length: 255, transformer: AgeRangeEnumTransformer, nullable: false })
     public ageRange: AgeRange;
 
     @Property({ name: "project" })

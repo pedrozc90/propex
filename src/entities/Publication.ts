@@ -1,5 +1,5 @@
 import { Property, Required, Enum } from "@tsed/common";
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
@@ -8,6 +8,8 @@ import { PublicationType } from "../types";
 import { PublicationTypeEnumTransformer } from "../utils";
 
 @Entity({ name: "publications" })
+@Index("idx_project_id", [ "project" ])
+@Index("idx_attachment_id", [ "attachment" ])
 export class Publication extends Audit {
 
     @Property({ name: "id" })
@@ -18,7 +20,7 @@ export class Publication extends Audit {
     @Enum(PublicationType)
     @Property({ name: "type" })
     // @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
-    @Column({ name: "type", transformer: PublicationTypeEnumTransformer, nullable: false })
+    @Column({ name: "type", type: "varchar", length: 255, transformer: PublicationTypeEnumTransformer, nullable: false })
     public type: PublicationType;
 
     @Required()

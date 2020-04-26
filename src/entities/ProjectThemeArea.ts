@@ -1,4 +1,4 @@
-import { Property, Required } from "@tsed/common";
+import { Property, Required, Default } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 
@@ -12,10 +12,11 @@ import { ThemeArea } from "./ThemeArea";
 export class ProjectThemeArea extends Audit {
 
     @Required()
+    @Default(false)
     @Description("Marca a área temática principal.")
     @Property({ name: "main" })
     @Column({ name: "main", type: "boolean", default: false, nullable: false })
-    public main: boolean;
+    public main: boolean = false;
 
     @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.projectThemeAreas, { nullable: false })

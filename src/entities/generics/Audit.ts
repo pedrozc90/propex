@@ -1,5 +1,5 @@
 import { Default, Format, Property } from "@tsed/common";
-import { CreateDateColumn } from "typeorm";
+import { CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 export class Audit {
     
@@ -11,7 +11,7 @@ export class Audit {
 
     @Format("date-time")
     @Property({ name: "updatedAt" })
-    @CreateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
+    @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
     // @Property({ name: "version" })

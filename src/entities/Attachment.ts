@@ -1,4 +1,4 @@
-import { Property, Required, Enum } from "@tsed/common";
+import { Property, Required, Enum, Default } from "@tsed/common";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -17,10 +17,11 @@ export class Attachment extends Audit {
     
     @Required()
     @Enum(AttachmentType)
+    @Default(AttachmentType.DOCUMENT)
     @Property({ name: "type" })
     // @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
-    @Column({ name: "type", type: "varchar", transformer: AttachmentTypeEnumTransformer, nullable: false })
-    public type: AttachmentType;
+    @Column({ name: "type", type: "varchar", length: 255, transformer: AttachmentTypeEnumTransformer, default: "DOCUMENT", nullable: false })
+    public type: AttachmentType = AttachmentType.DOCUMENT;
 
     @Required()
     @Property({ name: "url" })
@@ -28,9 +29,9 @@ export class Attachment extends Audit {
     public url: string;
 
     @Required()
-    @Property({ name: "originalFilename" })
-    @Column({ name: "original_filename", type: "varchar", length: 255, nullable: false })
-    public originalFilename: string;
+    @Property({ name: "originalFileName" })
+    @Column({ name: "original_file_name", type: "varchar", length: 255, nullable: false })
+    public originalFileName: string;
 
     @Required()
     @Property({ name: "originalFileSize" })
@@ -38,9 +39,9 @@ export class Attachment extends Audit {
     public originalFileSize: number;
 
     @Required()
-    @Property({ name: "filename" })
-    @Column({ name: "filename", type: "varchar", length: 255, nullable: false })
-    public filename: string;
+    @Property({ name: "fileName" })
+    @Column({ name: "file_name", type: "varchar", length: 255, nullable: false })
+    public fileName: string;
 
     @Required()
     @Property({ name: "fileSize" })

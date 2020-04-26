@@ -35,9 +35,8 @@ export class DevelopmentService {
         const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
         const themeAreas = await this.ThemeAreaRepository.find({});
         const extensionLines = await this.ExtensionLineRepository.find({});
-        const publics = await this.PublicRepository.find({});
 
-        console.log(publics);
+        console.log(knowledgeAreas);
         return {};
     }
 

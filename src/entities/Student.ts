@@ -1,4 +1,4 @@
-import { Property, Required } from "@tsed/common";
+import { Property, Required, Default } from "@tsed/common";
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Index, OneToMany, Unique } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -30,9 +30,10 @@ export class Student extends Audit {
     public period: string;
 
     @Required()
+    @Default(false)
     @Property({ name: "scholarship" })
     @Column({ name: "scholarship", type: "boolean", default: false, nullable: false })
-    public scholarship: boolean;
+    public scholarship: boolean = false;
 
     @Property({ name: "user" })
     @OneToOne(() => User, (user) => user.student, { nullable: true })

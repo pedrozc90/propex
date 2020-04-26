@@ -17,15 +17,15 @@ export class DisclosureMedia extends Audit {
     public name: string;
 
     @Required()
+    @Property({ name: "link" })
+    @Column({ name: "link", type: "varchar", length: 255, nullable: false })
+    public link: string;
+
+    @Required()
     @Format("date")
     @Property({ name: "date" })
     @Column({ name: "date", type: "date", nullable: false })
     public date: string;
-
-    @Required()
-    @Property({ name: "link" })
-    @Column({ name: "link", type: "varchar", length: 255, nullable: false })
-    public link: string;
 
     @Property({ name: "projects" })
     @ManyToOne(() => Project, (project) => project.disclosureMedias, { nullable: false })

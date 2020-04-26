@@ -58,9 +58,9 @@ export class Project extends Audit {
 
     // @Required()
     @Description("Créditos previstos na matriz curricular")
-    @Property({ name: "requiredCreditsClasses" })
-    @Column({ name: "required_credits_classes", type: "longtext", nullable: false })
-    public requiredCreditsClasses: string;
+    @Property({ name: "requiredCoursesCredits" })
+    @Column({ name: "required_courses_credits", type: "longtext", nullable: false })
+    public requiredCoursesCredits: string;
 
     // @Required()
     @Description("Espaço físico e equipamentos utilizados para o desencolvimento das atividades")
@@ -77,7 +77,7 @@ export class Project extends Audit {
     // @Required()
     @Description("Acompanhamento e avalização pelo coordenador do projeto")
     @Property({ name: "accompanimentAndEvaluation" })
-    @Column({ name: "accompaniment_and_evaluation", type: "longtext", nullable: false })
+    @Column({ name: "accompaniment_and_evaluation", type: "longtext", nullable: true })
     public accompanimentAndEvaluation: string;
 
     @Property({ name: "disclosureMedias" })

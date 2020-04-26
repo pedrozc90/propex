@@ -18,15 +18,15 @@ export class EventPresentation extends Audit {
     public name: string;
 
     @Required()
+    @Property({ name: "modality" })
+    @Column({ name: "modality", type: "varchar", length: 255, nullable: false })
+    public modality: string;
+
+    @Required()
     @Format("date")
     @Property({ name: "date" })
     @Column({ name: "date", type: "date", nullable: false })
     public date: string;
-
-    @Required()
-    @Property({ name: "modality" })
-    @Column({ name: "modality", type: "varchar", length: 255, nullable: false })
-    public modality: string;
 
     @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.eventPresentations, { nullable: false })

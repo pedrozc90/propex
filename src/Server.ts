@@ -51,14 +51,15 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             username: process.env.DB_USERNAME || "root",
             password: process.env.DB_PASSWORD || "",
             logging: false,
-            synchronize: true,
+            synchronize: false,
+            dropSchema: false,
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
             subscribers: [ `${rootDir}/subscribers/*.ts` ],
             // debug: [ "query" ]
-            charset: "UTF8_GENERAL_CI",
-            dropSchema: true,
-            timezone: "local"
+            charset: "utf8mb4_general_ci",
+            timezone: "local",
+            extra: { charset: "utf8mb4_general_ci" }
         } as ConnectionOptions
     ]
 })

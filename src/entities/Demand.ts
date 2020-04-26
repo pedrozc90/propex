@@ -22,16 +22,6 @@ export class Demand extends Audit {
     @Column({ name: "justification", type: "longtext", nullable: false })
     public justification: string;
 
-    @Required()
-    @Property({ name: "contact" })
-    @Column({ name: "contact", type: "varchar", length: 255, nullable: false })
-    public contact: string;
-
-    @Required()
-    @Property({ name: "phone" })
-    @Column({ name: "phone", type: "varchar", length: 255, nullable: false })
-    public phone: string;
-
     @Property({ name: "projects" })
     @ManyToOne(() => Project, (project) => project.demands, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
