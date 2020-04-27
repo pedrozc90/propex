@@ -50,12 +50,12 @@ export class ProjectHumanResource extends Audit {
     public project: Project;
 
     @Property({ name: "collaborator" })
-    @ManyToOne(() => Collaborator, (collaborator) => collaborator.projectHumanResources, { nullable: false })
+    @ManyToOne(() => Collaborator, (collaborator) => collaborator.projectHumanResources, { nullable: true })
     @JoinColumn({ name: "collaborator_id", referencedColumnName: "id" })
     public collaborator: Collaborator;
 
     @Property({ name: "student" })
-    @ManyToOne(() => Student, (student) => student.projectHumanResources, { nullable: false })
+    @ManyToOne(() => Student, (student) => student.projectHumanResources, { nullable: true })
     @JoinColumn({ name: "student_id", referencedColumnName: "id" })
     public student: Student;
 

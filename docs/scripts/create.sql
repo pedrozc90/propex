@@ -434,8 +434,8 @@ DROP TABLE IF EXISTS project_human_resources ;
 CREATE TABLE IF NOT EXISTS project_human_resources (
     id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     project_id BIGINT(20) UNSIGNED NOT NULL,
-    collaborator_id BIGINT(20) UNSIGNED NOT NULL,
-    student_id BIGINT(20) UNSIGNED NOT NULL,
+    collaborator_id BIGINT(20) UNSIGNED,
+    student_id BIGINT(20) UNSIGNED,
     coordinate TINYINT(1) NOT NULL DEFAULT 0,
     exclusive TINYINT(1) NOT NULL DEFAULT 0,
     workload INT(11) NOT NULL,

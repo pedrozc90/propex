@@ -54,7 +54,7 @@ export class Project extends Audit {
     @Description("PPC e Calendário do(s) curso(s)")
     @Property({ name: "ppcAndCourseCalendar" })
     @Column({ name: "ppc_and_course_calendar", type: "longtext", nullable: false })
-    public pccAndCourseCalendar: string;
+    public ppcAndCourseCalendar: string;
 
     // @Required()
     @Description("Créditos previstos na matriz curricular")
@@ -132,17 +132,17 @@ export class Project extends Audit {
     @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
     @JoinTable({
         name: "project_extension_lines",
-        joinColumn: { name: "extension_line_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+        joinColumn: { name: "project_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "extension_line_id", referencedColumnName: "id" }
     })
     public extensionLines: ExtensionLine[];
 
     @Property({ name: "knowledgeAreas" })
-    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects)
+    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects, { cascade: true })
     @JoinTable({
         name: "project_knowledge_areas",
-        joinColumn: { name: "knowledge_area_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+        joinColumn: { name: "project_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "knowledge_area_id", referencedColumnName: "id" }
     })
     public knowledgeAreas: KnowledgeArea[];
 
@@ -150,8 +150,8 @@ export class Project extends Audit {
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
         name: "project_attachments",
-        joinColumn: { name: "attachment_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "project_id", referencedColumnName: "id" }
+        joinColumn: { name: "project_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "attachment_id", referencedColumnName: "id" }
     })
     public attachments: Attachment[];
 

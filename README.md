@@ -15,12 +15,22 @@ projeto de extensão
 + MySQL 8.0
     - Create a database named **propex**.
 
+## Install
+
+1. Clone repository
+2. Install [Node.js v12.16.x](https://nodejs.org/en/)
+3. Install MySQL 8.0
+4. Use [create.sql](https://github.com/PedroZC90/propex/blob/master/docs/scripts/create.sql) to create the database.
+5. Install project packages, using command
+
+```bash
+# rum this command this repository folder
+npm install
+```
+
 ## Run As Development
 
 ```bash
-# install packages
-npm install
-
 # start project on development mode
 npm run start
 ```

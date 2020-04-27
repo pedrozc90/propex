@@ -62,8 +62,8 @@ export class Activity extends Audit {
     @ManyToMany(() => Attachment, (attachment) => attachment.activities)
     @JoinTable({
         name: "activity_attachments",
-        joinColumn: { name: "attachment_id", referencedColumnName: "id" },
-        inverseJoinColumn: { name: "activity_id", referencedColumnName: "id" }
+        joinColumn: { name: "activity_id", referencedColumnName: "id" },
+        inverseJoinColumn: { name: "attachment_id", referencedColumnName: "id" }
     })
     public attachments: Attachment[];
 
