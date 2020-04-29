@@ -2,7 +2,8 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams } fr
 
 import { ExtensionLineRepository } from "../../repositories";
 import { ExtensionLine, Page } from "../../entities";
-import { IOptions } from "../../types";
+import { DeleteResult } from "typeorm";
+import { HTTPException } from "ts-httpexceptions";
 
 @Controller("/extension_lines")
 export class ExtensionLineCtrl {
@@ -11,12 +12,7 @@ export class ExtensionLineCtrl {
 
     @Get("/")
     public async fetch(@QueryParams("page") page: number, @QueryParams("rpp") rpp: number, @QueryParams("q") q: string): Promise<Page<ExtensionLine>> {
-        const options: IOptions = {};
-        options.page = page || 1;
-        options.rpp = rpp || 0;
-        options.q = q || undefined;
-
-        return this.extensionLineRepository.fetch({ ...options });
+        return this.extensionLineRepository.fetch({ page, rpp, q });
     }
 
     @Get("/list")
@@ -26,6 +22,14 @@ export class ExtensionLineCtrl {
 
     @Post("")
     public async create(@BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ExtensionLine | undefined> {
+        if (!extensionLine.id && !extensionLine.number) {
+            const { max } = await this.extensionLineRepository.createQueryBuilder("el")
+                .select("MAX(el.number)", "max")
+                .getRawOne();
+            if (max) {
+                extensionLine.number = max + 1;
+            }
+        }
         return this.extensionLineRepository.save(extensionLine);
     }
 
@@ -36,7 +40,26 @@ export class ExtensionLineCtrl {
 
     @Delete("/:id")
     public async delete(@PathParams("id") id: number): Promise<any> {
-        return this.extensionLineRepository.delete(id);
+        // response example:
+        // {
+        //     "raw": {
+        //       "fieldCount": 0,
+        //       "affectedRows": 1,
+        //       "insertId": 0,
+        //       "info": "",
+        //       "serverStatus": 2,
+        //       "warningStatus": 0
+        //     },
+        //     "affected": 1
+        // }
+        const result: DeleteResult = await this.extensionLineRepository.delete(id);
+        if (!result.raw || result.raw.serverStatus !== 2) {
+            throw new HTTPException(404, "Error while deleting from extension_lines table.");
+        }
+        if (result.raw.affected === 0) {
+            return { message: `Row ${id} do not exists.` };
+        }
+        return { message: `Row ${id} was successfully deleted.` };
     }
 
 }
