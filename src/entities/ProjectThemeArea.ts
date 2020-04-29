@@ -11,23 +11,27 @@ import { ThemeArea } from "./ThemeArea";
 @Entity({ name: "project_theme_areas" })
 export class ProjectThemeArea extends Audit {
 
+    @PrimaryColumn({ name: "project_id", type: "bigint", unsigned: true, nullable: false })
+    public projectId: number;
+
+    @Property({ name: "project" })
+    @ManyToOne(() => Project, (project) => project.projectThemeAreas, { nullable: false })
+    @JoinColumn({ name: "project_id", referencedColumnName: "id" })
+    public project: Project;
+
+    @PrimaryColumn({ name: "theme_area_id", type: "bigint", unsigned: true, nullable: false })
+    public themeAreaId: number;
+
+    @Property({ name: "themeArea" })
+    @ManyToOne(() => ThemeArea, (themeArea) => themeArea.projectThemeAreas, { nullable: false })
+    @JoinColumn({ name: "theme_area_id", referencedColumnName: "id" })
+    public themeArea: ThemeArea;
+
     @Required()
     @Default(false)
     @Description("Marca a área temática principal.")
     @Property({ name: "main" })
     @Column({ name: "main", type: "boolean", default: false, nullable: false })
     public main: boolean = false;
-
-    @Property({ name: "project" })
-    @ManyToOne(() => Project, (project) => project.projectThemeAreas, { nullable: false })
-    @JoinColumn({ name: "project_id", referencedColumnName: "id" })
-    @PrimaryColumn({ name: "project_id", type: "bigint", width: 20, unsigned: true, nullable: false })
-    public project: Project;
-
-    @Property({ name: "themeArea" })
-    @ManyToOne(() => ThemeArea, (themeArea) => themeArea.projectThemeAreas, { nullable: false })
-    @JoinColumn({ name: "theme_area_id", referencedColumnName: "id" })
-    @PrimaryColumn({ name: "theme_area_id", type: "bigint", width: 20, unsigned: true, nullable: false })
-    public themeArea: ThemeArea;
 
 }

@@ -1,14 +1,15 @@
 import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals } from "@tsed/common";
 
-import { ProjectRepository } from "../../repositories";
-import { Page, Project } from "../../entities";
-import { IOptions, IContext } from "../../types";
+import { ProjectRepository, ExtensionLineRepository } from "../../repositories";
+import { Page, Project, ExtensionLine } from "../../entities";
+import { IOptions, IContext, Scope } from "../../types";
 import { CustomAuth } from "../../services";
 
 @Controller("/projects")
 export class ProjectCtrl {
 
-    constructor(private projectRepository: ProjectRepository) {}
+    constructor(private projectRepository: ProjectRepository,
+        private extensionLineRepository: ExtensionLineRepository) {}
 
     @Get("/")
     @CustomAuth({ scope: [] })
@@ -26,14 +27,16 @@ export class ProjectCtrl {
 
         query = query.innerJoinAndSelect("p.projectHumanResources", "phr");
 
-        if (context.collaborator) {
-            query = query.innerJoinAndSelect("prh.collaborator", "c")
-                .innerJoin("c.user", "u", "u.id = :userId", { userId: context.user?.id });
-        }
+        if (context.scope !== Scope.ADMINISTRATOR) {
+            if (context.collaborator) {
+                query = query.innerJoinAndSelect("prh.collaborator", "c")
+                    .innerJoin("c.user", "u", "u.id = :userId", { userId: context.user?.id });
+            }
 
-        if (context.student) {
-            query = query.innerJoinAndSelect("prh.student", "s")
-                .innerJoin("s.user", "u", "u.id = :userId", { userId: context.user?.id });
+            if (context.student) {
+                query = query.innerJoinAndSelect("prh.student", "s")
+                    .innerJoin("s.user", "u", "u.id = :userId", { userId: context.user?.id });
+            }
         }
 
         query = query.skip((page - 1) * rpp).take(rpp);
@@ -59,6 +62,17 @@ export class ProjectCtrl {
     @Delete("/:id")
     public async delete(@PathParams("id") id: number): Promise<any> {
         return this.projectRepository.delete(id);
+    }
+
+    @Get("/:id/extension-lines")
+    public async getExtensionLines(@PathParams("id") id: number): Promise<ExtensionLine[] | undefined> {
+        return this.extensionLineRepository.find({
+            join: {
+                alias: "el",
+                innerJoin: { project: "el.project" }
+            },
+            where: { project: { id } }
+        });
     }
 
 }

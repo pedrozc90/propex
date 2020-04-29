@@ -1,9 +1,10 @@
 import { Default, Format, Property, Required, IgnoreProperty } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn, OneToMany } from "typeorm";
 
 import { Collaborator } from "./Collaborator";
 import { Student } from "./Student";
+import { ProjectHumanResource } from "./ProjectHumanResource";
 
 export class UserCredentials {
 
@@ -41,8 +42,8 @@ export class UserBasic extends UserCredentials {
     
 }
 
-@Entity({ name: "users" })
 @Unique("uk_user_email", [ "email" ])
+@Entity({ name: "users" })
 export class User extends UserBasic {
 
     @Property({ name: "id" })
@@ -69,14 +70,16 @@ export class User extends UserBasic {
     @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
-    @IgnoreProperty()
     @Property({ name: "collaborator" })
     @OneToOne(() => Collaborator, (collaborator) => collaborator.user)
     public collaborator: Collaborator;
 
-    @IgnoreProperty()
     @Property({ name: "student" })
     @OneToOne(() => Student, (student) => student.user)
     public student: Student;
+
+    @Property({ name: "projectHumanResources" })
+    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.user)
+    public projectHumanResources: ProjectHumanResource[];
     
 }

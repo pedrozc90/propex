@@ -8,9 +8,21 @@ import { Public } from "./Public";
 @Entity({ name: "project_publics" })
 export class ProjectPublic extends Audit {
 
-    // @Property({ name: "id" })
-    // @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    // public id!: number;
+    @PrimaryColumn({ name: "project_id", type: "bigint", unsigned: true, nullable: false })
+    public projectId: number;
+
+    @Property("project")
+    @ManyToOne(() => Project, (project) => project.projectPublics, { primary: true })
+    @JoinColumn({ name: "project_id", referencedColumnName: "id" })
+    public project: Project;
+
+    @PrimaryColumn({ name: "public_id", type: "bigint", unsigned: true, nullable: false })
+    public publicId: number;
+
+    @Property({ name: "public" })
+    @ManyToOne(() => Public, (p) => p.projectPublics, { primary: true })
+    @JoinColumn({ name: "public_id", referencedColumnName: "id" })
+    public public: Public;
 
     @Required()
     @Default(false)
@@ -28,15 +40,4 @@ export class ProjectPublic extends Audit {
     @Column({ name: "others_cras", type: "varchar", length: 255 })
     public otherPublicCras: number;
     
-    @ManyToOne(() => Project, (project) => project.projectPublics, { nullable: false })
-    @JoinColumn({ name: "project_id", referencedColumnName: "id" })
-    @PrimaryColumn({ name: "project_id", type: "bigint", unsigned: true, nullable: false })
-    public project: Project;
-
-    @Property({ name: "public" })
-    @ManyToOne(() => Public, (p) => p.projectPublics, { nullable: false })
-    @JoinColumn({ name: "public_id", referencedColumnName: "id" })
-    @PrimaryColumn({ name: "public_id", type: "bigint", unsigned: true, nullable: false })
-    public public: Public;
-
 }

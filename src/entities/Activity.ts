@@ -5,13 +5,13 @@ import { Audit } from "./generics/Audit";
 import { Attachment } from "./Attachment";
 import { Project } from "./Project";
 
-@Entity({ name: "activities" })
 @Index("idx_project_id", [ "project" ])
+@Entity({ name: "activities" })
 export class Activity extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Property({ name: "name" })
@@ -67,7 +67,7 @@ export class Activity extends Audit {
     })
     public attachments: Attachment[];
 
-    @Property({ name: "projects" })
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.activities, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

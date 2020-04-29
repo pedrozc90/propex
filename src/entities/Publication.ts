@@ -7,14 +7,14 @@ import { Attachment } from "./Attachment";
 import { PublicationType } from "../types";
 import { PublicationTypeEnumTransformer } from "../utils";
 
-@Entity({ name: "publications" })
 @Index("idx_project_id", [ "project" ])
 @Index("idx_attachment_id", [ "attachment" ])
+@Entity({ name: "publications" })
 export class Publication extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Enum(PublicationType)

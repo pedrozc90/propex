@@ -1,2 +1,2 @@
-source /home/scripts/create.sql;
+source /home/scripts/schema.sql;
 source /home/scripts/populate.sql;

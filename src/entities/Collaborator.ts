@@ -1,18 +1,17 @@
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, OneToMany, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
-import { ProjectHumanResource } from "./ProjectHumanResource";
 
-@Entity({ name: "collaborators" })
 @Index("idx_user_id", [ "user" ])
+@Entity({ name: "collaborators" })
 export class Collaborator extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Description("Formação acadêmica ou função")
@@ -36,9 +35,5 @@ export class Collaborator extends Audit {
     @OneToOne(() => User, (user) => user.collaborator)
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })
     public user: User;
-
-    @Property({ name: "projectHumanResources" })
-    @OneToMany(() => ProjectHumanResource, (projectHumanResources) => projectHumanResources.collaborator)
-    public projectHumanResources: ProjectHumanResource[];
 
 }

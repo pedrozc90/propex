@@ -13,7 +13,7 @@ export class Attachment extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Enum(AttachmentType)

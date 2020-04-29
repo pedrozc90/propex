@@ -4,13 +4,13 @@ import { Entity, PrimaryGeneratedColumn, Column, Index, ManyToOne, JoinColumn } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Entity({ name: "demands" })
 @Index("idx_project_id", [ "project" ])
+@Entity({ name: "demands" })
 export class Demand extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
 
     @Required()
     @Property({ name: "description" })
@@ -22,7 +22,7 @@ export class Demand extends Audit {
     @Column({ name: "justification", type: "longtext", nullable: false })
     public justification: string;
 
-    @Property({ name: "projects" })
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.demands, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;

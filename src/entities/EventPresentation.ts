@@ -4,13 +4,13 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Entity({ name: "event_presentations" })
 @Index("idx_project_id", [ "project" ])
+@Entity({ name: "event_presentations" })
 export class EventPresentation extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Property({ name: "name" })

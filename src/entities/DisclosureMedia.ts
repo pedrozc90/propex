@@ -9,7 +9,7 @@ export class DisclosureMedia extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
     
     @Required()
     @Property({ name: "name" })
@@ -27,7 +27,7 @@ export class DisclosureMedia extends Audit {
     @Column({ name: "date", type: "date", nullable: false })
     public date: string;
 
-    @Property({ name: "projects" })
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.disclosureMedias, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
