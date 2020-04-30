@@ -1,7 +1,8 @@
-import { Repository, ObjectLiteral } from "typeorm";
+import { Repository, ObjectLiteral, DeleteResult } from "typeorm";
 
 import { Page } from "../../entities";
 import { IOptions } from "../../types";
+import { HTTPException } from "ts-httpexceptions";
 
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
 
@@ -28,7 +29,7 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      * @param options   -- pagination and search options
      */
     public async list(options: IOptions): Promise<T[]> {
-        return this.find({});
+        return this.find({ ...(options as any) });
     }
 
     /**
@@ -37,6 +38,29 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      */
     public async findById(id: number): Promise<T | undefined> {
         return this.findOne(id, { relations: this.relations });
+    }
+
+    public async deleteById(id: number): Promise<any> {
+        // response example:
+        // {
+        //     "raw": {
+        //       "fieldCount": 0,
+        //       "affectedRows": 1,
+        //       "insertId": 0,
+        //       "info": "",
+        //       "serverStatus": 2,
+        //       "warningStatus": 0
+        //     },
+        //     "affected": 1
+        // }
+        const result: DeleteResult = await this.delete(id);
+        if (!result.raw || result.raw.serverStatus !== 2) {
+            throw new HTTPException(404, "Error while deleting from extension_lines table.");
+        }
+        if (result.raw.affected === 0) {
+            return { message: `Row ${id} do not exists.` };
+        }
+        return { message: `Row ${id} was successfully deleted.` };
     }
 
 }
