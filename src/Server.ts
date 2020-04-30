@@ -56,7 +56,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
             subscribers: [ `${rootDir}/subscribers/*.ts` ],
-            // debug: [ "query" ]
+            // debug: [ "query" ],
             charset: "utf8mb4_general_ci",
             timezone: "local",
             extra: { charset: "utf8mb4_general_ci" },

@@ -4,6 +4,7 @@ import { ProjectRepository, ExtensionLineRepository } from "../../repositories";
 import { Page, Project, ExtensionLine } from "../../entities";
 import { IOptions, IContext, Scope } from "../../types";
 import { CustomAuth } from "../../services";
+import { Like } from "typeorm";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -20,23 +21,18 @@ export class ProjectCtrl {
         options.q = q || undefined;
 
         let query = await this.projectRepository.createQueryBuilder("p");
-            
-        if (q) {
-            query = query.where(`p.title like %${q}%`);
-        }
 
-        query = query.innerJoinAndSelect("p.projectHumanResources", "phr");
+        query = query.innerJoinAndSelect("p.projectHumanResources", "phr")
+            .innerJoinAndSelect("phr.user", "usr")
+            .leftJoinAndSelect("usr.collaborator", "clb")
+            .leftJoinAndSelect("usr.student", "std");
 
         if (context.scope !== Scope.ADMINISTRATOR) {
-            if (context.collaborator) {
-                query = query.innerJoinAndSelect("prh.collaborator", "c")
-                    .innerJoin("c.user", "u", "u.id = :userId", { userId: context.user?.id });
-            }
+            query = query.where("usr.id = :userId", { userId: context.user?.id });
+        }
 
-            if (context.student) {
-                query = query.innerJoinAndSelect("prh.student", "s")
-                    .innerJoin("s.user", "u", "u.id = :userId", { userId: context.user?.id });
-            }
+        if (q) {
+            query = query.where(`p.title like %${q}%`);
         }
 
         query = query.skip((page - 1) * rpp).take(rpp);
@@ -50,8 +46,24 @@ export class ProjectCtrl {
     }
 
     @Get("/list")
-    public async list(@QueryParams("q") q: string): Promise<Project[]> {
-        return this.projectRepository.list({ q });
+    @CustomAuth({ scope: [] })
+    public async list(@Locals("context") context: IContext, @QueryParams("q") q: string): Promise<Project[]> {
+        let query = await this.projectRepository.createQueryBuilder("p");
+        
+        query = query.innerJoinAndSelect("p.projectHumanResources", "phr")
+            .innerJoinAndSelect("phr.user", "usr")
+            .leftJoinAndSelect("usr.collaborator", "clb")
+            .leftJoinAndSelect("usr.student", "std");
+
+        if (context?.scope !== Scope.ADMINISTRATOR) {
+            query = query.where("usr.id = :userId", { userId: context.user?.id });
+        }
+
+        if (q) {
+            query = query.where(`p.title like %${q}%`);
+        }
+
+        return query.getMany();
     }
 
     @Get("/:id")
@@ -61,7 +73,7 @@ export class ProjectCtrl {
 
     @Delete("/:id")
     public async delete(@PathParams("id") id: number): Promise<any> {
-        return this.projectRepository.delete(id);
+        return this.projectRepository.deleteById(id);
     }
 
     @Get("/:id/extension-lines")
@@ -69,7 +81,7 @@ export class ProjectCtrl {
         return this.extensionLineRepository.find({
             join: {
                 alias: "el",
-                innerJoin: { project: "el.project" }
+                innerJoin: { project: "el.projects" }
             },
             where: { project: { id } }
         });
