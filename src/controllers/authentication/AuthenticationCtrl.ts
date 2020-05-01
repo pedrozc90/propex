@@ -28,7 +28,7 @@ export class AuthenticationCtrl {
         }
 
         // sign jwt token
-        const token = await this.authenticationService.signJwtToken(user);
+        const token = await this.authenticationService.signJwtToken(user, credentials.rememberMe);
         if (!token) {
             throw new Unauthorized("Unable to create token!");
         }

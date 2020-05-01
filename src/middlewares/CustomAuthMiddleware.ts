@@ -26,10 +26,10 @@ export class CustomAuthMiddleware implements IMiddleware {
         }
 
         // verify and decode jwt token
-        await this.authenticationService.verifyJwtToken(token).then(async (decodeJwt: IJwt) => {
-            if (decodeJwt) {
+        await this.authenticationService.verifyJwtToken(token).then(async (decodedJwt: IJwt) => {
+            if (decodedJwt) {
                 // shared user information by response locals
-                response.locals.context = await this.authenticationService.context(decodeJwt.id || 0);
+                response.locals.context = await this.authenticationService.context(decodedJwt.id || 0);
 
                 // check if endpoint requires a role permission.
                 // if (options.role && (Scope as any)[options.role] !== response.locals.context.scope) {
