@@ -21,6 +21,13 @@ export class UserCredentials {
     @Property({ name: "password" })
     @Column({ name: "password", type: "varchar", length: 32, nullable: false })
     public password: string;
+
+    @IgnoreProperty()
+    @Description("Mark if ist to remember user login.")
+    @Example("true")
+    @Default(false)
+    @Property({ name: "rememberMe" })
+    public rememberMe: boolean;
     
 }
 

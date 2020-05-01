@@ -65,7 +65,7 @@ export class AuthenticationService {
      * Sign Jwt token with user data.
      * @param user      -- user data.
      */
-    public async signJwtToken(user: User): Promise<string | null> {
+    public async signJwtToken(user: User, rememberMe: boolean = false): Promise<string | null> {
         if (!JWT_SECRET_KEY) return null;
 
         const now: number = Math.floor(Date.now() / 1000);
@@ -75,10 +75,12 @@ export class AuthenticationService {
             // exp: now + JWT_EXPIRATION
         };
         const secret: Secret = JWT_SECRET_KEY;
-        const options: SignOptions = {
-            // algorithm: "RS256",
-            expiresIn: JWT_EXPIRATION || "1h"
-        };
+        const options: SignOptions = {};
+        // algorithm: "RS256",
+        // expiresIn: JWT_EXPIRATION || "1h"
+        if (!rememberMe) {
+            options.expiresIn = JWT_EXPIRATION || "24h";
+        }
         return new Promise((resolve, reject) => {
             sign(payload, secret, options, (err: Error | null, token: string | undefined): void => {
                 if (err) {
