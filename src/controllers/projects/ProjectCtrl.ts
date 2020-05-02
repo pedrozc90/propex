@@ -1,9 +1,10 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals, Required } from "@tsed/common";
 
 import { ProjectRepository, ExtensionLineRepository, KnowledgeAreaRepository, ThemeAreaRepository } from "../../repositories";
 import { Page, Project, ExtensionLine, KnowledgeArea } from "../../entities";
 import { IOptions, IContext, Scope } from "../../types";
 import { CustomAuth } from "../../services";
+import { HTTPException } from "ts-httpexceptions";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -43,7 +44,15 @@ export class ProjectCtrl {
 
     @Post("/")
     public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
-        return this.projectRepository.save(project);
+        if (project.projectHumanResources) {
+            project.projectHumanResources.map((phr) => {
+                console.log(phr);
+            });
+        }
+        console.log(project);
+        // const x = await this.projectRepository.save(project);
+        // return x;
+        return this.projectRepository.findOne({ id: 1000 });
     }
 
     @Get("/:id")
@@ -60,12 +69,20 @@ export class ProjectCtrl {
             .leftJoinAndSelect("p.futureDevelopmentPlans", "futureDevelopmentPlans")
             .leftJoinAndSelect("p.knowledgeAreas", "knowledgeAreas")
             .leftJoinAndSelect("p.partners", "partners")
-            .leftJoinAndSelect("p.projectHumanResources", "projectHumanResources")
-            .leftJoinAndSelect("p.projectPublics", "projectPublics")
             .leftJoinAndSelect("p.projectTargets", "projectTargets")
+
+            // load public
+            .leftJoinAndSelect("p.projectPublics", "projectPublics")
+            .leftJoinAndSelect("projectPublics.public", "public")
+
+            // load theme areas
             .leftJoinAndSelect("p.projectThemeAreas", "projectThemeAreas")
+            .leftJoinAndSelect("projectThemeAreas.themeArea", "themeArea")
+
             .leftJoinAndSelect("p.publications", "publications")
             
+            // load human resouces (collaborators and students)
+            .leftJoinAndSelect("p.projectHumanResources", "projectHumanResources")
             .leftJoinAndSelect("projectHumanResources.user", "user")
             .leftJoinAndSelect("user.collaborator", "collaborator")
             .leftJoinAndSelect("user.student", "student")
@@ -92,6 +109,16 @@ export class ProjectCtrl {
             },
             where: { project: { id } }
         });
+    }
+
+    @Post("/:id/extension-lines")
+    public async setExtensionLines(@PathParams("id") id: number, @Required() @BodyParams("entensionLines") entensionLines: ExtensionLine[]): Promise<void> {
+        const project = await this.projectRepository.findById(id);
+        if (!project) {
+            throw new HTTPException(400, `Project ${id} do not exists!`);
+        }
+        return this.projectRepository.createQueryBuilder("project")
+            .relation("extensionLines").of(project).add(entensionLines);
     }
 
     @Get("/:id/knowledge-areas")
