@@ -1,36 +1,55 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals, Required } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals, Required, $log } from "@tsed/common";
 
-import { ProjectRepository, ExtensionLineRepository, KnowledgeAreaRepository, ThemeAreaRepository } from "../../repositories";
-import { Page, Project, ExtensionLine, KnowledgeArea } from "../../entities";
-import { IOptions, IContext, Scope } from "../../types";
+import * as Repo from "../../repositories";
+import { Page, Project, ExtensionLine, ProjectHumanResource } from "../../entities";
+import { IContext, Scope } from "../../types";
 import { CustomAuth } from "../../services";
-import { HTTPException } from "ts-httpexceptions";
+import { HTTPException, Unauthorized } from "ts-httpexceptions";
 
 @Controller("/projects")
 export class ProjectCtrl {
 
-    constructor(private projectRepository: ProjectRepository,
-        private extensionLineRepository: ExtensionLineRepository,
-        private knowledgeAreaRepository: KnowledgeAreaRepository,
-        private themeAreaRepository: ThemeAreaRepository) {}
+    constructor(
+        private ActivityRepository: Repo.ActivityRepository,
+        private AttachmentRepository: Repo.AttachmentRepository,
+        private CollaboratorRepository: Repo.CollaboratorRepository,
+        private DemandRepository: Repo.DemandRepository,
+        private DisclosureMediaRepository: Repo.DisclosureMediaRepository,
+        private EvaluationRepository: Repo.EvaluationRepository,
+        private EventPresentationRepository: Repo.EventPresentationRepository,
+        private ExtensionLineRepository: Repo.ExtensionLineRepository,
+        private FutureDevelopmentPlanRepository: Repo.FutureDevelopmentPlanRepository,
+        private KnowledgeAreaRepository: Repo.KnowledgeAreaRepository,
+        private PartnerRepository: Repo.PartnerRepository,
+        private ProjectRepository: Repo.ProjectRepository,
+        private ProjectHumanResourceRepository: Repo.ProjectHumanResourceRepository,
+        private ProjectPublicRepository: Repo.ProjectPublicRepository,
+        private ProjectTargetRepository: Repo.ProjectTargetRepository,
+        private ProjectThemeAreaRepository: Repo.ProjectThemeAreaRepository,
+        private PublicRepository: Repo.PublicRepository,
+        private PublicationRepository: Repo.PublicationRepository,
+        private StudentRepository: Repo.StudentRepository,
+        private ThemeAreaRepository: Repo.ThemeAreaRepository,
+        private UserRepository: Repo.UserRepository) {
+        // initialize stuff here
+    }
 
     @Get("/")
     @CustomAuth({ scope: [] })
-    public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number, @QueryParams("rpp") rpp: number, @QueryParams("q") q: string): Promise<Page<Project>> {
-        const options: IOptions = {};
-        options.page = page || 1;
-        options.rpp = rpp || 0;
-        options.q = q || undefined;
-
-        let query = await this.projectRepository.createQueryBuilder("p");
-
-        query = query.leftJoinAndSelect("p.projectHumanResources", "phr")
+    public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number = 1, @QueryParams("rpp") rpp: number = 15, @QueryParams("q") q: string): Promise<Page<Project>> {
+        let query = await this.ProjectRepository.createQueryBuilder("p")
+            .leftJoinAndSelect("p.projectHumanResources", "phr")
             .innerJoin("phr.user", "usr")
             .leftJoin("usr.collaborator", "clb")
             .leftJoin("usr.student", "std");
 
         if (context.scope !== Scope.ADMINISTRATOR) {
-            query = query.where("usr.id = :userId", { userId: context.user?.id });
+            query = query.where((qb) => {
+                const subquery = qb.subQuery().from(ProjectHumanResource, "x").select("x.project_id")
+                    .where("x.user_id = :userId", { userId: context.user?.id })
+                    .getQuery();
+                return `p.id IN ${subquery}`;
+            });
         }
 
         if (q) {
@@ -50,17 +69,24 @@ export class ProjectCtrl {
             });
         }
         console.log(project);
-        // const x = await this.projectRepository.save(project);
+        // const x = await this.ProjectRepository.save(project);
         // return x;
-        return this.projectRepository.findOne({ id: 1000 });
+        return this.ProjectRepository.findOne({ id: 1000 });
     }
 
     @Get("/:id")
     @CustomAuth({ scope: [] })
     public async get(@Locals("context") context: IContext, @PathParams("id") id: number): Promise<Project | undefined> {
-        let query = await this.projectRepository.createQueryBuilder("p")
-            .leftJoinAndSelect("p.activities", "activities")
-            .leftJoinAndSelect("p.attachments", "attachments")
+        // check if user belong to this project.
+        const { access } = await this.ProjectRepository.createQueryBuilder("p")
+            .innerJoin("p.projectHumanResources", "phr", "phr.project_id = :projectId AND phr.user_id = :userId", { projectId: id, userId: context.user.id })
+            .select("COUNT(p.id) > 0", "access")
+            .getRawOne();
+        if (context.scope !== Scope.ADMINISTRATOR && access === 0) {
+            throw new Unauthorized("User do not have access to this project.");
+        }
+
+        const query = await this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.demands", "demands")
             .leftJoinAndSelect("p.disclosureMedias", "disclosureMedias")
             .leftJoinAndSelect("p.evaluations", "evaluations")
@@ -79,7 +105,11 @@ export class ProjectCtrl {
             .leftJoinAndSelect("p.projectThemeAreas", "projectThemeAreas")
             .leftJoinAndSelect("projectThemeAreas.themeArea", "themeArea")
 
+            .leftJoinAndSelect("p.activities", "activities")
+            .leftJoinAndSelect("p.attachments", "attachments")
+
             .leftJoinAndSelect("p.publications", "publications")
+            .leftJoinAndSelect("publications.attachment", "publicationsAttachments")
             
             // load human resouces (collaborators and students)
             .leftJoinAndSelect("p.projectHumanResources", "projectHumanResources")
@@ -88,21 +118,17 @@ export class ProjectCtrl {
             .leftJoinAndSelect("user.student", "student")
             .where("p.id = :id", { id });
 
-        if (context.scope !== Scope.ADMINISTRATOR) {
-            query = query.where("user.id = :userId", { userId: context.user?.id });
-        }
-
         return query.getOne();
     }
 
     @Delete("/:id")
     public async delete(@PathParams("id") id: number): Promise<any> {
-        return this.projectRepository.deleteById(id);
+        return this.ProjectRepository.deleteById(id);
     }
 
     @Get("/:id/extension-lines")
     public async getExtensionLines(@PathParams("id") id: number): Promise<ExtensionLine[] | undefined> {
-        return this.extensionLineRepository.find({
+        return this.ExtensionLineRepository.find({
             join: {
                 alias: "el",
                 innerJoin: { project: "el.projects" }
@@ -113,17 +139,17 @@ export class ProjectCtrl {
 
     @Post("/:id/extension-lines")
     public async setExtensionLines(@PathParams("id") id: number, @Required() @BodyParams("entensionLines") entensionLines: ExtensionLine[]): Promise<void> {
-        const project = await this.projectRepository.findById(id);
+        const project = await this.ProjectRepository.findById(id);
         if (!project) {
             throw new HTTPException(400, `Project ${id} do not exists!`);
         }
-        return this.projectRepository.createQueryBuilder("project")
+        return this.ProjectRepository.createQueryBuilder("project")
             .relation("extensionLines").of(project).add(entensionLines);
     }
 
     @Get("/:id/knowledge-areas")
     public async getKnowledgeAreas(@PathParams("id") id: number): Promise<any> {
-        return this.knowledgeAreaRepository.find({
+        return this.KnowledgeAreaRepository.find({
             join: {
                 alias: "ka",
                 innerJoin: { project: "ka.projects" }
@@ -132,9 +158,24 @@ export class ProjectCtrl {
         });
     }
 
+    @Get("/:id/publics")
+    public async getPublics(@PathParams("id") id: number): Promise<any> {
+        return this.PublicRepository.find({
+            join: {
+                alias: "public",
+                innerJoin: {
+                    projectPublic: "public.projectPublics",
+                    project: "projectPublic.project"
+                }
+            },
+            where: { project: { id } },
+            relations: [ "projectPublics" ]
+        });
+    }
+
     @Get("/:id/theme-areas")
     public async getThemeAreas(@PathParams("id") id: number): Promise<any> {
-        return this.themeAreaRepository.find({
+        return this.ThemeAreaRepository.find({
             join: {
                 alias: "ta",
                 innerJoin: {
@@ -149,7 +190,7 @@ export class ProjectCtrl {
 
     // @Get("/:id/test")
     // public async getTest(@PathParams("id") id: number): Promise<any> {
-    //     return this.projectRepository.find({
+    //     return this.ProjectRepository.find({
     //         join: {
     //             alias: "p",
     //             leftJoinAndSelect: {

@@ -2,7 +2,7 @@ import { Service } from "@tsed/common";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 import { BadRequest } from "ts-httpexceptions";
 
-import { User, UserCredentials, UserBasic } from "../../entities";
+import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { Scope, IContext } from "../../types";
 
@@ -29,28 +29,32 @@ export class AuthenticationService {
      * @param credentials   -- user credentials.
      */
     public async context(id: number): Promise<IContext> {
-        const context: IContext = {};
-        context.user = await this.userRepository.findById(id);
-        context.collaborator = await this.collaboratorRepository.createQueryBuilder("c")
-            .innerJoin("c.user", "users", "c.user_id = :userId", { userId: context?.user?.id })
+        const user = await this.userRepository.findById(id);
+
+        if (!user) {
+            throw new BadRequest("User not found!");
+        }
+
+        const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
+            .innerJoin("collaborator.user", "user", "collaborator.user_id = :userId", { userId: user?.id })
             .getOne();
-        context.student = await this.studentRepository.createQueryBuilder("s")
-            .innerJoin("s.user", "users", "s.user_id = :userId", { userId: context?.user?.id })
+        const student = await this.studentRepository.createQueryBuilder("student")
+            .innerJoin("student.user", "user", "student.user_id = :userId", { userId: user?.id })
             .getOne();
         
-        if (context.user && context.user.id === 1) {
-            context.scope = Scope.ADMINISTRATOR;
-        }
+        return {
+            user,
+            collaborator,
+            student,
+            scope: this.defineScope(user, collaborator, student)
+        };
+    }
 
-        if (context.collaborator) {
-            context.scope = Scope.COLLABORATOR;
-        }
-
-        if (context.student) {
-            context.scope = Scope.STUDENT;
-        }
-
-        return context;
+    private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope | undefined {
+        if (!user) return;
+        if (user.id === 1) return Scope.ADMINISTRATOR;
+        if (collaborator) return Scope.COLLABORATOR;
+        if (student) return Scope.STUDENT;
     }
 
     /**

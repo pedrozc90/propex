@@ -17,7 +17,7 @@ export interface IEntity {
 }
 
 export interface IContext {
-    user?: User;
+    user: User;
     collaborator?: Collaborator;
     student?: Student;
     scope?: Scope;
