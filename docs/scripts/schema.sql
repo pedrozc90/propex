@@ -463,7 +463,6 @@ CREATE TABLE IF NOT EXISTS propex.publics (
   deleted_at TIMESTAMP NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
-AUTO_INCREMENT = 20
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_ci;
 
