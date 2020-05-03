@@ -1,10 +1,10 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Locals, Required, $log } from "@tsed/common";
+import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required } from "@tsed/common";
+import { HTTPException, Unauthorized, NotFound } from "ts-httpexceptions";
 
-import * as Repo from "../../repositories";
-import { Page, Project, ExtensionLine, ProjectHumanResource } from "../../entities";
-import { IContext, Scope } from "../../types";
 import { CustomAuth } from "../../services";
-import { HTTPException, Unauthorized } from "ts-httpexceptions";
+import * as Repo from "../../repositories";
+import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic, Public, ThemeArea, ProjectTarget, ProjectThemeArea } from "../../entities";
+import { IContext, Scope } from "../../types";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -36,7 +36,8 @@ export class ProjectCtrl {
 
     @Get("/")
     @CustomAuth({ scope: [] })
-    public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number = 1, @QueryParams("rpp") rpp: number = 15, @QueryParams("q") q: string): Promise<Page<Project>> {
+    public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15, @QueryParams("q") q: string): Promise<Page<Project>> {
         let query = await this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.projectHumanResources", "phr")
             .innerJoin("phr.user", "usr")
@@ -53,7 +54,8 @@ export class ProjectCtrl {
         }
 
         if (q) {
-            query = query.where(`p.title like %${q}%`);
+            query = query.where(`p.title like %${q}%`)
+                .orWhere(`p.program LIKE %${q}%`);
         }
 
         query = query.skip((page - 1) * rpp).take(rpp);
@@ -63,15 +65,13 @@ export class ProjectCtrl {
 
     @Post("/")
     public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
-        if (project.projectHumanResources) {
-            project.projectHumanResources.map((phr) => {
-                console.log(phr);
-            });
-        }
-        console.log(project);
-        // const x = await this.ProjectRepository.save(project);
-        // return x;
-        return this.ProjectRepository.findOne({ id: 1000 });
+        return this.ProjectRepository.customCreate(project);
+    }
+
+    @Put("/")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
+    public async update(@Required() @BodyParams("project") project: Project): Promise<any> {
+        return this.ProjectRepository.update(project.id, { ...project });
     }
 
     @Get("/:id")
@@ -122,84 +122,140 @@ export class ProjectCtrl {
     }
 
     @Delete("/:id")
-    public async delete(@PathParams("id") id: number): Promise<any> {
+    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.ProjectRepository.deleteById(id);
     }
 
+    @Get("/:id/disclosure-medias")
+    @CustomAuth({ scope: [] })
+    public async getDisclosureMedia(@Required() @PathParams("id") id: number): Promise<DisclosureMedia[]> {
+        return this.DisclosureMediaRepository.createQueryBuilder("dm")
+            .innerJoin("dm.projects", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
+    }
+
     @Get("/:id/extension-lines")
-    public async getExtensionLines(@PathParams("id") id: number): Promise<ExtensionLine[] | undefined> {
-        return this.ExtensionLineRepository.find({
-            join: {
-                alias: "el",
-                innerJoin: { project: "el.projects" }
-            },
-            where: { project: { id } }
-        });
+    @CustomAuth({ scope: [] })
+    public async getExtensionLines(@Required() @PathParams("id") id: number): Promise<ExtensionLine[]> {
+        return this.ExtensionLineRepository.createQueryBuilder("el")
+            .innerJoin("el.projects", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
     }
 
     @Post("/:id/extension-lines")
-    public async setExtensionLines(@PathParams("id") id: number, @Required() @BodyParams("entensionLines") entensionLines: ExtensionLine[]): Promise<void> {
+    @CustomAuth({ scope: [] })
+    public async setExtensionLines(
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("entensionLines") entensionLines: ExtensionLine[]
+    ): Promise<any> {
         const project = await this.ProjectRepository.findById(id);
         if (!project) {
             throw new HTTPException(400, `Project ${id} do not exists!`);
         }
-        return this.ProjectRepository.createQueryBuilder("project")
+        await this.ProjectRepository.createQueryBuilder("project")
             .relation("extensionLines").of(project).add(entensionLines);
     }
 
     @Get("/:id/knowledge-areas")
-    public async getKnowledgeAreas(@PathParams("id") id: number): Promise<any> {
-        return this.KnowledgeAreaRepository.find({
-            join: {
-                alias: "ka",
-                innerJoin: { project: "ka.projects" }
-            },
-            where: { project: { id } }
-        });
+    @CustomAuth({ scope: [] })
+    public async getKnowledgeAreas(@PathParams("id") id: number): Promise<KnowledgeArea[]> {
+        return this.KnowledgeAreaRepository.createQueryBuilder("ka")
+            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
+    }
+
+    @Post("/:id/knowledge-areas")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    public async setKnowledgeAreas(@PathParams("id") id: number,
+        @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]): Promise<any> {
+        // find project
+        const project = await this.ProjectRepository.findById(id);
+        
+        // create relationship between project and knowledge areas
+        return this.ProjectRepository.createQueryBuilder()
+            .relation(Project, "knowledgeAreas").of(project).add(knowledgeAreas)
+            .then(() => {
+                return { message: `Project ${project?.title} was successfully updated.` };
+            }).catch(() => {
+                throw new Error("Error while updating knowledge areas relationship.");
+            });
     }
 
     @Get("/:id/publics")
-    public async getPublics(@PathParams("id") id: number): Promise<any> {
-        return this.PublicRepository.find({
-            join: {
-                alias: "public",
-                innerJoin: {
-                    projectPublic: "public.projectPublics",
-                    project: "projectPublic.project"
-                }
-            },
-            where: { project: { id } },
-            relations: [ "projectPublics" ]
-        });
+    @CustomAuth({ scope: [] })
+    public async getPublics(@PathParams("id") id: number): Promise<Public[]> {
+        return this.PublicRepository.createQueryBuilder("pb")
+            .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId: id })
+            .getMany();
+    }
+
+    @Post("/:id/publics")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    public async setPublics(@PathParams("id") id: number, projectPublics: ProjectPublic[]): Promise<any> {
+        // find project
+        const project = await this.ProjectRepository.findById(id);
+        if (!project) {
+            throw new NotFound("Project not found!");
+        }
+        project.projectPublics = projectPublics;
+        return this.ProjectRepository.save(project);
     }
 
     @Get("/:id/theme-areas")
-    public async getThemeAreas(@PathParams("id") id: number): Promise<any> {
-        return this.ThemeAreaRepository.find({
-            join: {
-                alias: "ta",
-                innerJoin: {
-                    projectThemeArea: "ta.projectThemeAreas",
-                    project: "projectThemeArea.project"
-                }
-            },
-            where: { project: { id } },
-            relations: [ "projectThemeAreas" ]
-        });
+    @CustomAuth({ scope: [] })
+    public async getThemeAreas(@PathParams("id") id: number): Promise<ThemeArea[]> {
+        return this.ThemeAreaRepository.createQueryBuilder("ta")
+            .innerJoinAndSelect("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId: id })
+            .getMany();
     }
 
-    // @Get("/:id/test")
-    // public async getTest(@PathParams("id") id: number): Promise<any> {
-    //     return this.ProjectRepository.find({
-    //         join: {
-    //             alias: "p",
-    //             leftJoinAndSelect: {
-    //                 projectThemeArea: "p.projectThemeAreas",
-    //                 themeArea: "projectThemeArea.themeArea"
-    //             }
-    //         },
-    //         where: { id }
-    //     });
-    // }
+    @Post("/:id/theme-areas")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    public async setThemeAreas(@PathParams("id") id: number, projectThemeAreas: ProjectThemeArea[]): Promise<any> {
+        const project = await this.ProjectRepository.findById(id);
+        if (!project) {
+            throw new NotFound("Project not found!");
+        }
+        project.projectThemeAreas = projectThemeAreas;
+        return this.ProjectRepository.save(project);
+    }
+
+    @Get("/:id/targets")
+    @CustomAuth({ scope: [] })
+    public async getTargets(@PathParams("id") id: number): Promise<ProjectTarget[]> {
+        return this.ProjectTargetRepository.createQueryBuilder("pt")
+            .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
+    }
+
+    @Post("/:id/targets")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    public async setTargets(@PathParams("id") id: number,
+        @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]): Promise<any> {
+        const project = await this.ProjectRepository.findById(id);
+        
+        if (!project) {
+            throw new NotFound("Project not found.");
+        }
+
+        const targets = await this.ProjectTargetRepository.find({
+            join: {
+                alias: "pt",
+                innerJoinAndSelect: { project: "pt.project" }
+            },
+            where: { project: { id } }
+        });
+
+        targets.map((t) => {
+            const f = projectTargets.find((pt) => pt.ageRange === t.ageRange);
+            if (f) {
+                t.menNumber = f.menNumber;
+                t.womenNumber = f.womenNumber;
+            }
+            return t;
+        });
+        return this.ProjectTargetRepository.save(targets);
+    }
 
 }

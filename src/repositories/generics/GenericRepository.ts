@@ -37,7 +37,7 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      * @param _id       -- document id
      */
     public async findById(id: number): Promise<T | undefined> {
-        return this.findOne(id, { relations: this.relations });
+        return this.findOne(id);
     }
 
     public async deleteById(id: number): Promise<any> {
