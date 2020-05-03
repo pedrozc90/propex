@@ -12,17 +12,17 @@ export class ProjectTarget extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
-    public id!: number;
+    public id: number;
 
     @Required()
     @Property({ name: "menNumber" })
-    @Column({ name: "men_number", type: "int", width: 11, default: null, nullable: true })
-    public menNumber: number | null;
+    @Column({ name: "men_number", type: "int", width: 11, default: 0, nullable: true })
+    public menNumber: number = 0;
 
     @Required()
     @Property({ name: "womenNumber" })
-    @Column({ name: "women_number", type: "int", width: 11, default: null, nullable: true })
-    public womenNumber: number | null;
+    @Column({ name: "women_number", type: "int", width: 11, default: 0, nullable: true })
+    public womenNumber: number = 0;
 
     @Required()
     @Enum(AgeRange)

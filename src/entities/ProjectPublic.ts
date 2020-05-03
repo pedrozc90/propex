@@ -32,12 +32,12 @@ export class ProjectPublic extends Audit {
 
     @Required()
     @Property({ name: "othersTitle" })
-    @Column({ name: "others_title", type: "varchar", length: 255 })
+    @Column({ name: "others_title", type: "varchar", length: 255, nullable: true })
     public otherPublicTitle: number;
 
     @Required()
     @Property({ name: "othersCras" })
-    @Column({ name: "others_cras", type: "varchar", length: 255 })
+    @Column({ name: "others_cras", type: "varchar", length: 255, nullable: true })
     public otherPublicCras: number;
     
 }

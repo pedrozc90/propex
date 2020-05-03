@@ -47,19 +47,19 @@ export class Project extends Audit {
     // @Required()
     @Description("Cursos envolvidos")
     @Property({ name: "includedCourses" })
-    @Column({ name: "included_courses", type: "longtext", nullable: false })
+    @Column({ name: "included_courses", type: "longtext", nullable: true })
     public includedCourses: string;
 
     // @Required()
     @Description("PPC e Calendário do(s) curso(s)")
     @Property({ name: "ppcAndCourseCalendar" })
-    @Column({ name: "ppc_and_course_calendar", type: "longtext", nullable: false })
+    @Column({ name: "ppc_and_course_calendar", type: "longtext", nullable: true })
     public ppcAndCourseCalendar: string;
 
     // @Required()
     @Description("Créditos previstos na matriz curricular")
     @Property({ name: "requiredCoursesCredits" })
-    @Column({ name: "required_courses_credits", type: "longtext", nullable: false })
+    @Column({ name: "required_courses_credits", type: "longtext", nullable: true })
     public requiredCoursesCredits: string;
 
     // @Required()

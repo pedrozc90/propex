@@ -81,8 +81,12 @@ INSERT INTO project_theme_areas (project_id, theme_area_id, main) VALUES
     (3, 6, true);
 
 INSERT INTO project_extension_lines (project_id, extension_line_id) VALUES
-    (1, 6),
-    (1, 2);
+    (1, 24),
+    (1, 25),
+    (2, 25),
+    (3, 42),
+    (3, 36),
+    (3, 53);
 
 INSERT INTO partners (project_id, name, contact, email, phone) VALUES
     (1, "Partner A", "???", "partner01@email.com", "(48) 0000-0000"),
