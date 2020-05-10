@@ -14,21 +14,21 @@ DROP TABLE IF EXISTS propex.projects;
 
 CREATE TABLE IF NOT EXISTS propex.projects (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  program VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  start_season VARCHAR(15) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  included_courses LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  ppc_and_course_calendar LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  required_courses_credits LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  infrastructure LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  public_participation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  accompaniment_and_evaluation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
+  title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  program VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  start_season VARCHAR(15) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  included_courses LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  ppc_and_course_calendar LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  required_courses_credits LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  infrastructure LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  public_participation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  accompaniment_and_evaluation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -39,15 +39,15 @@ DROP TABLE IF EXISTS propex.activities;
 CREATE TABLE IF NOT EXISTS propex.activities (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   external TINYINT(1) NOT NULL DEFAULT 0,
   number_of_members INT(11) NOT NULL,
   date DATE NOT NULL,
   period INT(11) NOT NULL,
-  execution_weekday VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  execution_weekday VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   execution_hour TIME NOT NULL,
-  results VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  results VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS propex.activities (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -69,9 +69,9 @@ DROP TABLE IF EXISTS propex.attachments;
 
 CREATE TABLE IF NOT EXISTS propex.attachments (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL DEFAULT 'DOCUMENT',
-  url VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  original_file_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL DEFAULT 'DOCUMENT',
+  url VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  original_file_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   original_file_size DOUBLE(8,2) NOT NULL,
   file_name INT NOT NULL,
   file_size DOUBLE(8,2) NOT NULL,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS propex.attachments (
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS propex.activity_attachments (
     REFERENCES propex.attachments (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -112,10 +112,10 @@ DROP TABLE IF EXISTS propex.users;
 
 CREATE TABLE IF NOT EXISTS propex.users (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  email VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  phone VARCHAR(20) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  password VARCHAR(32) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  email VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  phone VARCHAR(20) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  password VARCHAR(32) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS propex.users (
   UNIQUE INDEX uk_users_email (email ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -134,9 +134,9 @@ DROP TABLE IF EXISTS propex.collaborators;
 CREATE TABLE IF NOT EXISTS propex.collaborators (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT(20) UNSIGNED NOT NULL,
-  academic_function VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  profissional_registry VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  affiliation VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  academic_function VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  profissional_registry VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  affiliation VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS propex.collaborators (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -159,8 +159,8 @@ DROP TABLE IF EXISTS propex.disclosure_medias;
 CREATE TABLE IF NOT EXISTS propex.disclosure_medias (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   date DATE NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS propex.disclosure_medias (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -182,8 +182,8 @@ DROP TABLE IF EXISTS propex.event_presentations;
 CREATE TABLE IF NOT EXISTS propex.event_presentations (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  modality VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  modality VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   date DATE NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS propex.event_presentations (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -205,14 +205,14 @@ DROP TABLE IF EXISTS propex.extension_lines;
 CREATE TABLE IF NOT EXISTS propex.extension_lines (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   number INT(11) NOT NULL,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  operation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  operation LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -223,7 +223,7 @@ DROP TABLE IF EXISTS propex.evaluations;
 CREATE TABLE IF NOT EXISTS propex.evaluations (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  description LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  description LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS propex.evaluations (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -244,9 +244,9 @@ DROP TABLE IF EXISTS propex.future_development_plans;
 CREATE TABLE IF NOT EXISTS propex.future_development_plans (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  activities LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  expected_results LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  participants_number VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  activities LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  expected_results LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  participants_number VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -256,7 +256,7 @@ CREATE TABLE IF NOT EXISTS propex.future_development_plans (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -267,10 +267,10 @@ DROP TABLE IF EXISTS propex.partners;
 CREATE TABLE IF NOT EXISTS propex.partners (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  contact VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  email VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  phone VARCHAR(20) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  contact VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  email VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  phone VARCHAR(20) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS propex.partners (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -291,13 +291,13 @@ DROP TABLE IF EXISTS propex.knowledge_areas;
 
 CREATE TABLE IF NOT EXISTS propex.knowledge_areas (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -308,8 +308,8 @@ DROP TABLE IF EXISTS propex.demands;
 CREATE TABLE IF NOT EXISTS propex.demands (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
-  description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  justification LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  justification LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -319,7 +319,7 @@ CREATE TABLE IF NOT EXISTS propex.demands (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -331,10 +331,10 @@ CREATE TABLE IF NOT EXISTS propex.publications (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   attachment_id BIGINT(20) UNSIGNED NOT NULL,
-  type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL DEFAULT 'ARTIGO',
-  title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  journal_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
+  type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL DEFAULT 'ARTIGO',
+  title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  journal_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  link VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS propex.publications (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -370,7 +370,7 @@ CREATE TABLE IF NOT EXISTS propex.project_attachments (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -392,7 +392,7 @@ CREATE TABLE IF NOT EXISTS propex.project_extension_lines (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -424,7 +424,7 @@ CREATE TABLE IF NOT EXISTS propex.project_human_resources (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -446,7 +446,7 @@ CREATE TABLE IF NOT EXISTS propex.project_knowledge_areas (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -456,15 +456,15 @@ DROP TABLE IF EXISTS propex.publics;
 
 CREATE TABLE IF NOT EXISTS propex.publics (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   deleted_at TIMESTAMP NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -476,8 +476,8 @@ CREATE TABLE IF NOT EXISTS propex.project_publics (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   public_id BIGINT(20) UNSIGNED NOT NULL,
   directly TINYINT(1) NOT NULL DEFAULT 0,
-  others_title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
-  others_cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NULL,
+  others_title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  others_cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (project_id, public_id),
@@ -491,7 +491,7 @@ CREATE TABLE IF NOT EXISTS propex.project_publics (
     REFERENCES propex.publics (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -504,7 +504,7 @@ CREATE TABLE IF NOT EXISTS propex.project_targets (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   men_number INT(11) NULL DEFAULT 0,
   women_number INT(11) NULL DEFAULT 0,
-  age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
@@ -514,7 +514,7 @@ CREATE TABLE IF NOT EXISTS propex.project_targets (
     REFERENCES propex.projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -524,13 +524,13 @@ DROP TABLE IF EXISTS propex.theme_areas;
 
 CREATE TABLE IF NOT EXISTS propex.theme_areas (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL DEFAULT NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -555,7 +555,7 @@ CREATE TABLE IF NOT EXISTS propex.project_theme_areas (
     REFERENCES propex.theme_areas (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
@@ -566,8 +566,8 @@ DROP TABLE IF EXISTS propex.students;
 CREATE TABLE IF NOT EXISTS propex.students (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT(20) UNSIGNED NOT NULL,
-  code VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
-  course VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci' NOT NULL,
+  code VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  course VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   period INT(11) NOT NULL,
   scholarship TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
@@ -581,4 +581,4 @@ CREATE TABLE IF NOT EXISTS propex.students (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_unicode_ci;
+COLLATE = utf8mb4_general_ci;

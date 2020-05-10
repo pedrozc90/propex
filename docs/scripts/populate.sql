@@ -96,4 +96,3 @@ INSERT INTO publics (name) VALUES
     ("Outras ONG’s"),
     ("Organizações/movimentos populares"),
     ("Outros");
-
