@@ -35,7 +35,7 @@ export class Project extends Audit {
     // @Required()
     @Description("Nome do programa institucional vinculado ao pejeto")
     @Property({ name: "program" })
-    @Column({ name: "program", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "program", type: "varchar", length: 255, nullable: false })
     public program: string;
 
     // @Required()
