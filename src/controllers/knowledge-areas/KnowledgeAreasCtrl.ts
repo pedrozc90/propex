@@ -3,7 +3,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams } fr
 import { KnowledgeAreaRepository } from "../../repositories";
 import { KnowledgeArea, Page } from "../../entities";
 
-@Controller("/knowledge_areas")
+@Controller("/knowledge-areas")
 export class KnowledgeAreasCtrl {
 
     constructor(private knowledgeAreaRepository: KnowledgeAreaRepository) {}

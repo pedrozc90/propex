@@ -3,7 +3,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams } fr
 import { ThemeAreaRepository } from "../../repositories";
 import { ThemeArea, Page } from "../../entities";
 
-@Controller("/theme_areas")
+@Controller("/theme-areas")
 export class ThemeAreaCtrl {
 
     constructor(private themeAreaRepository: ThemeAreaRepository) {}
