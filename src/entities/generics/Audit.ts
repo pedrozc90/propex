@@ -6,12 +6,12 @@ export class Audit {
     @Format("date-time")
     @Default(Date.now)
     @Property({ name: "createdAt" })
-    @CreateDateColumn({ name: "created_at", type: "timestamp", nullable: false, update: false })
+    @CreateDateColumn({ name: "created_at", type: "timestamp", nullable: true })
     public createdAt: Date;
 
     @Format("date-time")
     @Property({ name: "updatedAt" })
-    @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
+    @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true })
     public updatedAt: Date;
 
     // @Property({ name: "version" })

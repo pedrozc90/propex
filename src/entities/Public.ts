@@ -17,10 +17,10 @@ export class Public extends Audit {
     @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     public name: string;
 
-    @Required()
+    // @Required()
     @Description("Centro de Referência de Assitência Social - CRAS")
     @Property({ name: "cras" })
-    @Column({ name: "cras", type: "varchar", length: 255, nullable: true, default: null })
+    @Column({ name: "cras", type: "varchar", length: 255, nullable: true })
     public cras: string;
 
     @Format("date-time")

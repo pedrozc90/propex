@@ -3,7 +3,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams } fr
 import { ExtensionLineRepository } from "../../repositories";
 import { ExtensionLine, Page } from "../../entities";
 
-@Controller("/extension_lines")
+@Controller("/extension-lines")
 export class ExtensionLineCtrl {
 
     constructor(private extensionLineRepository: ExtensionLineRepository) {}
