@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class FixModel1589001000000 implements MigrationInterface {
+export class FixModelMigration1589001000000 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<any> {
         const tables = [
