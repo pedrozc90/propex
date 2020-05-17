@@ -36,6 +36,13 @@ export class ProjectCtrl {
         // initialize stuff here
     }
 
+    /**
+     * Return a paginated list of projects, which the user is associated with.
+     * @param context       -- user context.
+     * @param page          -- page number.
+     * @param rpp           -- rows per page.
+     * @param q             -- query string (search).
+     */
     @Get("/")
     @CustomAuth({ scope: [] })
     public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number = 1,
@@ -65,6 +72,10 @@ export class ProjectCtrl {
         return Page.of(await query.getMany(), page, rpp);
     }
 
+    /**
+     * Create a new project.
+     * @param project -- project data.
+     */
     @Post("/")
     public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
         return this.ProjectRepository.customCreate(project);
@@ -76,6 +87,11 @@ export class ProjectCtrl {
         return this.ProjectRepository.update(project.id, { ...project });
     }
 
+    /**
+     * Search data of a given project.
+     * @param context           -- user context.
+     * @param id                -- project id.
+     */
     @Get("/:id")
     @CustomAuth({ scope: [] })
     public async get(@Locals("context") context: IContext, @PathParams("id") id: number): Promise<Project | undefined> {
@@ -84,10 +100,13 @@ export class ProjectCtrl {
             .innerJoin("p.projectHumanResources", "phr", "phr.project_id = :projectId AND phr.user_id = :userId", { projectId: id, userId: context.user.id })
             .select("COUNT(p.id) > 0", "access")
             .getRawOne();
+        
+        // user need to be a administrator or need to be associate to the project.
         if (context.scope !== Scope.ADMINISTRATOR && access === 0) {
             throw new Unauthorized("User do not have access to this project.");
         }
 
+        // load project and all his relationships.
         const query = await this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.demands", "demands")
             .leftJoinAndSelect("p.disclosureMedias", "disclosureMedias")
@@ -123,12 +142,20 @@ export class ProjectCtrl {
         return query.getOne();
     }
 
+    /**
+     * Delete a project. Only administrators have permission.
+     * @param id                -- project id.
+     */
     @Delete("/:id")
     @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.ProjectRepository.deleteById(id);
     }
 
+    /**
+     * Return a list of disclosure medias that belongs to a project.
+     * @param id                -- project id.
+     */
     @Get("/:id/disclosure-medias")
     @CustomAuth({ scope: [] })
     public async getDisclosureMedia(@Required() @PathParams("id") id: number): Promise<DisclosureMedia[]> {
@@ -137,6 +164,11 @@ export class ProjectCtrl {
             .getMany();
     }
 
+    /**
+     * Create/Update disclosure medias from a project.
+     * @param id                    -- project id
+     * @param disclosureMedias      -- disclosure medias data.
+     */
     @Post("/:id/disclosure-medias")
     @CustomAuth({ scope: [] })
     public async setDisclosureMedia(
@@ -167,6 +199,30 @@ export class ProjectCtrl {
             updated: updatedMedias.length || 0,
             created: createdMedias.length || 0
         };
+    }
+
+    /**
+     * Delete a disclosure media that belongs to a project.
+     * @param context                   -- user context.
+     * @param projectId                 -- project id.
+     * @param disclosureMediaId         -- disclosure media id
+     */
+    @Delete("/:id/disclosure-medias/:dm_id")
+    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
+    public async deleteDisclosureMedia(
+        @Locals("context") context: IContext,
+        @PathParams("id") projectId: number,
+        @PathParams("dm_id") disclosureMediaId: number
+    ): Promise<any> {
+        // return { projectId, disclosureMediaId };
+        const result = await this.DisclosureMediaRepository.createQueryBuilder().delete()
+            .where("id = :disclosureMediaId AND project_id = :projectId", { disclosureMediaId, projectId })
+            .execute();
+        
+        if (result.affected === 0) {
+            throw new BadRequest(`Disclosure Media ${disclosureMediaId} not found.`);
+        }
+        return { messagte: `Disclosure Media ${disclosureMediaId} was successfully deleted.` };
     }
 
     /**
