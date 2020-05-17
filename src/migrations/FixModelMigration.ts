@@ -27,10 +27,11 @@ export class FixModelMigration1589001000000 implements MigrationInterface {
             "users"
         ];
         
-        Promise.all(tables.map((t: string) => {
-            queryRunner.query(`ALTER TABLE ${t} MODIFY updated_at TIMESTAMP(6) DEFAULT NULL`);
-            queryRunner.query(`ALTER TABLE ${t} ALTER COLUMN updated_at DROP DEFAULT`);
-        }));
+        // for (const t of tables) {
+        //     await queryRunner.query(`ALTER TABLE ${t} MODIFY updated_at TIMESTAMP(6) DEFAULT NULL`);
+        //     await queryRunner.query(`ALTER TABLE ${t} ALTER COLUMN updated_at DROP DEFAULT`);
+        //     // await queryRunner.query(`ALTER TABLE ${t} ALTER COLUMN updated_at DEFAULT NULL`);
+        // }
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {}
