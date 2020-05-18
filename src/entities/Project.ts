@@ -129,7 +129,7 @@ export class Project extends Audit {
     public activities: Activity[];
 
     @Property({ name: "extensionLines" })
-    @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects)
+    @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects, { cascade: false })
     @JoinTable({
         name: "project_extension_lines",
         joinColumn: { name: "project_id", referencedColumnName: "id" },
@@ -138,7 +138,7 @@ export class Project extends Audit {
     public extensionLines: ExtensionLine[];
 
     @Property({ name: "knowledgeAreas" })
-    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects, { cascade: true })
+    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects, { cascade: false })
     @JoinTable({
         name: "project_knowledge_areas",
         joinColumn: { name: "project_id", referencedColumnName: "id" },

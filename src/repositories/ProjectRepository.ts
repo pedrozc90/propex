@@ -4,6 +4,7 @@ import { GenericRepository } from "./generics/GenericRepository";
 import { Project, ProjectTarget } from "../entities";
 import { AgeRange } from "../types";
 import { AgeRangeEnumTransformer } from "../utils";
+import { ProjectTargetRepository } from "./ProjectTargetRepository";
 
 const relations = [
     "disclosureMedias",
@@ -26,7 +27,7 @@ const relations = [
 @EntityRepository(Project)
 export class ProjectRepository extends GenericRepository<Project> {
 
-    constructor() {
+    constructor(private projectTargetRepository: ProjectTargetRepository) {
         super(relations);
     }
 
@@ -68,12 +69,7 @@ export class ProjectRepository extends GenericRepository<Project> {
         return this.save(p);
     }
 
-    public async customCreate(project: Project): Promise<any> {
-        project.projectTargets = this.populateTargets(project, project.projectTargets);
-        return project;
-    }
-
-    private populateTargets(project: Project, targets: ProjectTarget[]): ProjectTarget[] {
+    public async populateTargets(project: Project, targets: ProjectTarget[]): Promise<ProjectTarget[]> {
         const array: ProjectTarget[] = Object.keys(AgeRange).map((key: string) => {
             const t = new ProjectTarget();
             t.ageRange = AgeRangeEnumTransformer.from(key);
@@ -91,7 +87,7 @@ export class ProjectRepository extends GenericRepository<Project> {
             });
         }
 
-        return array;
+        return this.projectTargetRepository.save(array);
     }
 
 }

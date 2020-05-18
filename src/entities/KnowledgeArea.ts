@@ -17,7 +17,7 @@ export class KnowledgeArea extends Audit {
     public name: string;
 
     @Property({ name: "projects" })
-    @ManyToMany(() => Project, (project) => project.knowledgeAreas, { cascade: [ "insert", "update" ] })
+    @ManyToMany(() => Project, (project) => project.knowledgeAreas, { cascade: false })
     public projects: Project[];
 
 }

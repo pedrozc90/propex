@@ -3,10 +3,12 @@ import { HTTPException, Unauthorized, NotFound, BadRequest } from "ts-httpexcept
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
-import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic, Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator } from "../../entities";
+import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic,
+    Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator } from "../../entities";
 import { IContext, Scope } from "../../types";
 
 import moment from "moment";
+import { Query } from "typeorm/driver/Query";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -77,8 +79,80 @@ export class ProjectCtrl {
      * @param project -- project data.
      */
     @Post("/")
-    public async create(@BodyParams("project") project: Project): Promise<Project | undefined> {
-        return this.ProjectRepository.customCreate(project);
+    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    public async create(@BodyParams("project") project: Project): Promise<any> {
+        project = await this.ProjectRepository.save(project);
+
+        await this.ProjectRepository.populateTargets(project, project.projectTargets);
+
+        // extensionLines (cascade)
+        // knowledgeAreas (cascade)
+
+        // activities
+        // attachments
+        // demands
+        // if (project.demands) {
+        //     let demands = project.demands;
+        //     demands = await this.DemandRepository.save(demands.map((d) => {
+        //         d.project = project;
+        //         return d;
+        //     }));
+        // }
+
+        // // disclosureMedias
+        // if (project.disclosureMedias) {
+        //     let disclosureMedias = project.disclosureMedias;
+        //     disclosureMedias = await this.DisclosureMediaRepository.save(disclosureMedias.map((dm) => {
+        //         dm.project = project;
+        //         return dm;
+        //     }));
+        // }
+
+        // // evaluations
+        // if (project.evaluations) {
+        //     let evaluations = project.evaluations;
+        //     evaluations = await this.EvaluationRepository.save(evaluations.map((e) => {
+        //         e.project = project;
+        //         return e;
+        //     }));
+        // }
+
+        // // eventPresentations
+        // if (project.eventPresentations) {
+        //     let eventPresentations = project.eventPresentations;
+        //     eventPresentations = await this.EventPresentationRepository.save(eventPresentations.map((e) => {
+        //         e.project = project;
+        //         return e;
+        //     }));
+        // }
+
+        // // futureDevelopmentPlans
+        // if (project.futureDevelopmentPlans) {
+        //     let futureDevelopmentPlans = project.futureDevelopmentPlans;
+        //     futureDevelopmentPlans = await this.FutureDevelopmentPlanRepository.save(futureDevelopmentPlans.map((e) => {
+        //         e.project = project;
+        //         return e;
+        //     }));
+        // }
+
+        // // partners
+        // if (project.partners) {
+        //     let partners = project.partners;
+        //     partners = await this.EventPresentationRepository.save(partners.map((e) => {
+        //         e.project = project;
+        //         return e;
+        //     }));
+        // }
+
+        // // projectHumanResources
+
+        // // projectPublics
+
+        // // projectTargets
+        // // projectThemeAreas
+        // // publications
+
+        return project;
     }
 
     @Put("/")
@@ -238,40 +312,13 @@ export class ProjectCtrl {
     }
 
     /**
-     * Insert new extension lines to a given project.
+     * Create/Update/Delete project extension lines, delete the items not send, and add the new items.
      * @param id                -- project id.
      * @param extensionLines    -- list of extension lines (they must exists in the database).
      */
     @Post("/:id/extension-lines")
     @CustomAuth({ scope: [] })
     public async postExtensionLines(
-        @Required() @PathParams("id") id: number,
-        @Required() @BodyParams("extensionLines") extensionLines: ExtensionLine[]
-    ): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
-        if (!project) {
-            throw new HTTPException(400, `Project ${id} not found!`);
-        }
-
-        await this.ProjectRepository.createQueryBuilder("project").relation("extensionLines")
-            .of(project)
-            .add(extensionLines.filter((el) => !!el.id))
-            .catch((e: any) => {
-                $log.error(e.message);
-                throw new BadRequest(e.message, e);
-            });
-
-        return { message: "Project extenstion lines changed!" };
-    }
-
-    /**
-     * Update project extension lines, delete the items not send, and add the new items.
-     * @param id                -- project id.
-     * @param extensionLines    -- list of extension lines (they must exists in the database).
-     */
-    @Put("/:id/extension-lines")
-    @CustomAuth({ scope: [] })
-    public async putExtensionLines(
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("extensionLines") extensionLines: ExtensionLine[]
     ): Promise<any> {
@@ -312,38 +359,13 @@ export class ProjectCtrl {
     }
 
     /**
-     * Create relationship between project and knowledge areas.
-     * @param id                    -- project id.
-     * @param knowledgeAreas        -- list of knwoledge areas to add.
-     */
-    @Post("/:id/knowledge-areas")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
-    public async postKnowledgeAreas(@PathParams("id") id: number,
-        @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
-        if (!project) {
-            throw new HTTPException(400, `Project ${id} not found!`);
-        }
-
-        await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas")
-            .of(project)
-            .add(knowledgeAreas.filter((ka) => !!ka.id))
-            .catch((e: any) => {
-                $log.error(e.message);
-                throw new BadRequest(e.message, e);
-            });
-
-        return { message: "Project knowledge areas changed!" };
-    }
-
-    /**
-     * Update project knowledge areas realationship, delete the items not send, and add the new items.
+     * Create/Update/Delete project knowledge areas realationship, delete the items not send, and add the new items.
      * @param id                -- project id.
      * @param knowledgeAreas    -- list of knwoledge areas (they must exists in the database).
      */
-    @Put("/:id/knowledge-areas")
+    @Post("/:id/knowledge-areas")
     @CustomAuth({ scope: [] })
-    public async putKnowledgeAreas(
+    public async postKnowledgeAreas(
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]
     ): Promise<any> {
@@ -373,22 +395,41 @@ export class ProjectCtrl {
 
     @Get("/:id/publics")
     @CustomAuth({ scope: [] })
-    public async getPublics(@PathParams("id") id: number): Promise<Public[]> {
-        return this.PublicRepository.createQueryBuilder("pb")
-            .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId: id })
-            .getMany();
+    public async getPublics(@PathParams("id") id: number, @QueryParams("directly") directly?: boolean): Promise<Public[]> {
+        let query = this.PublicRepository.createQueryBuilder("pb")
+            .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId: id });
+        
+        if (directly) {
+            query = query.where("ppb.directly = :directly", { directly: (directly) ? 1 : 0 });
+        }
+
+        return query.getMany();
     }
 
     @Post("/:id/publics")
     @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
-    public async setPublics(@PathParams("id") id: number, projectPublics: ProjectPublic[]): Promise<any> {
+    public async setPublics(@PathParams("id") id: number, publics: Public[]): Promise<any> {
         // find project
         const project = await this.ProjectRepository.findById(id);
         if (!project) {
             throw new NotFound("Project not found!");
         }
-        project.projectPublics = projectPublics;
-        return this.ProjectRepository.save(project);
+        
+        const savedPublics = await this.PublicRepository.createQueryBuilder("public")
+            .innerJoinAndSelect("public.projectPublics", "pp", "pp.project_id = :projectId", { projectId: id })
+            .getMany();
+        
+        const publicToDelete = savedPublics.filter((p) => publics.findIndex((r) => r.id === p.id) < 0);
+        if (publicToDelete && publicToDelete.length > 0) {
+            console.log("TO DELETE:", publicToDelete);
+        }
+
+        const publicToInsert = savedPublics.filter((p) => !!p.id && publics.findIndex((r) => r.id === p.id) < 0);
+        if (publicToInsert && publicToInsert.length > 0) {
+            console.log("TO INSERT:", publicToInsert);
+        }
+
+        return { message: "sanity check" };
     }
 
     /**
@@ -400,9 +441,11 @@ export class ProjectCtrl {
     public async getThemeAreas(@PathParams("id") id: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
         const query = this.ThemeAreaRepository.createQueryBuilder("ta")
             .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId: id });
-            
+        
+        // load project's main theme areas
         const main = await query.where("pta.main = 1").getMany();
 
+        // load project's secondary theme areas
         const secondary = await query.where("pta.main = 0").getMany();
 
         return { main, secondary };
@@ -426,38 +469,74 @@ export class ProjectCtrl {
             throw new NotFound("Project not found!");
         }
 
+        // create project theme aread
         const projectThemeAreas: ProjectThemeArea[] = [];
 
-        projectThemeAreas.push(
-            ...main.map((ta) => {
-                const pta = new ProjectThemeArea();
-                pta.main = true;
-                pta.project = project;
-                pta.themeArea = ta;
-                return pta;
-            })
-        );
+        projectThemeAreas.push(...main.map((ta) => {
+            const pta = new ProjectThemeArea();
+            pta.main = true;
+            pta.project = project;
+            pta.projectId = project.id;
+            pta.themeArea = ta;
+            pta.themeAreaId = ta.id;
+            return pta;
+        }));
 
-        projectThemeAreas.push(
-            ...secondary.map((ta) => {
-                const pta = new ProjectThemeArea();
-                pta.main = false;
-                pta.project = project;
-                pta.themeArea = ta;
-                return pta;
-            })
-        );
+        projectThemeAreas.push(...secondary.map((ta) => {
+            const pta = new ProjectThemeArea();
+            pta.main = false;
+            pta.project = project;
+            pta.projectId = project.id;
+            pta.themeArea = ta;
+            pta.themeAreaId = ta.id;
+            return pta;
+        }));
 
-        // await this.ProjectThemeAreaRepository.save(projectThemeAreas)
-        //     .catch((e) => {
-        //         $log.error(e.message);
-        //         throw new BadRequest(e.message);
-        //     });
+        // array of theme areas id received
+        const projectThemeAreaIds: number[] = projectThemeAreas.map((pta) => pta.themeArea.id);
+
+        // load saved project theme areas
+        const projectThemeAreasSaved: ProjectThemeArea[] = await this.ProjectThemeAreaRepository.createQueryBuilder("pta")
+            .innerJoinAndSelect("pta.project", "project", "pta.project_id = :projectId", { projectId: id })
+            .getMany();
+        
+        // filter project theme areas to be deleted
+        const projectThemeAreasToDelete: ProjectThemeArea[] = projectThemeAreasSaved.filter((ptas) => !projectThemeAreaIds.includes(ptas.themeAreaId));
+        if (projectThemeAreasToDelete.length > 0) {
+            await this.ProjectThemeAreaRepository.remove(projectThemeAreasToDelete);
+        }
+
+        // filter project theme areas to be inserted/updated
+        const projectThemeAreasToInsert: ProjectThemeArea[] = projectThemeAreas.filter((pta) => projectThemeAreasToDelete.findIndex((ptad) => ptad.themeAreaId === pta.themeArea.id) < 0);
+
+        return this.ProjectThemeAreaRepository.save(projectThemeAreasToInsert);
     }
 
+    /**
+     * Return the list of targets witch the project attends.
+     * @param id                    -- project id.
+     */
     @Get("/:id/targets")
     @CustomAuth({ scope: [] })
-    public async getTargets(@PathParams("id") id: number): Promise<ProjectTarget[]> {
+    public async getTargets(@PathParams("id") id: number): Promise<{ targets: ProjectTarget[], total: number }> {
+        const query = this.ProjectTargetRepository.createQueryBuilder("pt")
+            .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id });
+        
+        const targets = await query.getMany();
+
+        const { total } = await query.select("COALESCE(SUM(pt.men_number) + SUM(pt.women_number), 0)", "total")
+            .getRawOne();
+
+        return { targets, total: parseInt(total) };
+    }
+
+    /**
+     * Return the list of targets witch the project attends.
+     * @param id                    -- project id.
+     */
+    @Get("/:id/targets")
+    @CustomAuth({ scope: [] })
+    public async getTargetsTotal(@PathParams("id") id: number): Promise<ProjectTarget[]> {
         return this.ProjectTargetRepository.createQueryBuilder("pt")
             .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id })
             .getMany();
@@ -480,6 +559,10 @@ export class ProjectCtrl {
             },
             where: { project: { id } }
         });
+
+        if (!targets) {
+            throw new BadRequest("Targets not found!");
+        }
 
         targets.map((t) => {
             const f = projectTargets.find((pt) => pt.ageRange === t.ageRange);

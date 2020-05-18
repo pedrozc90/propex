@@ -1,9 +1,17 @@
+import { Property } from "@tsed/common";
+
 export class ResultContent<T> {
 
-    constructor(public code?: number,
-        public message?: string,
-        public content?: T
-    ) {}
+    // constructor() {}
+
+    @Property({ name: "code" })
+    public code?: number;
+
+    @Property({ name: "message" })
+    public message?: string;
+
+    @Property({ name: "content" })
+    public content?: T;
 
     public static of<T>(content?: T): ResultContent<T> {
         const result: ResultContent<T> = new ResultContent<T>();

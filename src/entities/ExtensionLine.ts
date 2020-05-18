@@ -27,7 +27,7 @@ export class ExtensionLine extends Audit {
     public operation: string;
 
     @Property({ name: "projects" })
-    @ManyToMany(() => Project, (project) => project.extensionLines)
+    @ManyToMany(() => Project, (project) => project.extensionLines, { cascade: false })
     public projects: Project[];
 
 }
