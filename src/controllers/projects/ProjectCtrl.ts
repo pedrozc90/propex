@@ -8,7 +8,6 @@ import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, Kn
 import { IContext, Scope } from "../../types";
 
 import moment from "moment";
-import { Query } from "typeorm/driver/Query";
 
 @Controller("/projects")
 export class ProjectCtrl {
