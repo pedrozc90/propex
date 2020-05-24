@@ -1,12 +1,6 @@
-/* eslint-disable object-curly-newline */
 import { ValueTransformer } from "typeorm";
 
-import {
-    findEnumKey,
-    AgeRange, AgeRangeKey,
-    AttachmentType, AttachmentTypeKey,
-    PublicationType, PublicationTypeKey
-} from "../../types";
+import { findEnumKey } from "../../types";
 
 export class EnumValueTransformer<T, K> implements ValueTransformer {
 
@@ -16,7 +10,7 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
      * Used to marshal data when writing to the database.
      * @param value     -- value to be transformed.
      */
-    public to(value: T): K | any {
+    public to(value: T): string | null {
         if (!value) return null;
         return findEnumKey(this.e, value);
     }
@@ -39,7 +33,4 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
 
 }
 
-// export const UserRoleEnumTransformer = new EnumValueTransformer<Role, string>(Role);
-export const AgeRangeEnumTransformer = new EnumValueTransformer<AgeRange, AgeRangeKey>(AgeRange);
-export const AttachmentTypeEnumTransformer = new EnumValueTransformer<AttachmentType, AttachmentTypeKey>(AttachmentType);
-export const PublicationTypeEnumTransformer = new EnumValueTransformer<PublicationType, PublicationTypeKey>(PublicationType);
+// export const ExampleEnumTransformer = new EnumValueTransformer<Example, ExampleKey>(Example);

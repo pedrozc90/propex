@@ -15,4 +15,14 @@ export class Scope {
         return this.key;
     }
 
+    public static get keys(): string[] {
+        return Object.keys(this);
+    }
+
+    public static get list(): Scope[] {
+        return Scope.keys.map((key: string) => Scope[key as ScopeKey] as Scope);
+    }
+
 }
+
+export type ScopeKey = keyof typeof Scope;
