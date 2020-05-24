@@ -19,6 +19,20 @@ import { ProjectTarget } from "./ProjectTarget";
 import { ProjectThemeArea } from "./ProjectThemeArea";
 import { Publication } from "./Publication";
 
+export class ProjectBasic {
+    
+    @Required()
+    @Description("Título do Projeto")
+    @Property({ name: "title" })
+    public title: string;
+
+    @Required()
+    @Description("Nome do programa institucional vinculado ao pejeto")
+    @Property({ name: "program" })
+    public program: string;
+
+}
+
 @Entity({ name: "projects" })
 export class Project extends Audit {
 
@@ -32,7 +46,7 @@ export class Project extends Audit {
     @Column({ name: "title", type: "varchar", length: 255, nullable: false })
     public title: string;
 
-    // @Required()
+    @Required()
     @Description("Nome do programa institucional vinculado ao pejeto")
     @Property({ name: "program" })
     @Column({ name: "program", type: "varchar", length: 255, nullable: false })
@@ -41,7 +55,7 @@ export class Project extends Audit {
     // @Required()
     @Description("")
     @Property({ name: "startSeason" })
-    @Column({ name: "start_season", type: "varchar", length: 15, nullable: false })
+    @Column({ name: "start_season", type: "varchar", length: 15, nullable: true })
     public startSeason: string;
 
     // @Required()

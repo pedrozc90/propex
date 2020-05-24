@@ -4,10 +4,11 @@ import { HTTPException, Unauthorized, NotFound, BadRequest } from "ts-httpexcept
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic,
-    Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator } from "../../entities";
-import { IContext, Scope } from "../../types";
+    Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator, ProjectBasic, User } from "../../entities";
+import { IContext, Scope, AgeRange } from "../../types";
 
 import moment from "moment";
+import { AgeRangeEnumTransformer } from "../../utils";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -79,86 +80,61 @@ export class ProjectCtrl {
      */
     @Post("/")
     @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
-    public async create(@BodyParams("project") project: Project): Promise<any> {
+    public async create(@BodyParams("project") data: ProjectBasic, @Required() @BodyParams("coordinator") coordinator: User): Promise<any> {
+        // a coordinator is required to create a new project.
+        if (!coordinator) {
+            throw new BadRequest("Coordenador não informado!");
+        }
+
+        // create a new project
+        let project = new Project();
+        project.title = data.title;
+        project.program = data.program;
+
         project = await this.ProjectRepository.save(project);
 
-        await this.ProjectRepository.populateTargets(project, project.projectTargets);
+        // veridy/select coordinator user
+        let query = this.UserRepository.createQueryBuilder("user")
+            .innerJoinAndSelect("user.collaborator", "collaborator");
+            
+        if (coordinator.id) query = query.where("user.id = :id", { id: coordinator.id });
+        if (coordinator.email) query = query.orWhere("user.email = :email", { email: coordinator.email });
 
-        // extensionLines (cascade)
-        // knowledgeAreas (cascade)
+        const user = await query.getOne();
 
-        // activities
-        // attachments
-        // demands
-        // if (project.demands) {
-        //     let demands = project.demands;
-        //     demands = await this.DemandRepository.save(demands.map((d) => {
-        //         d.project = project;
-        //         return d;
-        //     }));
-        // }
+        if (!user) {
+            throw new BadRequest("Usuário não encontrado.");
+        }
+        
+        const phr = new ProjectHumanResource();
+        phr.coordinate = true;
+        phr.exclusive = true;
+        phr.workload = 48;
+        phr.project = project;
+        phr.user = user;
 
-        // // disclosureMedias
-        // if (project.disclosureMedias) {
-        //     let disclosureMedias = project.disclosureMedias;
-        //     disclosureMedias = await this.DisclosureMediaRepository.save(disclosureMedias.map((dm) => {
-        //         dm.project = project;
-        //         return dm;
-        //     }));
-        // }
+        await this.ProjectHumanResourceRepository.save(phr)
+            .catch((error: Error) => {
+                $log.error(error.message);
+            });
 
-        // // evaluations
-        // if (project.evaluations) {
-        //     let evaluations = project.evaluations;
-        //     evaluations = await this.EvaluationRepository.save(evaluations.map((e) => {
-        //         e.project = project;
-        //         return e;
-        //     }));
-        // }
+        // pre-save all targets age range with zero number men and women.
+        const targets = AgeRange.list.map((ageRange) => {
+            const t = new ProjectTarget();
+            t.project = project;
+            t.ageRange = ageRange;
+            return t;
+        });
+        await this.ProjectTargetRepository.save(targets);
 
-        // // eventPresentations
-        // if (project.eventPresentations) {
-        //     let eventPresentations = project.eventPresentations;
-        //     eventPresentations = await this.EventPresentationRepository.save(eventPresentations.map((e) => {
-        //         e.project = project;
-        //         return e;
-        //     }));
-        // }
-
-        // // futureDevelopmentPlans
-        // if (project.futureDevelopmentPlans) {
-        //     let futureDevelopmentPlans = project.futureDevelopmentPlans;
-        //     futureDevelopmentPlans = await this.FutureDevelopmentPlanRepository.save(futureDevelopmentPlans.map((e) => {
-        //         e.project = project;
-        //         return e;
-        //     }));
-        // }
-
-        // // partners
-        // if (project.partners) {
-        //     let partners = project.partners;
-        //     partners = await this.EventPresentationRepository.save(partners.map((e) => {
-        //         e.project = project;
-        //         return e;
-        //     }));
-        // }
-
-        // // projectHumanResources
-
-        // // projectPublics
-
-        // // projectTargets
-        // // projectThemeAreas
-        // // publications
-
-        return project;
+        return { message: "Project successfully created!", id: project.id };
     }
 
-    @Put("/")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
-    public async update(@Required() @BodyParams("project") project: Project): Promise<any> {
-        return this.ProjectRepository.update(project.id, { ...project });
-    }
+    // @Put("/")
+    // @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
+    // public async update(@Required() @BodyParams("project") project: Project): Promise<any> {
+    //     return this.ProjectRepository.update(project.id, { ...project });
+    // }
 
     /**
      * Search data of a given project.

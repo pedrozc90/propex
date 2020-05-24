@@ -1,4 +1,4 @@
-import { Default, Format, Property, Required, IgnoreProperty } from "@tsed/common";
+import { Default, Format, Property, Required, IgnoreProperty, Allow } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn, OneToMany } from "typeorm";
 
@@ -56,8 +56,18 @@ export class User extends UserBasic {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id: number;
 
+    @Allow([ null, undefined ])
+    public name: string;
+
+    @Allow([ null, undefined ])
+    public email: string;
+
+    @Allow([ null, undefined ])
     @IgnoreProperty()
     public password: string;
+
+    @Allow([ null, undefined ])
+    public phone: string;
 
     @IgnoreProperty()
     @Description("Mark if user is active")

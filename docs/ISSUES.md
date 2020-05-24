@@ -14,3 +14,31 @@
 + O que é [indice 11](https://github.com/PedroZC90/propex/blob/master/docs/references/modelo-relatorios-extensao.pdf).
 
 + adicionar attachment para o **item 12**
+
+# Definições
+
+- projecto dura 2 anos.
+- usuario administrador que pode criar um projeto.
+    - para cadastrar no precisa do nome, o coordenador e programa.
+    - somente um coordenador.
+- colaborador não tem usuario.
+- coordenadores, professores e estudante tem usuario para acesso.
+- cadastro do estudante tb gera usuario.
+- coordenadore e professore tem a mesma permissoes.
+- usuario não pode criar um projeto nem editar os colaboradores.
+
+# Permissões
+
++ usuários:
+    + administrador
+        - criar novos projeto.
+    + colaborador:
+        + coordenador & professor
+            - não pode editar o titulo do projeto.
+            - não pode deletar o projetos.
+            - editar/atualizar/deletar qualquer informação.
+        + terceirizados
+            - não possui usuário.
+    + estudante
+        - não pode editar titulo do projeto.
+        - não pode editar os colaboradores/estudantes.

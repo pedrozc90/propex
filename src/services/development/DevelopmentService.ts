@@ -1,7 +1,11 @@
 import { Service } from "@tsed/di";
-import { MoreThan } from "typeorm";
+import { MoreThan, EntityManager } from "typeorm";
 
 import * as Repo from "../../repositories";
+import { Scope, AgeRange } from "../../types";
+import { AgeRangeEnumTransformer } from "../../utils";
+import { ProjectRepository } from "../../repositories";
+import { ThemeArea } from "../../entities";
 
 @Service()
 export class DevelopmentService {
@@ -39,6 +43,14 @@ export class DevelopmentService {
 
         const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
         const extensionLines = await this.ExtensionLineRepository.find({});
+
+        // transational example
+        // const ta = new ThemeArea();
+        // ta.name = "Debug";
+
+        // this.ProjectRepository.manager.transaction(async (em: EntityManager) => {
+        //     await em.save(ta);
+        // });
 
         return {};
     }

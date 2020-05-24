@@ -5,6 +5,7 @@ import { Entity, Column, ManyToOne, JoinColumn, Unique, PrimaryColumn, Index } f
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { User } from "./User";
+import moment from "moment";
 
 @Index("idx_user_id", [ "user" ])
 @Index("idx_project_id", [ "project" ])
@@ -53,6 +54,6 @@ export class ProjectHumanResource extends Audit {
     @Default(Date.now)
     @Property({ name: "dateAdmission" })
     @Column({ name: "dt_admission", type: "date", nullable: false })
-    public dateAdmission: string;
+    public dateAdmission: string = moment().format("YYYY-MM-DD").toString();
 
 }
