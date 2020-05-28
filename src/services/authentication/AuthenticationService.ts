@@ -1,6 +1,6 @@
 import { Service } from "@tsed/common";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
-import { BadRequest } from "ts-httpexceptions";
+import { BadRequest } from "@tsed/exceptions";
 
 import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
@@ -52,7 +52,7 @@ export class AuthenticationService {
 
     private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope | undefined {
         if (!user) return;
-        if (user.id === 1) return Scope.ADMINISTRATOR;
+        if (user.id === 1) return Scope.ADMIN;
         if (collaborator) return Scope.COLLABORATOR;
         if (student) return Scope.STUDENT;
     }

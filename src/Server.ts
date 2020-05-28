@@ -1,7 +1,7 @@
 import { GlobalAcceptMimesMiddleware, ServerLoader, ServerSettings } from "@tsed/common";
 import "@tsed/swagger";
 import "@tsed/typeorm";
-import { ConnectionOptions } from "typeorm/connection/ConnectionOptions";
+import { ConnectionOptions } from "typeorm";
 
 import bodyParser from "body-parser";
 import compress from "compression";
@@ -11,7 +11,6 @@ import methodOverride from "method-override";
 
 import * as dotenv from "dotenv";
 import * as path from "path";
-import { GlobalErrorHandlerMiddlware } from "./middlewares/GlobalErrorHandlerMiddleware";
 
 const rootDir = __dirname;
 dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
@@ -91,9 +90,9 @@ export class Server extends ServerLoader {
     //     $log.info("Server encounter an error => ", error);
     // }
 
-    public $afterRoutesInit(): void {
-        // add global middlewares
-        this.use(GlobalErrorHandlerMiddlware);
-    }
+    // public $afterRoutesInit(): void {
+    //     // add global middlewares
+    //     this.use(middlware);
+    // }
 
 }

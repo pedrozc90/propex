@@ -1,8 +1,8 @@
 import { Repository, ObjectLiteral, DeleteResult } from "typeorm";
+import { HTTPException } from "@tsed/exceptions";
 
 import { Page } from "../../entities";
 import { IOptions } from "../../types";
-import { HTTPException } from "ts-httpexceptions";
 
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
 
@@ -19,7 +19,7 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
         const rpp: number = options.rpp || 0;
 
         const query = this.createQueryBuilder()
-            .skip((page - 1) * rpp).limit(rpp);
+            .skip((page - 1) * rpp).take(rpp);
         
         return Page.of(await query.getMany(), page, rpp);
     }

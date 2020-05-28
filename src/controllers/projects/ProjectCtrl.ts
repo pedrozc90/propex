@@ -1,5 +1,5 @@
 import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log } from "@tsed/common";
-import { HTTPException, Unauthorized, NotFound, BadRequest } from "ts-httpexceptions";
+import { HTTPException, Unauthorized, NotFound, BadRequest } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
@@ -8,7 +8,6 @@ import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, Kn
 import { IContext, Scope, AgeRange } from "../../types";
 
 import moment from "moment";
-import { AgeRangeEnumTransformer } from "../../utils";
 
 @Controller("/projects")
 export class ProjectCtrl {
@@ -55,7 +54,7 @@ export class ProjectCtrl {
             .leftJoin("usr.collaborator", "clb")
             .leftJoin("usr.student", "std");
 
-        if (context.scope !== Scope.ADMINISTRATOR) {
+        if (context.scope !== Scope.ADMIN) {
             query = query.where((qb) => {
                 const subquery = qb.subQuery().from(ProjectHumanResource, "x").select("x.project_id")
                     .where("x.user_id = :userId", { userId: context.user?.id })
@@ -79,7 +78,7 @@ export class ProjectCtrl {
      * @param project -- project data.
      */
     @Post("/")
-    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN" ] })
     public async create(@BodyParams("project") data: ProjectBasic, @Required() @BodyParams("coordinator") coordinator: User): Promise<any> {
         // a coordinator is required to create a new project.
         if (!coordinator) {
@@ -131,7 +130,7 @@ export class ProjectCtrl {
     }
 
     // @Put("/")
-    // @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
+    // @CustomAuth({ scope: [ "ADMIN", "COORDINATOR" ] })
     // public async update(@Required() @BodyParams("project") project: Project): Promise<any> {
     //     return this.ProjectRepository.update(project.id, { ...project });
     // }
@@ -151,7 +150,7 @@ export class ProjectCtrl {
             .getRawOne();
         
         // user need to be a administrator or need to be associate to the project.
-        if (context.scope !== Scope.ADMINISTRATOR && access === 0) {
+        if (context.scope !== Scope.ADMIN && access === 0) {
             throw new Unauthorized("User do not have access to this project.");
         }
 
@@ -196,7 +195,7 @@ export class ProjectCtrl {
      * @param id                -- project id.
      */
     @Delete("/:id")
-    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN" ] })
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.ProjectRepository.deleteById(id);
     }
@@ -257,7 +256,7 @@ export class ProjectCtrl {
      * @param disclosureMediaId         -- disclosure media id
      */
     @Delete("/:id/disclosure-medias/:dm_id")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDINATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN", "COORDINATOR" ] })
     public async deleteDisclosureMedia(
         @Locals("context") context: IContext,
         @PathParams("id") projectId: number,
@@ -382,7 +381,7 @@ export class ProjectCtrl {
     }
 
     @Post("/:id/publics")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setPublics(@PathParams("id") id: number, publics: Public[]): Promise<any> {
         // find project
         const project = await this.ProjectRepository.findById(id);
@@ -433,7 +432,7 @@ export class ProjectCtrl {
      * @param secondary             -- list of secondary theme areas.
      */
     @Post("/:id/theme-areas")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setThemeAreas(
         @PathParams("id") id: number,
         @BodyParams("main") main: ThemeArea[],
@@ -518,7 +517,7 @@ export class ProjectCtrl {
     }
 
     @Post("/:id/targets")
-    @CustomAuth({ scope: [ "ADMINISTRATOR", "COORDENATOR" ] })
+    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setTargets(@PathParams("id") id: number,
         @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]): Promise<any> {
         const project = await this.ProjectRepository.findById(id);

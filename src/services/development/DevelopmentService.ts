@@ -1,11 +1,7 @@
 import { Service } from "@tsed/di";
-import { MoreThan, EntityManager } from "typeorm";
+import { MoreThan } from "typeorm";
 
 import * as Repo from "../../repositories";
-import { Scope, AgeRange } from "../../types";
-import { AgeRangeEnumTransformer } from "../../utils";
-import { ProjectRepository } from "../../repositories";
-import { ThemeArea } from "../../entities";
 
 @Service()
 export class DevelopmentService {

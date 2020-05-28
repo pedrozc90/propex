@@ -1,5 +1,5 @@
 import { $log, BodyParams, Controller, Get, Post, Required, Res } from "@tsed/common";
-import { InternalServerError, Unauthorized } from "ts-httpexceptions";
+import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
 import { AuthenticationService, CustomAuth } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";

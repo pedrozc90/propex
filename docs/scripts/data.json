@@ -1,6 +1,8 @@
 {
     "users": [
-        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000" }
+        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000" },
+        { "name": "john", "email": "john@domain.com", "password": "123456", "phone": "(48) 00000-0001" },
+        { "name": "josh", "email": "josh@domain.com", "password": "123456", "phone": "(48) 00000-0002" }
     ],
 
     "knowledgeAreas": [
