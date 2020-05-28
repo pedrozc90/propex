@@ -3,7 +3,7 @@ import { HTTPException, Unauthorized, NotFound, BadRequest } from "ts-httpexcept
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
-import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic, Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator } from "../../entities";
+import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic, Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator, Partner } from "../../entities";
 import { IContext, Scope } from "../../types";
 
 import moment from "moment";
@@ -528,6 +528,44 @@ export class ProjectCtrl {
     @Put("/:id/collaborators")
     public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
         return { message: "Method not implemented!" };
+    }
+
+/**  
+ * PARTERNS
+ */ 
+    @Get("/:id/parterns")
+    public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
+        return[];
+    }
+
+    @Post("/:id/parterns")
+    public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") collaborators: Collaborator[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Delete("/:id/parterns")
+    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    public async deleteParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") collaborators: Collaborator[]): Promise<any> {
+        return this.ProjectRepository.deleteById(id);
+    }
+
+/**  
+* EVALUATION  
+*/ 
+    @Get("/:id/evaluation")
+    public async getEvaluation(@PathParams("id") id: number): Promise<Partner[]> {
+    return[];
+    }
+
+    @Post("/:id/evaluation")
+    public async postEvaluation(@PathParams("id") id: number, @Required() @BodyParams("evaluation") collaborators: Collaborator[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Delete("/:id/evaluation")
+    @CustomAuth({ scope: [ "ADMINISTRATOR" ] })
+    public async deleteEvaluation(@PathParams("id") id: number, @Required() @BodyParams("evaluation") collaborators: Collaborator[]): Promise<any> {
+        return this.ProjectRepository.deleteById(id);
     }
 
 }
