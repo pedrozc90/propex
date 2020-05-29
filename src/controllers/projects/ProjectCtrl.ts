@@ -3,8 +3,9 @@ import { HTTPException, Unauthorized, NotFound, BadRequest } from "@tsed/excepti
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
-import { Page, Project, ExtensionLine, ProjectHumanResource, DisclosureMedia, KnowledgeArea, ProjectPublic,
-    Public, ThemeArea, ProjectTarget, ProjectThemeArea, Student, Collaborator, ProjectBasic, User } from "../../entities";
+import { Collaborator, DisclosureMedia, Evaluation, ExtensionLine, KnowledgeArea,
+    Page, Partner, Project, ProjectBasic, ProjectHumanResource, ProjectTarget,
+    ProjectThemeArea, Public, Student, ThemeArea, User } from "../../entities";
 import { IContext, Scope, AgeRange } from "../../types";
 
 import moment from "moment";
@@ -200,6 +201,10 @@ export class ProjectCtrl {
         return this.ProjectRepository.deleteById(id);
     }
 
+    // --------------------------------------------------
+    // DISCLOSURE MEDIAS
+    // --------------------------------------------------
+
     /**
      * Return a list of disclosure medias that belongs to a project.
      * @param id                -- project id.
@@ -273,6 +278,10 @@ export class ProjectCtrl {
         return { messagte: `Disclosure Media ${disclosureMediaId} was successfully deleted.` };
     }
 
+    // --------------------------------------------------
+    // EXTENSION LINES
+    // --------------------------------------------------
+
     /**
      * Returns all extension lines from a given project.
      * @param id                -- project id.
@@ -319,6 +328,10 @@ export class ProjectCtrl {
 
         return { message: "Project extension lines updated!" };
     }
+
+    // --------------------------------------------------
+    // KNOWLEDGE AREAS
+    // --------------------------------------------------
 
     /**
      * Return all knowledge areas from a given project.
@@ -367,6 +380,10 @@ export class ProjectCtrl {
         return { message: "Project Knowledge Areas updated!" };
     }
 
+    // --------------------------------------------------
+    // PUBLICS
+    // --------------------------------------------------
+
     @Get("/:id/publics")
     @CustomAuth({ scope: [] })
     public async getPublics(@PathParams("id") id: number, @QueryParams("directly") directly?: boolean): Promise<Public[]> {
@@ -405,6 +422,10 @@ export class ProjectCtrl {
 
         return { message: "sanity check" };
     }
+
+    // --------------------------------------------------
+    // THEME AREAS
+    // --------------------------------------------------
 
     /**
      * Return the list of theme areas connected to a given project.
@@ -486,6 +507,10 @@ export class ProjectCtrl {
         return this.ProjectThemeAreaRepository.save(projectThemeAreasToInsert);
     }
 
+    // --------------------------------------------------
+    // TARGETS
+    // --------------------------------------------------
+
     /**
      * Return the list of targets witch the project attends.
      * @param id                    -- project id.
@@ -549,6 +574,10 @@ export class ProjectCtrl {
         return this.ProjectTargetRepository.save(targets);
     }
 
+    // --------------------------------------------------
+    // STUDENTS
+    // --------------------------------------------------
+
     /**
      * Returns a list of students working on this project.
      * @param id                -- project id.
@@ -596,6 +625,10 @@ export class ProjectCtrl {
         return { message: "Method not implemented!" };
     }
 
+    // --------------------------------------------------
+    // COLLABORATORS
+    // --------------------------------------------------
+
     /**
      * Returns a list of collaborators working in a project.
      * @param id                -- project id.
@@ -641,6 +674,46 @@ export class ProjectCtrl {
     @Put("/:id/collaborators")
     public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
         return { message: "Method not implemented!" };
+    }
+
+    // --------------------------------------------------
+    // PARTERNS
+    // --------------------------------------------------
+
+    @Get("/:id/parterns")
+    public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
+        return [];
+    }
+
+    @Post("/:id/parterns")
+    public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") parterns: Partner[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Delete("/:id/parterns/:parternId")
+    @CustomAuth({ scope: [ "ADMIN" ] })
+    public async deleteParterns(@PathParams("id") id: number, @Required() @PathParams("parternId") parternId: number): Promise<any> {
+        return this.PartnerRepository.deleteById(parternId);
+    }
+    
+    // --------------------------------------------------
+    // EVALUATIONS
+    // --------------------------------------------------
+
+    @Get("/:id/evaluations")
+    public async getEvaluation(@PathParams("id") id: number): Promise<Partner[]> {
+        return [];
+    }
+
+    @Post("/:id/evaluations")
+    public async postEvaluation(@PathParams("id") id: number, @Required() @BodyParams("evaluations") evaluations: Evaluation[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Delete("/:id/evaluations/:evaluationId")
+    @CustomAuth({ scope: [ "ADMIN" ] })
+    public async deleteEvaluation(@PathParams("id") id: number, @Required() @PathParams("evaluationId") evaluationId: number): Promise<any> {
+        return this.EvaluationRepository.deleteById(evaluationId);
     }
 
 }
