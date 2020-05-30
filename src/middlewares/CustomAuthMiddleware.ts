@@ -36,8 +36,6 @@ export class CustomAuthMiddleware implements IMiddleware {
         
         // shared user information by response locals
         const context = await this.authenticationService.context(decodedJwt);
-        
-        console.log(options.scope, context?.scope, options.scope?.includes("ADMIN"));
 
         if ((options.role && options.role !== context?.scope?.value) ||
             (options.scope && context && context.scope && !options.scope.includes(context.scope.value))) {

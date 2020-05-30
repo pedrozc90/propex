@@ -83,7 +83,10 @@ export class ProjectCtrl {
      */
     @Post("/")
     @CustomAuth({ scope: [ "ADMIN" ] })
-    public async create(@BodyParams("project") data: ProjectBasic, @Required() @BodyParams("coordinator") coordinator: User): Promise<any> {
+    public async create(
+        @BodyParams("project") data: ProjectBasic,
+        @Required() @BodyParams("coordinator") coordinator: User
+    ): Promise<any> {
         // a coordinator is required to create a new project.
         if (!coordinator) {
             throw new BadRequest("Coordinator not found!");
@@ -96,7 +99,7 @@ export class ProjectCtrl {
 
         project = await this.ProjectRepository.save(project);
 
-        // veridy/select coordinator user
+        // verify/select coordinator user
         let query = this.UserRepository.createQueryBuilder("user")
             .innerJoinAndSelect("user.collaborator", "collaborator");
             
@@ -249,30 +252,6 @@ export class ProjectCtrl {
             updated: updatedMedias.length || 0,
             created: createdMedias.length || 0
         };
-    }
-
-    /**
-     * Delete a disclosure media that belongs to a project.
-     * @param context                   -- user context.
-     * @param projectId                 -- project id.
-     * @param disclosureMediaId         -- disclosure media id
-     */
-    @Delete("/:id/disclosure-medias/:dm_id")
-    @CustomAuth({ scope: [ "ADMIN", "COORDINATOR" ] })
-    public async deleteDisclosureMedia(
-        @Locals("context") context: IContext,
-        @PathParams("id") projectId: number,
-        @PathParams("dm_id") disclosureMediaId: number
-    ): Promise<any> {
-        // return { projectId, disclosureMediaId };
-        const result = await this.DisclosureMediaRepository.createQueryBuilder().delete()
-            .where("id = :disclosureMediaId AND project_id = :projectId", { disclosureMediaId, projectId })
-            .execute();
-        
-        if (result.affected === 0) {
-            throw new BadRequest(`Disclosure Media ${disclosureMediaId} not found.`);
-        }
-        return { messagte: `Disclosure Media ${disclosureMediaId} was successfully deleted.` };
     }
 
     // --------------------------------------------------
