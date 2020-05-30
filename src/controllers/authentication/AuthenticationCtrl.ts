@@ -1,7 +1,7 @@
 import { $log, BodyParams, Controller, Get, Post, Required, Res } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
-import { AuthenticationService, CustomAuth } from "../../services";
+import { AuthenticationService } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";
 import { IToken } from "../../types";
 
@@ -34,8 +34,6 @@ export class AuthenticationCtrl {
         }
 
         $log.warn(`[Authentication] user: ${user.email}, token: ${token}`);
-        // update context information
-        // await this.authenticationService.setContext(token, { role: user.role, _id: user._id } as IJwt);
 
         return { token };
     }

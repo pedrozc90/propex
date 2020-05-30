@@ -95,4 +95,9 @@ export class Server extends ServerLoader {
     //     this.use(middlware);
     // }
 
+    // public $beforeRoutesInits(): void {
+    //     // add global middlewares
+    //     this.use(middleware);
+    // }
+
 }

@@ -19,7 +19,7 @@ export class UserCtrl {
      * @param q     -- extra query param, used for searching
      */
     @Get("/")
-    @CustomAuth({ scope: [ "ADIMIN" ] })
+    @CustomAuth({ role: "ADMIN" })
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -42,7 +42,7 @@ export class UserCtrl {
     }
 
     @Post("/")
-    @CustomAuth({ scope: [ "ADMIN" ] })
+    @CustomAuth({ role: "ADMIN" })
     public async create(@Required() @BodyParams("user") data: User): Promise<any> {
         let user = await this.userRepository.findOne({ where: { email: data.email } });
         if (user) {
@@ -63,7 +63,7 @@ export class UserCtrl {
     }
 
     @Get("/:id")
-    @CustomAuth({ scope: [ "ADIMIN" ] })
+    @CustomAuth({ scope: [ "ADMIN" ] })
     public async get(@PathParams("id") id: number): Promise<User | undefined> {
         return this.userRepository.createQueryBuilder("user")
             .leftJoinAndSelect("user.student", "student")

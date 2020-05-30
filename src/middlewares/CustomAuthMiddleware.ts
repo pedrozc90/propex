@@ -2,7 +2,7 @@ import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/com
 import { Forbidden, Unauthorized } from "@tsed/exceptions";
 
 import { AuthenticationService } from "../services";
-import { ICustomAuthOptions, IJwt, Scope } from "../types";
+import { ICustomAuthOptions, IJwt } from "../types";
 
 @Middleware()
 export class CustomAuthMiddleware implements IMiddleware {
@@ -14,8 +14,12 @@ export class CustomAuthMiddleware implements IMiddleware {
      * @param request   -- express request object.
      * @param endpoint  -- express endpoint.
      */
-    public async use(@Req() request: Req, @Res() response: Res, @Next() next: Next,
-        @EndpointInfo() endpoint: EndpointInfo): Promise<void> {
+    public async use(
+        @Req() request: Req,
+        @Res() response: Res,
+        @Next() next: Next,
+        @EndpointInfo() endpoint: EndpointInfo
+    ): Promise<void> {
         // retrieve options given to the @UseAuth decorator
         const options: ICustomAuthOptions = endpoint.get(CustomAuthMiddleware) || {};
 
@@ -25,26 +29,23 @@ export class CustomAuthMiddleware implements IMiddleware {
             throw new Unauthorized("Missing token!");
         }
 
-        // verify and decode jwt token
-        await this.authenticationService.verifyJwtToken(token).then(async (decodedJwt: IJwt) => {
-            if (decodedJwt) {
-                // shared user information by response locals
-                response.locals.context = await this.authenticationService.context(decodedJwt.id || 0);
+        const decodedJwt: IJwt = await this.authenticationService.verifyJwtToken(token)
+            .catch((err: any) => {
+                throw new Unauthorized(err.message || err);
+            });
+        
+        // shared user information by response locals
+        const context = await this.authenticationService.context(decodedJwt);
+        
+        console.log(options.scope, context?.scope, options.scope?.includes("ADMIN"));
 
-                // check if endpoint requires a role permission.
-                // if (options.role && (Scope as any)[options.role] !== response.locals.context.scope) {
-                //     throw new Forbidden("You are not allowed here.");
-                // }
+        if ((options.role && options.role !== context?.scope?.value) ||
+            (options.scope && context && context.scope && !options.scope.includes(context.scope.value))) {
+            throw new Forbidden("You are not allowed here.");
+        }
 
-                // if (options.scope && !options.scope.includes(response.locals.context.scope)) {
-                //     throw new Forbidden("You are not allowed here.");
-                // }
-            } else {
-                throw new Unauthorized("Unauthorized, Invalid Token!");
-            }
-        }).catch((err: any) => {
-            throw new Unauthorized(err.message || err);
-        });
+        response.locals.context = await this.authenticationService.context(decodedJwt);
+        response.locals.token = token;
 
         // go the next middleware
         next();

@@ -1,4 +1,4 @@
-import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log } from "@tsed/common";
+import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log, UseBefore, UseBeforeEach } from "@tsed/common";
 import { HTTPException, Unauthorized, NotFound, BadRequest } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
@@ -40,16 +40,19 @@ export class ProjectCtrl {
 
     /**
      * Return a paginated list of projects, which the user is associated with.
-     * @param context       -- user context.
-     * @param page          -- page number.
-     * @param rpp           -- rows per page.
-     * @param q             -- query string (search).
+     * @param context           -- user context.
+     * @param page              -- page number.
+     * @param rpp               -- rows per page.
+     * @param q                 -- query string (search).
      */
     @Get("/")
-    @CustomAuth({ scope: [] })
-    public async fetch(@Locals("context") context: IContext, @QueryParams("page") page: number = 1,
-        @QueryParams("rpp") rpp: number = 15, @QueryParams("q") q: string): Promise<Page<Project>> {
-        let query = await this.ProjectRepository.createQueryBuilder("p")
+    @CustomAuth({})
+    public async fetch(@Locals("context") context: IContext,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q: string
+    ): Promise<Page<Project>> {
+        let query = this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.projectHumanResources", "phr")
             .innerJoinAndSelect("phr.user", "usr")
             .leftJoin("usr.collaborator", "clb")
@@ -83,7 +86,7 @@ export class ProjectCtrl {
     public async create(@BodyParams("project") data: ProjectBasic, @Required() @BodyParams("coordinator") coordinator: User): Promise<any> {
         // a coordinator is required to create a new project.
         if (!coordinator) {
-            throw new BadRequest("Coordenador não informado!");
+            throw new BadRequest("Coordinator not found!");
         }
 
         // create a new project
@@ -103,7 +106,7 @@ export class ProjectCtrl {
         const user = await query.getOne();
 
         if (!user) {
-            throw new BadRequest("Usuário não encontrado.");
+            throw new BadRequest("User not found!");
         }
         
         const phr = new ProjectHumanResource();
@@ -130,19 +133,13 @@ export class ProjectCtrl {
         return { message: "Project successfully created!", id: project.id };
     }
 
-    // @Put("/")
-    // @CustomAuth({ scope: [ "ADMIN", "COORDINATOR" ] })
-    // public async update(@Required() @BodyParams("project") project: Project): Promise<any> {
-    //     return this.ProjectRepository.update(project.id, { ...project });
-    // }
-
     /**
      * Search data of a given project.
      * @param context           -- user context.
      * @param id                -- project id.
      */
     @Get("/:id")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async get(@Locals("context") context: IContext, @PathParams("id") id: number): Promise<Project | undefined> {
         // check if user belong to this project.
         const { access } = await this.ProjectRepository.createQueryBuilder("p")
@@ -191,15 +188,15 @@ export class ProjectCtrl {
         return query.getOne();
     }
 
-    /**
-     * Delete a project. Only administrators have permission.
-     * @param id                -- project id.
-     */
-    @Delete("/:id")
-    @CustomAuth({ scope: [ "ADMIN" ] })
-    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        return this.ProjectRepository.deleteById(id);
-    }
+    // /**
+    //  * Delete a project. Only administrators have permission.
+    //  * @param id                -- project id.
+    //  */
+    // @Delete("/:id")
+    // @CustomAuth({ scope: [ "ADMIN" ] })
+    // public async delete(@Required() @PathParams("id") id: number): Promise<any> {
+    //     return this.ProjectRepository.deleteById(id);
+    // }
 
     // --------------------------------------------------
     // DISCLOSURE MEDIAS
@@ -210,7 +207,7 @@ export class ProjectCtrl {
      * @param id                -- project id.
      */
     @Get("/:id/disclosure-medias")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getDisclosureMedia(@Required() @PathParams("id") id: number): Promise<DisclosureMedia[]> {
         return this.DisclosureMediaRepository.createQueryBuilder("dm")
             .innerJoin("dm.project", "p", "p.id = :projectId", { projectId: id })
@@ -223,7 +220,7 @@ export class ProjectCtrl {
      * @param disclosureMedias      -- disclosure medias data.
      */
     @Post("/:id/disclosure-medias")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async setDisclosureMedia(
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
@@ -287,7 +284,7 @@ export class ProjectCtrl {
      * @param id                -- project id.
      */
     @Get("/:id/extension-lines")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getExtensionLines(@Required() @PathParams("id") id: number): Promise<ExtensionLine[]> {
         return this.ExtensionLineRepository.createQueryBuilder("el")
             .innerJoin("el.projects", "p", "p.id = :projectId", { projectId: id })
@@ -300,7 +297,7 @@ export class ProjectCtrl {
      * @param extensionLines    -- list of extension lines (they must exists in the database).
      */
     @Post("/:id/extension-lines")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async postExtensionLines(
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("extensionLines") extensionLines: ExtensionLine[]
@@ -338,7 +335,7 @@ export class ProjectCtrl {
      * @param id                    -- project id.
      */
     @Get("/:id/knowledge-areas")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getKnowledgeAreas(@PathParams("id") id: number): Promise<KnowledgeArea[]> {
         return this.KnowledgeAreaRepository.createQueryBuilder("ka")
             .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
@@ -351,7 +348,7 @@ export class ProjectCtrl {
      * @param knowledgeAreas    -- list of knwoledge areas (they must exists in the database).
      */
     @Post("/:id/knowledge-areas")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async postKnowledgeAreas(
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]
@@ -385,7 +382,7 @@ export class ProjectCtrl {
     // --------------------------------------------------
 
     @Get("/:id/publics")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getPublics(@PathParams("id") id: number, @QueryParams("directly") directly?: boolean): Promise<Public[]> {
         let query = this.PublicRepository.createQueryBuilder("pb")
             .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId: id });
@@ -432,7 +429,7 @@ export class ProjectCtrl {
      * @param id                    -- project id.
      */
     @Get("/:id/theme-areas")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getThemeAreas(@PathParams("id") id: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
         const query = this.ThemeAreaRepository.createQueryBuilder("ta")
             .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId: id });
@@ -516,7 +513,7 @@ export class ProjectCtrl {
      * @param id                    -- project id.
      */
     @Get("/:id/targets")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getTargets(@PathParams("id") id: number): Promise<{ targets: ProjectTarget[], total: number }> {
         const query = this.ProjectTargetRepository.createQueryBuilder("pt")
             .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id });
@@ -534,7 +531,7 @@ export class ProjectCtrl {
      * @param id                    -- project id.
      */
     @Get("/:id/targets")
-    @CustomAuth({ scope: [] })
+    @CustomAuth({})
     public async getTargetsTotal(@PathParams("id") id: number): Promise<ProjectTarget[]> {
         return this.ProjectTargetRepository.createQueryBuilder("pt")
             .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id })
@@ -542,7 +539,7 @@ export class ProjectCtrl {
     }
 
     @Post("/:id/targets")
-    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
+    @CustomAuth({})
     public async setTargets(@PathParams("id") id: number,
         @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]): Promise<any> {
         const project = await this.ProjectRepository.findById(id);
@@ -586,6 +583,7 @@ export class ProjectCtrl {
      * @param q                 -- search query.
      */
     @Get("/:id/students")
+    @CustomAuth({})
     public async getStudents(
         @PathParams("id") id: number,
         @QueryParams("scholarship") scholarship?: boolean,
@@ -616,11 +614,13 @@ export class ProjectCtrl {
     }
 
     @Post("/:id/students")
+    @CustomAuth({})
     public async postStudents(@PathParams("id") id: number, @Required() @BodyParams("students") students: Student[]): Promise<any> {
         return { message: "Method not implemented!" };
     }
 
     @Put("/:id/students")
+    @CustomAuth({})
     public async putStudents(@PathParams("id") id: number, @Required() @BodyParams("students") students: Student[]): Promise<any> {
         return { message: "Method not implemented!" };
     }
@@ -637,6 +637,7 @@ export class ProjectCtrl {
      * @param q                 -- search query.
      */
     @Get("/:id/collaborators")
+    @CustomAuth({})
     public async getCollaborators(
         @PathParams("id") id: number,
         @QueryParams("coordinate") coordinate?: boolean,
@@ -667,11 +668,13 @@ export class ProjectCtrl {
     }
 
     @Post("/:id/collaborators")
+    @CustomAuth({})
     public async postCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
         return { message: "Method not implemented!" };
     }
 
     @Put("/:id/collaborators")
+    @CustomAuth({})
     public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
         return { message: "Method not implemented!" };
     }
@@ -681,17 +684,19 @@ export class ProjectCtrl {
     // --------------------------------------------------
 
     @Get("/:id/parterns")
+    @CustomAuth({})
     public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
         return [];
     }
 
     @Post("/:id/parterns")
+    @CustomAuth({})
     public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") parterns: Partner[]): Promise<any> {
         return { message: "Method not implemented!" };
     }
 
     @Delete("/:id/parterns/:parternId")
-    @CustomAuth({ scope: [ "ADMIN" ] })
+    @CustomAuth({ role: "ADMIN" })
     public async deleteParterns(@PathParams("id") id: number, @Required() @PathParams("parternId") parternId: number): Promise<any> {
         return this.PartnerRepository.deleteById(parternId);
     }
@@ -701,19 +706,15 @@ export class ProjectCtrl {
     // --------------------------------------------------
 
     @Get("/:id/evaluations")
+    @CustomAuth({})
     public async getEvaluation(@PathParams("id") id: number): Promise<Partner[]> {
         return [];
     }
 
     @Post("/:id/evaluations")
+    @CustomAuth({})
     public async postEvaluation(@PathParams("id") id: number, @Required() @BodyParams("evaluations") evaluations: Evaluation[]): Promise<any> {
         return { message: "Method not implemented!" };
-    }
-
-    @Delete("/:id/evaluations/:evaluationId")
-    @CustomAuth({ scope: [ "ADMIN" ] })
-    public async deleteEvaluation(@PathParams("id") id: number, @Required() @PathParams("evaluationId") evaluationId: number): Promise<any> {
-        return this.EvaluationRepository.deleteById(evaluationId);
     }
 
 }

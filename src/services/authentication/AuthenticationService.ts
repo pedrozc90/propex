@@ -4,7 +4,7 @@ import { BadRequest } from "@tsed/exceptions";
 
 import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
-import { Scope, IContext } from "../../types";
+import { Scope, IContext, IJwt } from "../../types";
 
 const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
 const JWT_EXPIRATION: number = 1 * 60 * 60; // seconds
@@ -28,9 +28,10 @@ export class AuthenticationService {
      * Find user by credentials.
      * @param credentials   -- user credentials.
      */
-    public async context(id: number): Promise<IContext> {
-        const user = await this.userRepository.findById(id);
+    public async context(jwt?: IJwt): Promise<IContext | undefined> {
+        if (!jwt || !jwt.id) return;
 
+        const user = await this.userRepository.findById(jwt.id);
         if (!user) {
             throw new BadRequest("User not found!");
         }
@@ -38,16 +39,14 @@ export class AuthenticationService {
         const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
             .innerJoin("collaborator.user", "user", "collaborator.user_id = :userId", { userId: user?.id })
             .getOne();
+
         const student = await this.studentRepository.createQueryBuilder("student")
             .innerJoin("student.user", "user", "student.user_id = :userId", { userId: user?.id })
             .getOne();
+
+        const scope = this.defineScope(user, collaborator, student);
         
-        return {
-            user,
-            collaborator,
-            student,
-            scope: this.defineScope(user, collaborator, student)
-        };
+        return { user, collaborator, student, scope };
     }
 
     private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope | undefined {
