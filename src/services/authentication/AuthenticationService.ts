@@ -1,6 +1,6 @@
-import { Service } from "@tsed/common";
+import { Service, $log } from "@tsed/common";
+import { BadRequest, Unauthorized } from "@tsed/exceptions";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
-import { BadRequest } from "@tsed/exceptions";
 
 import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
@@ -18,22 +18,29 @@ export class AuthenticationService {
 
     /**
      * Find user by credentials.
-     * @param credentials   -- user credentials.
+     * @param credentials           -- user credentials (email, password).
      */
     public async findByCredentials(credentials: UserCredentials): Promise<User | undefined> {
         return this.userRepository.findByCredentials(credentials);
     }
 
     /**
-     * Find user by credentials.
-     * @param credentials   -- user credentials.
+     * Load user context.
+     * @param jwt                   -- decoded jwt token.
      */
     public async context(jwt?: IJwt): Promise<IContext | undefined> {
-        if (!jwt || !jwt.id) return;
+        if (!jwt) {
+            throw new Unauthorized("Invalid token!");
+        }
+        
+        if (!jwt.id) return;
 
-        const user = await this.userRepository.findById(jwt.id);
+        const user = await this.userRepository.findOne({ id: jwt.id, active: true })
+            .catch((error: any) => {
+                $log.error(error.message);
+            });
         if (!user) {
-            throw new BadRequest("User not found!");
+            throw new Unauthorized("User is inative!");
         }
 
         const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
@@ -58,15 +65,15 @@ export class AuthenticationService {
 
     /**
      * Register a new user.
-     * @param user      -- user information.
+     * @param user                  -- user information.
      */
     public async register(user: UserBasic): Promise<User | null> {
         return this.userRepository.save(user);
     }
 
     /**
-     * Sign Jwt token with user data.
-     * @param user      -- user data.
+     * Sign a jwt token with user data.
+     * @param user                  -- user data.
      */
     public async signJwtToken(user: User, rememberMe: boolean = false): Promise<string | null> {
         if (!JWT_SECRET_KEY) return null;
@@ -97,7 +104,7 @@ export class AuthenticationService {
 
     /**
      * Verify if jwt token is valid.
-     * @param token
+     * @param token                 -- jwt token taken from request headers
      */
     public async verifyJwtToken(token: string): Promise<any> {
         if (!JWT_SECRET_KEY) return;
@@ -113,8 +120,8 @@ export class AuthenticationService {
     }
 
     /**
-     * Retrieve token from 'Authorization' request header.
-     * @param token -- Jwt Token
+     * Parse jwt token from 'Authorization' request header.
+     * @param token                 -- jwt token
      */
     public getJwtToken(token: string): string {
         const words: string[] = token.split(" ");
@@ -127,7 +134,7 @@ export class AuthenticationService {
 
     /**
      * Set token to 'Authorization' request header.
-     * @param token -- Jwt Token
+     * @param token                 -- jwt Token
      */
     public setJwtToken(token: string): string {
         return `Bearer ${token}`;

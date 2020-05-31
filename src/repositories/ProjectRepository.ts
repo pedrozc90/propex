@@ -1,8 +1,9 @@
 import { EntityRepository } from "@tsed/typeorm";
+import { Unauthorized } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Project, ProjectTarget } from "../entities";
-import { AgeRange } from "../types";
+import { AgeRange, IContext, Scope } from "../types";
 import { AgeRangeEnumTransformer } from "../utils";
 import { ProjectTargetRepository } from "./ProjectTargetRepository";
 
@@ -30,64 +31,34 @@ export class ProjectRepository extends GenericRepository<Project> {
     constructor(private projectTargetRepository: ProjectTargetRepository) {
         super(relations);
     }
+    
+    /**
+     * Return a project if user is linked to it.
+     * @param context               -- user context.
+     * @param id                    -- project id.
+     */
+    public async findByContext(id: number, context: IContext, coodinator: boolean = false): Promise<Project> {
+        let query = this.createQueryBuilder("p")
+            .innerJoin("p.projectHumanResources", "phr")
+            .where("p.id = :id", { id });
 
-    public async init(): Promise<Project> {
-        // delete all projects
-        await this.delete({});
-
-        // find one
-        let p = await this.findOne({});
-        if (!p) {
-            p = new Project();
-            p.title = "Test";
-            p.program = "Class Assigment, Evalutaion Ativity";
-            p.startSeason = "2020/01";
-            
-            // p.includedCourses = "Computer Science";
-            // p.ppcAndCourseCalendar = "???";
-            // p.requiredCoursesCredits = "Software Engineering";
-            // p.infrastructure = "Free for all";
-            // p.publicParticipation = "None";
-            // p.accompanimentAndEvaluation = "Bad";
-            
-            // p.disclosureMedias = [];
-            // p.eventPresentations = [];
-            // p.evaluations = [];
-            // p.futureDevelopmentPlans = [];
-            // p.partners = [];
-            // p.demands = [];
-            // p.publications = [];
-            // p.projectHumanResources = [];
-            // p.projectPublics = [];
-            // p.projectTargets = [];
-            // p.projectThemeAreas = [];
-            // p.activities = [];
-            // p.extensionLines = [];
-            // p.knowledgeAreas = [];
-            // p.attachments = [];
-        }
-        return this.save(p);
-    }
-
-    public async populateTargets(project: Project, targets: ProjectTarget[]): Promise<ProjectTarget[]> {
-        const array: ProjectTarget[] = Object.keys(AgeRange).map((key: string) => {
-            const t = new ProjectTarget();
-            t.ageRange = AgeRangeEnumTransformer.from(key);
-            t.project = project;
-            return t;
-        });
-
-        if (targets) {
-            array.map((a: ProjectTarget) => {
-                const tmp = targets.filter((t) => t.ageRange === a.ageRange)[0];
-                if (tmp?.id) a.id = tmp.id;
-                a.menNumber = tmp?.menNumber || 0;
-                a.womenNumber = tmp?.womenNumber || 0;
-                return a;
-            });
+        if (!context.scope || !context.scope.isAdmin) {
+            query = query.innerJoin("phr.user", "usr", "user.id = :userId", { userId: context.user?.id });
         }
 
-        return this.projectTargetRepository.save(array);
+        if (coodinator) {
+            query = query.where("phr.coordinator = :coordinator", { coodinator: true });
+        }
+
+        const project = await query.getOne();
+        if (!project) {
+            if (coodinator) {
+                throw new Unauthorized("Coordinator only is allowed here.");
+            }
+            throw new Unauthorized("You are not part of this project.");
+        }
+
+        return project;
     }
 
 }

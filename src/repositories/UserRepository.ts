@@ -15,4 +15,17 @@ export class UserRepository extends GenericRepository<User> {
         return this.findOne({ email: credentials.email, password: credentials.password });
     }
 
+    /**
+     * Generate a random password.
+     */
+    public generateRandomPassword(length: number = 8): string {
+        const characters: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength: number = characters.length;
+        const selected: string[] = [];
+        for (let i = 0; i < length; i++) {
+            selected[i] = characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return selected.join("");
+    }
+
 }

@@ -7,10 +7,8 @@ export class GlobalErrorResponseMiddleware implements IMiddleware {
     @Constant("errors.headerName", "errors")
     protected headerName: string;
 
-    use(@Err() error: any, @Req() request: Req, @Res() response: Res): any {
+    public use(@Err() error: any, @Req() request: Req, @Res() response: Res): any {
         const logger = request.ctx.logger;
-
-        // const toHTML = (message = "") => message.replace(/\n/gi, "<br />");
 
         if (error instanceof Exception || error.status) {
             logger.error({
@@ -66,7 +64,7 @@ export class GlobalErrorResponseMiddleware implements IMiddleware {
         // return;
     }
 
-    setHeaders(response: Res, ...args: IResponseError[]) {
+    private setHeaders(response: Res, ...args: IResponseError[]) {
         let hErrors: any = [];
 
         args

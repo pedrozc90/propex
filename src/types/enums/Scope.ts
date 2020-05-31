@@ -11,6 +11,18 @@ export class Scope {
         public readonly access: number = 0) {
     }
 
+    public get isAdmin(): boolean {
+        return this === Scope.ADMIN;
+    }
+
+    public get isStudent(): boolean {
+        return this === Scope.STUDENT;
+    }
+
+    public get isCollaborator(): boolean {
+        return this === Scope.COLLABORATOR;
+    }
+
     public get value(): string {
         return this.key;
     }

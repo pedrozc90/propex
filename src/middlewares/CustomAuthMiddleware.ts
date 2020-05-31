@@ -36,7 +36,9 @@ export class CustomAuthMiddleware implements IMiddleware {
         
         // shared user information by response locals
         const context = await this.authenticationService.context(decodedJwt);
-
+        
+        // user scope must match defined options, if options exists.
+        // if options do not exists, just a valid token is required.
         if ((options.role && options.role !== context?.scope?.value) ||
             (options.scope && context && context.scope && !options.scope.includes(context.scope.value))) {
             throw new Forbidden("You are not allowed here.");
@@ -45,7 +47,7 @@ export class CustomAuthMiddleware implements IMiddleware {
         response.locals.context = await this.authenticationService.context(decodedJwt);
         response.locals.token = token;
 
-        // go the next middleware
+        // go the next middleware/endpoint
         next();
     }
 

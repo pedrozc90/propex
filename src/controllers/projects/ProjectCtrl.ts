@@ -1,11 +1,11 @@
 import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log, UseBefore, UseBeforeEach } from "@tsed/common";
-import { HTTPException, Unauthorized, NotFound, BadRequest } from "@tsed/exceptions";
+import { Exception, Unauthorized, NotFound, BadRequest } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Collaborator, DisclosureMedia, Evaluation, ExtensionLine, KnowledgeArea,
     Page, Partner, Project, ProjectBasic, ProjectHumanResource, ProjectTarget,
-    ProjectThemeArea, Public, Student, ThemeArea, User } from "../../entities";
+    ProjectThemeArea, Public, Student, ThemeArea, User, ResultContent, Activity } from "../../entities";
 import { IContext, Scope, AgeRange } from "../../types";
 
 import moment from "moment";
@@ -40,10 +40,10 @@ export class ProjectCtrl {
 
     /**
      * Return a paginated list of projects, which the user is associated with.
-     * @param context           -- user context.
-     * @param page              -- page number.
-     * @param rpp               -- rows per page.
-     * @param q                 -- query string (search).
+     * @param context                       -- user context.
+     * @param page                          -- page number.
+     * @param rpp                           -- rows per page.
+     * @param q                             -- query string (search).
      */
     @Get("/")
     @CustomAuth({})
@@ -68,8 +68,8 @@ export class ProjectCtrl {
         }
 
         if (q) {
-            query = query.where(`p.title like %${q}%`)
-                .orWhere(`p.program LIKE %${q}%`);
+            query = query.where("p.title LIKE :title", { title: `%${q}%` })
+                .orWhere("p.program LIKE :program", { program: `%${q}%` });
         }
 
         query = query.skip((page - 1) * rpp).take(rpp);
@@ -79,12 +79,12 @@ export class ProjectCtrl {
 
     /**
      * Create a new project.
-     * @param project -- project data.
+     * @param project                       -- project data.
      */
     @Post("/")
     @CustomAuth({ scope: [ "ADMIN" ] })
     public async create(
-        @BodyParams("project") data: ProjectBasic,
+        @Required() @BodyParams("project") data: ProjectBasic,
         @Required() @BodyParams("coordinator") coordinator: User
     ): Promise<any> {
         // a coordinator is required to create a new project.
@@ -138,12 +138,14 @@ export class ProjectCtrl {
 
     /**
      * Search data of a given project.
-     * @param context           -- user context.
-     * @param id                -- project id.
+     * @param context                       -- user context.
+     * @param id                            -- project id.
      */
     @Get("/:id")
     @CustomAuth({})
-    public async get(@Locals("context") context: IContext, @PathParams("id") id: number): Promise<Project | undefined> {
+    public async get(@Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number
+    ): Promise<Project | undefined> {
         // check if user belong to this project.
         const { access } = await this.ProjectRepository.createQueryBuilder("p")
             .innerJoin("p.projectHumanResources", "phr", "phr.project_id = :projectId AND phr.user_id = :userId", { projectId: id, userId: context.user.id })
@@ -202,6 +204,101 @@ export class ProjectCtrl {
     // }
 
     // --------------------------------------------------
+    // ACTIVITIES
+    // --------------------------------------------------
+
+    /**
+     * Return a list of activities tied to a project.
+     * @param context                       -- user context.
+     * @param id                            -- project id.
+     * @param page                          -- page number.
+     * @param rpp                           -- row per page.
+     * @param q                             -- query string.
+     * @param initDate                      -- initial date.
+     * @param lastDate                      -- last date.
+     */
+    @Get("/:id/activities")
+    @CustomAuth({})
+    public async getActivities(@Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("init_date") initDate?: string,
+        @QueryParams("last_date") lastDate?: string
+    ): Promise<Page<Activity>> {
+        let query = this.ActivityRepository.createQueryBuilder("activity")
+            .innerJoin("activity.project", "project", "project.id =: id", { id });
+
+        if (q) {
+            query = query.where("activity.name LIKE :name", { name: `%${q}%` })
+                .orWhere("activity.description LIKE :description", { description: `%${q}%` });
+        }
+
+        if (initDate) query = query.where(`activity.date > ${initDate}`);
+        if (lastDate) query = query.where(`activity.date < ${lastDate}`);
+
+        query = query.skip((page - 1) * rpp).take(rpp);
+
+        return Page.of(await query.getMany(), page, rpp);
+    }
+
+    // --------------------------------------------------
+    // COLLABORATORS
+    // --------------------------------------------------
+
+    /**
+     * Returns a list of collaborators working in a project.
+     * @param id                            -- project id.
+     * @param coordinate                    -- mark if collaborator is a project coordinator.
+     * @param exclusive                     -- mark if collaborator is exclusive of the project.
+     * @param q                             -- search query.
+     */
+    @Get("/:id/collaborators")
+    @CustomAuth({})
+    public async getCollaborators(
+        @PathParams("id") id: number,
+        @QueryParams("coordinate") coordinate?: boolean,
+        @QueryParams("exclusive") exclusive?: boolean,
+        @QueryParams("q") q?: string
+    ): Promise<Collaborator[]> {
+        let query = this.CollaboratorRepository.createQueryBuilder("clb")
+            .innerJoinAndSelect("clb.user", "usr")
+            .innerJoinAndSelect("usr.projectHumanResources", "phr")
+            .innerJoin("phr.project", "p", "p.id = :projectId", { projectId: id });
+        
+        if (coordinate !== undefined && coordinate !== null) {
+            query = query.where("phr.coordinate = :coordinate", { coordinate: (coordinate) ? 1 : 0 });
+        }
+
+        if (exclusive !== undefined && exclusive !== null) {
+            query = query.where("phr.exclusive = :exclusive", { exclusive: (exclusive) ? 1 : 0 });
+        }
+
+        if (q) {
+            query = query.where("std.academic_function LIKE :function", { function: `%${q}%` })
+                .orWhere("std.profissional_registry LIKE :registry", { registry: `%${q}%` })
+                .orWhere("std.affiliation LIKE :affiliation", { affiliation: `%${q}%` })
+                .orWhere("usr.name LIKE :name", { name: `%${q}%` })
+                .orWhere("usr.email LIKE :email", { email: `%${q}%` });
+        }
+
+        return query.getMany();
+    }
+
+    @Post("/:id/collaborators")
+    @CustomAuth({})
+    public async postCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Put("/:id/collaborators")
+    @CustomAuth({})
+    public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    // --------------------------------------------------
     // DISCLOSURE MEDIAS
     // --------------------------------------------------
 
@@ -224,13 +321,13 @@ export class ProjectCtrl {
      */
     @Post("/:id/disclosure-medias")
     @CustomAuth({})
-    public async setDisclosureMedia(
+    public async setDisclosureMedia(@Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
     ): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
+        const project = await this.ProjectRepository.findByContext(id, context);
         if (!project) {
-            throw new HTTPException(400, "Project not found");
+            throw new Exception(400, "Project not found");
         }
 
         // update existing entities
@@ -277,13 +374,13 @@ export class ProjectCtrl {
      */
     @Post("/:id/extension-lines")
     @CustomAuth({})
-    public async postExtensionLines(
+    public async postExtensionLines(@Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("extensionLines") extensionLines: ExtensionLine[]
     ): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
+        const project = await this.ProjectRepository.findByContext(id, context);
         if (!project) {
-            throw new HTTPException(400, `Project ${id} not found!`);
+            throw new Exception(400, "Project not found");
         }
         
         // load extension lines which the project has connection.
@@ -306,6 +403,32 @@ export class ProjectCtrl {
     }
 
     // --------------------------------------------------
+    // EVALUATIONS
+    // --------------------------------------------------
+
+    @Get("/:id/evaluations")
+    @CustomAuth({})
+    public async getEvaluation(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number
+    ): Promise<Partner[]> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        return [];
+    }
+
+    @Post("/:id/evaluations")
+    @CustomAuth({})
+    public async postEvaluation(
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("evaluations") evaluations: Evaluation[]
+    ): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    // --------------------------------------------------
     // KNOWLEDGE AREAS
     // --------------------------------------------------
 
@@ -322,47 +445,81 @@ export class ProjectCtrl {
     }
 
     /**
-     * Create/Update/Delete project knowledge areas realationship, delete the items not send, and add the new items.
+     * Overwrite project knowledge areas, delete the items not send, and add the new items.
      * @param id                -- project id.
      * @param knowledgeAreas    -- list of knwoledge areas (they must exists in the database).
      */
     @Post("/:id/knowledge-areas")
     @CustomAuth({})
-    public async postKnowledgeAreas(
+    public async postKnowledgeAreas(@Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]
-    ): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
+    ): Promise<ResultContent<KnowledgeArea[]>> {
+        const project = await this.ProjectRepository.findByContext(id, context);
         if (!project) {
-            throw new HTTPException(400, `Project ${id} not found!`);
+            throw new Exception(400, "Project not found");
         }
         
         // load extension lines which the project has connection.
-        const projectKnowledgeAreas = await this.KnowledgeAreaRepository.createQueryBuilder("ka")
+        let savedKnowledgeAreas = await this.KnowledgeAreaRepository.createQueryBuilder("ka")
             .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
             .getMany();
         
-        // extension lines not send in the request should be removed
-        const projectKnowledgeAreasToDelete = projectKnowledgeAreas.filter((a) => knowledgeAreas.findIndex((b) => b.id === a.id) < 0);
-        if (projectKnowledgeAreasToDelete && projectKnowledgeAreasToDelete.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).remove(projectKnowledgeAreasToDelete);
+        // extension lines not received in the request need to be removed
+        const knowledgeAreasToDelete = savedKnowledgeAreas.filter((a) => knowledgeAreas.findIndex((b) => b.id === a.id) < 0);
+        if (knowledgeAreasToDelete && knowledgeAreasToDelete.length > 0) {
+            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).remove(knowledgeAreasToDelete);
         }
 
-        const projectKnowledgeAreasToInsert = knowledgeAreas.filter((a) => !!a.id && projectKnowledgeAreas.findIndex((b) => b.id === a.id) < 0);
-        if (projectKnowledgeAreasToInsert && projectKnowledgeAreasToInsert.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).add(projectKnowledgeAreasToInsert);
+        const knowledgeAreasToInsert = knowledgeAreas.filter((a) => !!a.id && savedKnowledgeAreas.findIndex((b) => b.id === a.id) < 0);
+        if (knowledgeAreasToInsert && knowledgeAreasToInsert.length > 0) {
+            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).add(knowledgeAreasToInsert);
         }
 
-        return { message: "Project Knowledge Areas updated!" };
+        savedKnowledgeAreas = await this.KnowledgeAreaRepository.createQueryBuilder("ka")
+            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
+
+        return ResultContent.of<KnowledgeArea[]>(savedKnowledgeAreas).withMessage("Project knowledge areas successfully saved!");
+    }
+
+    // --------------------------------------------------
+    // PARTERNS
+    // --------------------------------------------------
+
+    @Get("/:id/parterns")
+    @CustomAuth({})
+    public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
+        return [];
+    }
+
+    @Post("/:id/parterns")
+    @CustomAuth({})
+    public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") parterns: Partner[]): Promise<any> {
+        return { message: "Method not implemented!" };
+    }
+
+    @Delete("/:id/parterns/:parternId")
+    @CustomAuth({ role: "ADMIN" })
+    public async deleteParterns(@PathParams("id") id: number, @Required() @PathParams("parternId") parternId: number): Promise<any> {
+        return this.PartnerRepository.deleteById(parternId);
     }
 
     // --------------------------------------------------
     // PUBLICS
     // --------------------------------------------------
 
+    /**
+     * Return all publics from a given project.
+     * @param id                            -- project id.
+     * @param directly                      -- filter direct publics.
+     */
     @Get("/:id/publics")
     @CustomAuth({})
-    public async getPublics(@PathParams("id") id: number, @QueryParams("directly") directly?: boolean): Promise<Public[]> {
+    public async getPublics(
+        @Required() @PathParams("id") id: number,
+        @QueryParams("directly") directly?: boolean
+    ): Promise<Public[]> {
         let query = this.PublicRepository.createQueryBuilder("pb")
             .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId: id });
         
@@ -373,181 +530,44 @@ export class ProjectCtrl {
         return query.getMany();
     }
 
+    /**
+     * Overwrite project publics.
+     * @param context                       -- user context.
+     * @param id                            -- project id.
+     * @param publics                       -- project publics data.
+     */
     @Post("/:id/publics")
     @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
-    public async setPublics(@PathParams("id") id: number, publics: Public[]): Promise<any> {
-        // find project
-        const project = await this.ProjectRepository.findById(id);
+    public async setPublics(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("publics") publics: Public[]
+    ): Promise<ResultContent<Public[]>> {
+        const project = await this.ProjectRepository.findByContext(id, context);
         if (!project) {
-            throw new NotFound("Project not found!");
+            throw new Exception(400, "Project not found");
         }
         
-        const savedPublics = await this.PublicRepository.createQueryBuilder("public")
+        let savedPublics = await this.PublicRepository.createQueryBuilder("public")
             .innerJoinAndSelect("public.projectPublics", "pp", "pp.project_id = :projectId", { projectId: id })
             .getMany();
         
+        // publics not received in the request need to be removed
         const publicToDelete = savedPublics.filter((p) => publics.findIndex((r) => r.id === p.id) < 0);
         if (publicToDelete && publicToDelete.length > 0) {
-            console.log("TO DELETE:", publicToDelete);
+            await this.ProjectRepository.createQueryBuilder("project").relation("projectPublics").of(project).remove(publicToDelete);
         }
 
         const publicToInsert = savedPublics.filter((p) => !!p.id && publics.findIndex((r) => r.id === p.id) < 0);
         if (publicToInsert && publicToInsert.length > 0) {
-            console.log("TO INSERT:", publicToInsert);
+            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).add(publicToInsert);
         }
 
-        return { message: "sanity check" };
-    }
-
-    // --------------------------------------------------
-    // THEME AREAS
-    // --------------------------------------------------
-
-    /**
-     * Return the list of theme areas connected to a given project.
-     * @param id                    -- project id.
-     */
-    @Get("/:id/theme-areas")
-    @CustomAuth({})
-    public async getThemeAreas(@PathParams("id") id: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
-        const query = this.ThemeAreaRepository.createQueryBuilder("ta")
-            .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId: id });
-        
-        // load project's main theme areas
-        const main = await query.where("pta.main = 1").getMany();
-
-        // load project's secondary theme areas
-        const secondary = await query.where("pta.main = 0").getMany();
-
-        return { main, secondary };
-    }
-
-    /**
-     * Save project theme areas.
-     * @param id                    -- project id.
-     * @param main                  -- list of main theme areas.
-     * @param secondary             -- list of secondary theme areas.
-     */
-    @Post("/:id/theme-areas")
-    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
-    public async setThemeAreas(
-        @PathParams("id") id: number,
-        @BodyParams("main") main: ThemeArea[],
-        @BodyParams("secondary") secondary: ThemeArea[]
-    ): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
-        if (!project) {
-            throw new NotFound("Project not found!");
-        }
-
-        // create project theme aread
-        const projectThemeAreas: ProjectThemeArea[] = [];
-
-        projectThemeAreas.push(...main.map((ta) => {
-            const pta = new ProjectThemeArea();
-            pta.main = true;
-            pta.project = project;
-            pta.projectId = project.id;
-            pta.themeArea = ta;
-            pta.themeAreaId = ta.id;
-            return pta;
-        }));
-
-        projectThemeAreas.push(...secondary.map((ta) => {
-            const pta = new ProjectThemeArea();
-            pta.main = false;
-            pta.project = project;
-            pta.projectId = project.id;
-            pta.themeArea = ta;
-            pta.themeAreaId = ta.id;
-            return pta;
-        }));
-
-        // array of theme areas id received
-        const projectThemeAreaIds: number[] = projectThemeAreas.map((pta) => pta.themeArea.id);
-
-        // load saved project theme areas
-        const projectThemeAreasSaved: ProjectThemeArea[] = await this.ProjectThemeAreaRepository.createQueryBuilder("pta")
-            .innerJoinAndSelect("pta.project", "project", "pta.project_id = :projectId", { projectId: id })
+        savedPublics = await this.PublicRepository.createQueryBuilder("public")
+            .innerJoinAndSelect("public.projectPublics", "pp", "pp.project_id = :projectId", { projectId: id })
             .getMany();
-        
-        // filter project theme areas to be deleted
-        const projectThemeAreasToDelete: ProjectThemeArea[] = projectThemeAreasSaved.filter((ptas) => !projectThemeAreaIds.includes(ptas.themeAreaId));
-        if (projectThemeAreasToDelete.length > 0) {
-            await this.ProjectThemeAreaRepository.remove(projectThemeAreasToDelete);
-        }
 
-        // filter project theme areas to be inserted/updated
-        const projectThemeAreasToInsert: ProjectThemeArea[] = projectThemeAreas.filter((pta) => projectThemeAreasToDelete.findIndex((ptad) => ptad.themeAreaId === pta.themeArea.id) < 0);
-
-        return this.ProjectThemeAreaRepository.save(projectThemeAreasToInsert);
-    }
-
-    // --------------------------------------------------
-    // TARGETS
-    // --------------------------------------------------
-
-    /**
-     * Return the list of targets witch the project attends.
-     * @param id                    -- project id.
-     */
-    @Get("/:id/targets")
-    @CustomAuth({})
-    public async getTargets(@PathParams("id") id: number): Promise<{ targets: ProjectTarget[], total: number }> {
-        const query = this.ProjectTargetRepository.createQueryBuilder("pt")
-            .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id });
-        
-        const targets = await query.getMany();
-
-        const { total } = await query.select("COALESCE(SUM(pt.men_number) + SUM(pt.women_number), 0)", "total")
-            .getRawOne();
-
-        return { targets, total: parseInt(total) };
-    }
-
-    /**
-     * Return the list of targets witch the project attends.
-     * @param id                    -- project id.
-     */
-    @Get("/:id/targets")
-    @CustomAuth({})
-    public async getTargetsTotal(@PathParams("id") id: number): Promise<ProjectTarget[]> {
-        return this.ProjectTargetRepository.createQueryBuilder("pt")
-            .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id })
-            .getMany();
-    }
-
-    @Post("/:id/targets")
-    @CustomAuth({})
-    public async setTargets(@PathParams("id") id: number,
-        @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]): Promise<any> {
-        const project = await this.ProjectRepository.findById(id);
-        
-        if (!project) {
-            throw new NotFound("Project not found.");
-        }
-
-        const targets = await this.ProjectTargetRepository.find({
-            join: {
-                alias: "pt",
-                innerJoinAndSelect: { project: "pt.project" }
-            },
-            where: { project: { id } }
-        });
-
-        if (!targets) {
-            throw new BadRequest("Targets not found!");
-        }
-
-        targets.map((t) => {
-            const f = projectTargets.find((pt) => pt.ageRange === t.ageRange);
-            if (f) {
-                t.menNumber = f.menNumber;
-                t.womenNumber = f.womenNumber;
-            }
-            return t;
-        });
-        return this.ProjectTargetRepository.save(targets);
+        return ResultContent.of<Public[]>(savedPublics).withMessage("Project publics successfully saved!");
     }
 
     // --------------------------------------------------
@@ -605,95 +625,150 @@ export class ProjectCtrl {
     }
 
     // --------------------------------------------------
-    // COLLABORATORS
+    // TARGETS
     // --------------------------------------------------
 
     /**
-     * Returns a list of collaborators working in a project.
-     * @param id                -- project id.
-     * @param coordinate        -- mark if collaborator is a project coordinator.
-     * @param exclusive         -- mark if collaborator is exclusive of the project.
-     * @param q                 -- search query.
+     * Return the list of targets witch the project attends.
+     * @param id                            -- project id.
      */
-    @Get("/:id/collaborators")
+    @Get("/:id/targets")
     @CustomAuth({})
-    public async getCollaborators(
-        @PathParams("id") id: number,
-        @QueryParams("coordinate") coordinate?: boolean,
-        @QueryParams("exclusive") exclusive?: boolean,
-        @QueryParams("q") q?: string
-    ): Promise<Collaborator[]> {
-        let query = this.CollaboratorRepository.createQueryBuilder("clb")
-            .innerJoinAndSelect("clb.user", "usr")
-            .innerJoinAndSelect("usr.projectHumanResources", "phr")
-            .innerJoin("phr.project", "p", "p.id = :projectId", { projectId: id });
+    public async getTargets(@PathParams("id") id: number): Promise<{ targets: ProjectTarget[], total: number }> {
+        const query = this.ProjectTargetRepository.createQueryBuilder("pt")
+            .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id });
         
-        if (coordinate !== undefined && coordinate !== null) {
-            query = query.where("phr.coordinate = :coordinate", { coordinate: (coordinate) ? 1 : 0 });
+        const targets = await query.getMany();
+
+        const { total } = await query.select("COALESCE(SUM(pt.men_number) + SUM(pt.women_number), 0)", "total")
+            .getRawOne();
+
+        return { targets, total: parseInt(total) };
+    }
+
+    /**
+     * Returns
+     * @param id                            -- project id.
+     * @param projectTargets                -- project targets.
+     */
+    @Post("/:id/targets")
+    @CustomAuth({})
+    public async setTargets(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]
+    ): Promise<any> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
         }
 
-        if (exclusive !== undefined && exclusive !== null) {
-            query = query.where("phr.exclusive = :exclusive", { exclusive: (exclusive) ? 1 : 0 });
+        const targets = await this.ProjectTargetRepository.find({
+            join: {
+                alias: "pt",
+                innerJoinAndSelect: { project: "pt.project" }
+            },
+            where: { project: { id } }
+        });
+
+        if (!targets) {
+            throw new BadRequest("Targets not found!");
         }
 
-        if (q) {
-            query = query.where(`std.academic_function LIKE '%${q}%'`)
-                .orWhere(`std.profissional_registry LIKE '%${q}%'`)
-                .orWhere(`std.affiliation LIKE '%${q}%'`)
-                .orWhere(`usr.name LIKE '%${q}%'`);
+        targets.map((t) => {
+            const f = projectTargets.find((pt) => pt.ageRange === t.ageRange);
+            if (f) {
+                t.menNumber = f.menNumber;
+                t.womenNumber = f.womenNumber;
+            }
+            return t;
+        });
+        return this.ProjectTargetRepository.save(targets);
+    }
+
+    // --------------------------------------------------
+    // THEME AREAS
+    // --------------------------------------------------
+
+    /**
+     * Return the list of theme areas connected to a given project.
+     * @param id                            -- project id.
+     */
+    @Get("/:id/theme-areas")
+    @CustomAuth({})
+    public async getThemeAreas(@PathParams("id") id: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
+        const query = this.ThemeAreaRepository.createQueryBuilder("ta")
+            .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId: id });
+        
+        // load project's main theme areas
+        const main = await query.where("pta.main = 1").getMany();
+
+        // load project's secondary theme areas
+        const secondary = await query.where("pta.main = 0").getMany();
+
+        return { main, secondary };
+    }
+
+    /**
+     * Save project theme areas.
+     * @param id                            -- project id.
+     * @param main                          -- list of main theme areas.
+     * @param secondary                     -- list of secondary theme areas.
+     */
+    @Post("/:id/theme-areas")
+    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
+    public async setThemeAreas(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @BodyParams("main") main: ThemeArea[],
+        @BodyParams("secondary") secondary: ThemeArea[]
+    ): Promise<any> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
         }
 
-        return query.getMany();
-    }
+        // create project theme aread
+        const projectThemeAreas: ProjectThemeArea[] = [];
 
-    @Post("/:id/collaborators")
-    @CustomAuth({})
-    public async postCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
+        projectThemeAreas.push(...main.map((ta) => {
+            const pta = new ProjectThemeArea();
+            pta.main = true;
+            pta.project = project;
+            pta.projectId = project.id;
+            pta.themeArea = ta;
+            pta.themeAreaId = ta.id;
+            return pta;
+        }));
 
-    @Put("/:id/collaborators")
-    @CustomAuth({})
-    public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
+        projectThemeAreas.push(...secondary.map((ta) => {
+            const pta = new ProjectThemeArea();
+            pta.main = false;
+            pta.project = project;
+            pta.projectId = project.id;
+            pta.themeArea = ta;
+            pta.themeAreaId = ta.id;
+            return pta;
+        }));
 
-    // --------------------------------------------------
-    // PARTERNS
-    // --------------------------------------------------
+        // array of theme areas id received
+        const projectThemeAreaIds: number[] = projectThemeAreas.map((pta) => pta.themeArea.id);
 
-    @Get("/:id/parterns")
-    @CustomAuth({})
-    public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
-        return [];
-    }
+        // load saved project theme areas
+        const projectThemeAreasSaved: ProjectThemeArea[] = await this.ProjectThemeAreaRepository.createQueryBuilder("pta")
+            .innerJoinAndSelect("pta.project", "project", "pta.project_id = :projectId", { projectId: id })
+            .getMany();
+        
+        // filter project theme areas to be deleted
+        const projectThemeAreasToDelete: ProjectThemeArea[] = projectThemeAreasSaved.filter((ptas) => !projectThemeAreaIds.includes(ptas.themeAreaId));
+        if (projectThemeAreasToDelete.length > 0) {
+            await this.ProjectThemeAreaRepository.remove(projectThemeAreasToDelete);
+        }
 
-    @Post("/:id/parterns")
-    @CustomAuth({})
-    public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") parterns: Partner[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
+        // filter project theme areas to be inserted/updated
+        const projectThemeAreasToInsert: ProjectThemeArea[] = projectThemeAreas.filter((pta) => projectThemeAreasToDelete.findIndex((ptad) => ptad.themeAreaId === pta.themeArea.id) < 0);
 
-    @Delete("/:id/parterns/:parternId")
-    @CustomAuth({ role: "ADMIN" })
-    public async deleteParterns(@PathParams("id") id: number, @Required() @PathParams("parternId") parternId: number): Promise<any> {
-        return this.PartnerRepository.deleteById(parternId);
-    }
-    
-    // --------------------------------------------------
-    // EVALUATIONS
-    // --------------------------------------------------
-
-    @Get("/:id/evaluations")
-    @CustomAuth({})
-    public async getEvaluation(@PathParams("id") id: number): Promise<Partner[]> {
-        return [];
-    }
-
-    @Post("/:id/evaluations")
-    @CustomAuth({})
-    public async postEvaluation(@PathParams("id") id: number, @Required() @BodyParams("evaluations") evaluations: Evaluation[]): Promise<any> {
-        return { message: "Method not implemented!" };
+        return this.ProjectThemeAreaRepository.save(projectThemeAreasToInsert);
     }
 
 }

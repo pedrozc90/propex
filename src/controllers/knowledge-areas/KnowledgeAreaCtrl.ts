@@ -4,7 +4,7 @@ import { KnowledgeAreaRepository } from "../../repositories";
 import { KnowledgeArea, Page } from "../../entities";
 
 @Controller("/knowledge-areas")
-export class KnowledgeAreasCtrl {
+export class KnowledgeAreaCtrl {
 
     constructor(private knowledgeAreaRepository: KnowledgeAreaRepository) {}
 

@@ -46,7 +46,7 @@ export class AuthenticationCtrl {
      */
     @Get("/logout")
     public async logout(@Res() res: Res): Promise<void> {
-        res.redirect("/api/auth/login");
+        res.redirect("http://localhost:9000/api/projects");
     }
 
     /**

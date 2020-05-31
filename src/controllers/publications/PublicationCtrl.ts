@@ -1,0 +1,63 @@
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, $log } from "@tsed/common";
+import { Exception, NotImplemented } from "@tsed/exceptions";
+
+import { CustomAuth } from "../../services";
+import { PublicationRepository, ProjectRepository } from "../../repositories";
+import { Publication } from "../../entities";
+import { IContext } from "src/types";
+
+@Controller("/publications")
+export class PublicationCtrl {
+
+    constructor(private publicationRepository: PublicationRepository, private projectRepository: ProjectRepository) {}
+
+    /**
+     * Return a list of publications.
+     */
+    @Get("/")
+    @CustomAuth({})
+    public async fetch(): Promise<any> {
+        throw new NotImplemented("Method Not Implemented!");
+    }
+
+    /**
+     * Create/Update a publication.
+     * @param context                       -- user context.
+     * @param publication                   -- publication data.
+     */
+    @Post("/")
+    @CustomAuth({})
+    public async save(
+        @Locals("context") context: IContext,
+        @Required() @BodyParams("publication") publication: Publication
+    ): Promise<any> {
+        // check if user is part of project.
+        const project = await this.projectRepository.findByContext(publication.project.id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found.");
+        }
+        $log.error("Method Not Implemented", context, publication);
+        throw new NotImplemented("Method Not Implemented!");
+    }
+
+    /**
+     * Search for publication information by id.
+     * @param id                            -- publication id.
+     */
+    @Get("/:id")
+    @CustomAuth({})
+    public async get(@Required() @PathParams("id") id: number): Promise<Publication | undefined> {
+        return this.publicationRepository.findById(id);
+    }
+
+    /**
+     * Delete a publication information.
+     * @param id                            -- publication id.
+     */
+    @Delete("/:id")
+    @CustomAuth({})
+    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
+        return this.publicationRepository.deleteById(id);
+    }
+
+}
