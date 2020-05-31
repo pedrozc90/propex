@@ -1,9 +1,10 @@
 import { Property, Required, Format } from "@tsed/common";
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
+@Index("idx_disclosure_medias_project_id", [ "project" ])
 @Entity({ name: "disclosure_medias" })
 export class DisclosureMedia extends Audit {
 

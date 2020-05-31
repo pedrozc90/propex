@@ -2,8 +2,8 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Req
 
 import { PublicRepository } from "../../repositories";
 import { Public, Page } from "../../entities";
-import { CustomAuth } from "src/services";
-import { IContext } from "src/types";
+import { CustomAuth } from "../../services";
+import { IContext } from "../../types";
 
 @Controller("/publics")
 export class PublicCtrl {

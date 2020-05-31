@@ -1,10 +1,10 @@
-import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log, UseBefore, UseBeforeEach } from "@tsed/common";
-import { Exception, Unauthorized, NotFound, BadRequest } from "@tsed/exceptions";
+import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log } from "@tsed/common";
+import { Exception, Unauthorized, BadRequest, NotImplemented } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Collaborator, DisclosureMedia, Evaluation, ExtensionLine, KnowledgeArea,
-    Page, Partner, Project, ProjectBasic, ProjectHumanResource, ProjectTarget,
+    Page, Partner, Project, ProjectBasic, ProjectHumanResource, Target,
     ProjectThemeArea, Public, Student, ThemeArea, User, ResultContent, Activity } from "../../entities";
 import { IContext, Scope, AgeRange } from "../../types";
 
@@ -20,7 +20,7 @@ export class ProjectCtrl {
         private DemandRepository: Repo.DemandRepository,
         private DisclosureMediaRepository: Repo.DisclosureMediaRepository,
         private EvaluationRepository: Repo.EvaluationRepository,
-        private EventPresentationRepository: Repo.EventPresentationRepository,
+        private EventRepository: Repo.EventRepository,
         private ExtensionLineRepository: Repo.ExtensionLineRepository,
         private FutureDevelopmentPlanRepository: Repo.FutureDevelopmentPlanRepository,
         private KnowledgeAreaRepository: Repo.KnowledgeAreaRepository,
@@ -28,7 +28,7 @@ export class ProjectCtrl {
         private ProjectRepository: Repo.ProjectRepository,
         private ProjectHumanResourceRepository: Repo.ProjectHumanResourceRepository,
         private ProjectPublicRepository: Repo.ProjectPublicRepository,
-        private ProjectTargetRepository: Repo.ProjectTargetRepository,
+        private TargetRepository: Repo.TargetRepository,
         private ProjectThemeAreaRepository: Repo.ProjectThemeAreaRepository,
         private PublicRepository: Repo.PublicRepository,
         private PublicationRepository: Repo.PublicationRepository,
@@ -126,12 +126,12 @@ export class ProjectCtrl {
 
         // pre-save all targets age range with zero number men and women.
         const targets = AgeRange.list.map((ageRange) => {
-            const t = new ProjectTarget();
+            const t = new Target();
             t.project = project;
             t.ageRange = ageRange;
             return t;
         });
-        await this.ProjectTargetRepository.save(targets);
+        await this.TargetRepository.save(targets);
 
         return { message: "Project successfully created!", id: project.id };
     }
@@ -167,7 +167,7 @@ export class ProjectCtrl {
             .leftJoinAndSelect("p.futureDevelopmentPlans", "futureDevelopmentPlans")
             .leftJoinAndSelect("p.knowledgeAreas", "knowledgeAreas")
             .leftJoinAndSelect("p.partners", "partners")
-            .leftJoinAndSelect("p.projectTargets", "projectTargets")
+            .leftJoinAndSelect("p.targets", "targets")
 
             // load public
             .leftJoinAndSelect("p.projectPublics", "projectPublics")
@@ -288,14 +288,16 @@ export class ProjectCtrl {
 
     @Post("/:id/collaborators")
     @CustomAuth({})
-    public async postCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
-
-    @Put("/:id/collaborators")
-    @CustomAuth({})
-    public async putCollaborators(@PathParams("id") id: number, @Required() @BodyParams("collaborators") collaborators: Collaborator[]): Promise<any> {
-        return { message: "Method not implemented!" };
+    public async postCollaborators(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("collaborators") collaborators: Collaborator[]
+    ): Promise<any> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        throw new NotImplemented("Method Not Implmented.");
     }
 
     // --------------------------------------------------
@@ -422,10 +424,15 @@ export class ProjectCtrl {
     @Post("/:id/evaluations")
     @CustomAuth({})
     public async postEvaluation(
+        @Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("evaluations") evaluations: Evaluation[]
     ): Promise<any> {
-        return { message: "Method not implemented!" };
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        throw new NotImplemented("Method Not Implmented.");
     }
 
     // --------------------------------------------------
@@ -489,20 +496,28 @@ export class ProjectCtrl {
 
     @Get("/:id/parterns")
     @CustomAuth({})
-    public async getParterns(@PathParams("id") id: number): Promise<Partner[]> {
-        return [];
+    public async getParterns(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number): Promise<Partner[]> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        throw new NotImplemented("Method Not Implmented.");
     }
 
     @Post("/:id/parterns")
     @CustomAuth({})
-    public async postParterns(@PathParams("id") id: number, @Required() @BodyParams("parterns") parterns: Partner[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
-
-    @Delete("/:id/parterns/:parternId")
-    @CustomAuth({ role: "ADMIN" })
-    public async deleteParterns(@PathParams("id") id: number, @Required() @PathParams("parternId") parternId: number): Promise<any> {
-        return this.PartnerRepository.deleteById(parternId);
+    public async postParterns(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("parterns") parterns: Partner[]
+    ): Promise<any> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        throw new NotImplemented("Method Not Implmented.");
     }
 
     // --------------------------------------------------
@@ -614,14 +629,16 @@ export class ProjectCtrl {
 
     @Post("/:id/students")
     @CustomAuth({})
-    public async postStudents(@PathParams("id") id: number, @Required() @BodyParams("students") students: Student[]): Promise<any> {
-        return { message: "Method not implemented!" };
-    }
-
-    @Put("/:id/students")
-    @CustomAuth({})
-    public async putStudents(@PathParams("id") id: number, @Required() @BodyParams("students") students: Student[]): Promise<any> {
-        return { message: "Method not implemented!" };
+    public async postStudents(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("students") students: Student[]
+    ): Promise<any> {
+        const project = await this.ProjectRepository.findByContext(id, context);
+        if (!project) {
+            throw new Exception(400, "Project not found");
+        }
+        throw new NotImplemented("Method Not Implmented.");
     }
 
     // --------------------------------------------------
@@ -634,8 +651,8 @@ export class ProjectCtrl {
      */
     @Get("/:id/targets")
     @CustomAuth({})
-    public async getTargets(@PathParams("id") id: number): Promise<{ targets: ProjectTarget[], total: number }> {
-        const query = this.ProjectTargetRepository.createQueryBuilder("pt")
+    public async getTargets(@PathParams("id") id: number): Promise<{ targets: Target[], total: number }> {
+        const query = this.TargetRepository.createQueryBuilder("pt")
             .innerJoin("pt.project", "p", "p.id = :projectId", { projectId: id });
         
         const targets = await query.getMany();
@@ -649,21 +666,21 @@ export class ProjectCtrl {
     /**
      * Returns
      * @param id                            -- project id.
-     * @param projectTargets                -- project targets.
+     * @param targets                -- project targets.
      */
     @Post("/:id/targets")
     @CustomAuth({})
     public async setTargets(
         @Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
-        @Required() @BodyParams("projectTargets") projectTargets: ProjectTarget[]
+        @Required() @BodyParams("targets") targets: Target[]
     ): Promise<any> {
         const project = await this.ProjectRepository.findByContext(id, context);
         if (!project) {
             throw new Exception(400, "Project not found");
         }
 
-        const targets = await this.ProjectTargetRepository.find({
+        const savedTargets = await this.TargetRepository.find({
             join: {
                 alias: "pt",
                 innerJoinAndSelect: { project: "pt.project" }
@@ -672,18 +689,18 @@ export class ProjectCtrl {
         });
 
         if (!targets) {
-            throw new BadRequest("Targets not found!");
+            throw new Exception(400, "Targets not found!");
         }
 
-        targets.map((t) => {
-            const f = projectTargets.find((pt) => pt.ageRange === t.ageRange);
+        savedTargets.map((t) => {
+            const f = targets.find((pt) => pt.ageRange === t.ageRange);
             if (f) {
                 t.menNumber = f.menNumber;
                 t.womenNumber = f.womenNumber;
             }
             return t;
         });
-        return this.ProjectTargetRepository.save(targets);
+        return this.TargetRepository.save(targets);
     }
 
     // --------------------------------------------------

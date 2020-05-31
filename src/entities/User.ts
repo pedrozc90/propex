@@ -51,7 +51,7 @@ export class UserBasic extends UserCredentials {
     
 }
 
-@Unique("uk_user_email", [ "email" ])
+@Unique("uk_users_email", [ "email" ])
 @Entity({ name: "users" })
 export class User extends UserBasic {
 

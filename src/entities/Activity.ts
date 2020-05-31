@@ -5,7 +5,7 @@ import { Audit } from "./generics/Audit";
 import { Attachment } from "./Attachment";
 import { Project } from "./Project";
 
-@Index("idx_project_id", [ "project" ])
+@Index("idx_activities_project_id", [ "project" ])
 @Entity({ name: "activities" })
 export class Activity extends Audit {
 

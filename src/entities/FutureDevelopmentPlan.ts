@@ -5,7 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Index("idx_project_id", [ "project" ])
+@Index("idx_future_development_plans_project_id", [ "project" ])
 @Entity({ name: "future_development_plans" })
 export class FutureDevelopmentPlan extends Audit {
 

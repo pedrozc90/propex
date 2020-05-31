@@ -4,7 +4,7 @@ import { Exception, NotImplemented } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import { PublicationRepository, ProjectRepository } from "../../repositories";
 import { Publication } from "../../entities";
-import { IContext } from "src/types";
+import { IContext, PublicationType } from "../../types";
 
 @Controller("/publications")
 export class PublicationCtrl {
@@ -38,6 +38,15 @@ export class PublicationCtrl {
         }
         $log.error("Method Not Implemented", context, publication);
         throw new NotImplemented("Method Not Implemented!");
+    }
+
+    /**
+     * Return a list of publications.
+     */
+    @Get("/types")
+    @CustomAuth({})
+    public async listTypes(): Promise<PublicationType[]> {
+        return PublicationType.list;
     }
 
     /**

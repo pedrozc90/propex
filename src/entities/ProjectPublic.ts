@@ -1,10 +1,12 @@
 import { Property, Required, Default } from "@tsed/common";
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { Public } from "./Public";
 
+@Index("idx_project_publics_project_id", [ "project" ])
+@Index("idx_project_publics_public_id", [ "public" ])
 @Entity({ name: "project_publics" })
 export class ProjectPublic extends Audit {
 
@@ -32,12 +34,12 @@ export class ProjectPublic extends Audit {
 
     @Required()
     @Property({ name: "othersTitle" })
-    @Column({ name: "others_title", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "others_title", type: "varchar", length: 255 })
     public otherPublicTitle: number;
 
     @Required()
     @Property({ name: "othersCras" })
-    @Column({ name: "others_cras", type: "varchar", length: 255, nullable: true })
+    @Column({ name: "others_cras", type: "varchar", length: 255 })
     public otherPublicCras: number;
     
 }

@@ -10,9 +10,9 @@ USE propex;
 -- -----------------------------------------------------
 -- TABLE PROJECTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.projects;
+DROP TABLE IF EXISTS projects;
 
-CREATE TABLE IF NOT EXISTS propex.projects (
+CREATE TABLE IF NOT EXISTS projects (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   title VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   program VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -34,9 +34,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE ACTIVITIES
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.activities;
+DROP TABLE IF EXISTS activities;
 
-CREATE TABLE IF NOT EXISTS propex.activities (
+CREATE TABLE IF NOT EXISTS activities (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -51,10 +51,10 @@ CREATE TABLE IF NOT EXISTS propex.activities (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_activities_to_projects
+  INDEX idx_activities_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT activities_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id)
+    REFERENCES projects (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -65,16 +65,17 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE ATTACHMENTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.attachments;
+DROP TABLE IF EXISTS attachments;
 
-CREATE TABLE IF NOT EXISTS propex.attachments (
+CREATE TABLE IF NOT EXISTS attachments (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  type VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL DEFAULT 'DOCUMENT',
-  url VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
-  original_file_name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
-  original_file_size DOUBLE(8,2) NOT NULL,
-  file_name INT NOT NULL,
+  url VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
+  content_type VARCHAR(32) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  extension VARCHAR(32) NOT NULL,
   file_size DOUBLE(8,2) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  file_name_normalized VARCHAR(255) NOT NULL,
+  content LONGBLOB NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id))
@@ -86,20 +87,20 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE ACTIVITY_ATTACHMENTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.activity_attachments;
+DROP TABLE IF EXISTS activity_attachments;
 
-CREATE TABLE IF NOT EXISTS propex.activity_attachments (
+CREATE TABLE IF NOT EXISTS activity_attachments (
   activity_id BIGINT(20) UNSIGNED NOT NULL,
   attachment_id BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (activity_id, attachment_id),
-  INDEX idx_activity_id (activity_id ASC) VISIBLE,
-  INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
-  CONSTRAINT fk_activity_attachments_activitys
+  INDEX idx_activity_attachments_activity_id (activity_id ASC) VISIBLE,
+  INDEX idx_activity_attachments_attachment_id (attachment_id ASC) VISIBLE,
+  CONSTRAINT activity_attachments_fk_activitys
     FOREIGN KEY (activity_id)
-    REFERENCES propex.activities (id),
-  CONSTRAINT fk_activity_attachments_attachments
+    REFERENCES activities (id),
+  CONSTRAINT activity_attachments_fk_attachments
     FOREIGN KEY (attachment_id)
-    REFERENCES propex.attachments (id))
+    REFERENCES attachments (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -108,9 +109,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE USERS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.users;
+DROP TABLE IF EXISTS users;
 
-CREATE TABLE IF NOT EXISTS propex.users (
+CREATE TABLE IF NOT EXISTS users (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   email VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -129,9 +130,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE COLLABORATORS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.collaborators;
+DROP TABLE IF EXISTS collaborators;
 
-CREATE TABLE IF NOT EXISTS propex.collaborators (
+CREATE TABLE IF NOT EXISTS collaborators (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT(20) UNSIGNED NOT NULL,
   academic_function VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -140,10 +141,10 @@ CREATE TABLE IF NOT EXISTS propex.collaborators (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_user_id (user_id ASC) VISIBLE,
-  CONSTRAINT fk_collaborators_users
+  INDEX idx_collaborators_user_id (user_id ASC) VISIBLE,
+  CONSTRAINT collaborators_fk_users
     FOREIGN KEY (user_id)
-    REFERENCES propex.users (id)
+    REFERENCES users (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -154,9 +155,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE DISCLOSURE_MEDIAS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.disclosure_medias;
+DROP TABLE IF EXISTS disclosure_medias;
 
-CREATE TABLE IF NOT EXISTS propex.disclosure_medias (
+CREATE TABLE IF NOT EXISTS disclosure_medias (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -165,21 +166,21 @@ CREATE TABLE IF NOT EXISTS propex.disclosure_medias (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_disclosure_medias_projects
+  INDEX idx_disclosure_medias_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT disclosure_medias_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
--- TABLE EVENT_PRESENTATIONS
+-- TABLE EVENTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.event_presentations;
+DROP TABLE IF EXISTS events;
 
-CREATE TABLE IF NOT EXISTS propex.event_presentations (
+CREATE TABLE IF NOT EXISTS events (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -188,10 +189,10 @@ CREATE TABLE IF NOT EXISTS propex.event_presentations (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_event_presentations_projects
+  INDEX idx_events_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT event_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -200,9 +201,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE EXTENSION_LINES
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.extension_lines;
+DROP TABLE IF EXISTS extension_lines;
 
-CREATE TABLE IF NOT EXISTS propex.extension_lines (
+CREATE TABLE IF NOT EXISTS extension_lines (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   number INT(11) NOT NULL,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -218,19 +219,19 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE EVALUATIONS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.evaluations;
+DROP TABLE IF EXISTS evaluations;
 
-CREATE TABLE IF NOT EXISTS propex.evaluations (
+CREATE TABLE IF NOT EXISTS evaluations (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   description LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX fk_evaluations_projects (project_id ASC) VISIBLE,
-  CONSTRAINT fk_evaluations_projects
+  INDEX evaluations_fk_projects (project_id ASC) VISIBLE,
+  CONSTRAINT evaluations_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -239,9 +240,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE FUTURE_DEVELOPMENT_PLANS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.future_development_plans;
+DROP TABLE IF EXISTS future_development_plans;
 
-CREATE TABLE IF NOT EXISTS propex.future_development_plans (
+CREATE TABLE IF NOT EXISTS future_development_plans (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   activities LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -250,10 +251,10 @@ CREATE TABLE IF NOT EXISTS propex.future_development_plans (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_future_development_plans_projects
+  INDEX idx_future_development_plans_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT future_development_plans_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -262,9 +263,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PARTNERS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.partners;
+DROP TABLE IF EXISTS partners;
 
-CREATE TABLE IF NOT EXISTS propex.partners (
+CREATE TABLE IF NOT EXISTS partners (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   name VARCHAR(128) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -274,11 +275,11 @@ CREATE TABLE IF NOT EXISTS propex.partners (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  UNIQUE INDEX uk_partner_email (email ASC) VISIBLE,
-  CONSTRAINT fk_partners_projects
+  INDEX idx_partners_project_id (project_id ASC) VISIBLE,
+  UNIQUE INDEX uk_partners_email (email ASC) VISIBLE,
+  CONSTRAINT partners_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -287,9 +288,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE KNOWLEDGE_AREAS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.knowledge_areas;
+DROP TABLE IF EXISTS knowledge_areas;
 
-CREATE TABLE IF NOT EXISTS propex.knowledge_areas (
+CREATE TABLE IF NOT EXISTS knowledge_areas (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -303,9 +304,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE DEMANDS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.demands;
+DROP TABLE IF EXISTS demands;
 
-CREATE TABLE IF NOT EXISTS propex.demands (
+CREATE TABLE IF NOT EXISTS demands (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   description VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -313,10 +314,10 @@ CREATE TABLE IF NOT EXISTS propex.demands (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_demands_projects
+  INDEX idx_demands_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT demands_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -325,9 +326,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PUBLICATIONS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.publications;
+DROP TABLE IF EXISTS publications;
 
-CREATE TABLE IF NOT EXISTS propex.publications (
+CREATE TABLE IF NOT EXISTS publications (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
   attachment_id BIGINT(20) UNSIGNED NOT NULL,
@@ -338,14 +339,14 @@ CREATE TABLE IF NOT EXISTS propex.publications (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
-  CONSTRAINT fk_publications_attachments
+  INDEX idx_publications_project_id (project_id ASC) VISIBLE,
+  INDEX idx_publications_attachment_id (attachment_id ASC) VISIBLE,
+  CONSTRAINT publications_fk_attachments
     FOREIGN KEY (attachment_id)
-    REFERENCES propex.attachments (id),
-  CONSTRAINT fk_publications_projects
+    REFERENCES attachments (id),
+  CONSTRAINT publications_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -354,20 +355,20 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_ATTACHMENTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_attachments;
+DROP TABLE IF EXISTS project_attachments;
 
-CREATE TABLE IF NOT EXISTS propex.project_attachments (
+CREATE TABLE IF NOT EXISTS project_attachments (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   attachment_id BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (project_id, attachment_id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_attachment_id (attachment_id ASC) VISIBLE,
-  CONSTRAINT fk_project_attachments_attachments
+  INDEX idx_project_attachments_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_attachments_attachment_id (attachment_id ASC) VISIBLE,
+  CONSTRAINT project_attachments_fk_attachments
     FOREIGN KEY (attachment_id)
-    REFERENCES propex.attachments (id),
-  CONSTRAINT fk_project_attachments_projects
+    REFERENCES attachments (id),
+  CONSTRAINT project_attachments_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -376,20 +377,20 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_EXTENSION_LINES
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_extension_lines;
+DROP TABLE IF EXISTS project_extension_lines;
 
-CREATE TABLE IF NOT EXISTS propex.project_extension_lines (
+CREATE TABLE IF NOT EXISTS project_extension_lines (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   extension_line_id BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (project_id, extension_line_id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_extension_line_id (extension_line_id ASC) VISIBLE,
-  CONSTRAINT fk_project_extension_lines_extension_lines
+  INDEX idx_project_extension_lines_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_extension_lines_extension_line_id (extension_line_id ASC) VISIBLE,
+  CONSTRAINT project_extension_lines_fk_extension_lines
     FOREIGN KEY (extension_line_id)
-    REFERENCES propex.extension_lines (id),
-  CONSTRAINT fk_project_extension_lines_projects
+    REFERENCES extension_lines (id),
+  CONSTRAINT project_extension_lines_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -398,9 +399,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_HUMAN_RESOURCES
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_human_resources;
+DROP TABLE IF EXISTS project_human_resources;
 
-CREATE TABLE IF NOT EXISTS propex.project_human_resources (
+CREATE TABLE IF NOT EXISTS project_human_resources (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   user_id BIGINT(20) UNSIGNED NOT NULL,
   coordinate TINYINT(1) NOT NULL DEFAULT 0,
@@ -409,17 +410,17 @@ CREATE TABLE IF NOT EXISTS propex.project_human_resources (
   dt_admission DATE NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_user_id (user_id ASC) VISIBLE,
+  INDEX idx_project_human_resources_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_human_resources_user_id (user_id ASC) VISIBLE,
   PRIMARY KEY (project_id, user_id),
-  CONSTRAINT fk_project_human_resources_projects1
+  CONSTRAINT project_human_resources_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id)
+    REFERENCES projects (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT fk_project_human_resources_users1
+  CONSTRAINT project_human_resources_fk_users
     FOREIGN KEY (user_id)
-    REFERENCES propex.users (id)
+    REFERENCES users (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -430,20 +431,20 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_KNOWLEDGE_AREAS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_knowledge_areas;
+DROP TABLE IF EXISTS project_knowledge_areas;
 
-CREATE TABLE IF NOT EXISTS propex.project_knowledge_areas (
+CREATE TABLE IF NOT EXISTS project_knowledge_areas (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   knowledge_area_id BIGINT(20) UNSIGNED NOT NULL,
   PRIMARY KEY (project_id, knowledge_area_id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_knowledge_area_id (knowledge_area_id ASC) VISIBLE,
-  CONSTRAINT fk_project_knowledge_areas_knowledge_areas
+  INDEX idx_project_knowledge_areas_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_knowledge_areas_knowledge_area_id (knowledge_area_id ASC) VISIBLE,
+  CONSTRAINT project_knowledge_areas_fk_knowledge_areas
     FOREIGN KEY (knowledge_area_id)
-    REFERENCES propex.knowledge_areas (id),
-  CONSTRAINT fk_project_knowledge_areas_projects
+    REFERENCES knowledge_areas (id),
+  CONSTRAINT project_knowledge_areas_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -452,9 +453,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PUBLICS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.publics;
+DROP TABLE IF EXISTS publics;
 
-CREATE TABLE IF NOT EXISTS propex.publics (
+CREATE TABLE IF NOT EXISTS publics (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   cras VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NULL,
@@ -470,9 +471,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_PUBLICS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_publics;
+DROP TABLE IF EXISTS project_publics;
 
-CREATE TABLE IF NOT EXISTS propex.project_publics (
+CREATE TABLE IF NOT EXISTS project_publics (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   public_id BIGINT(20) UNSIGNED NOT NULL,
   directly TINYINT(1) NOT NULL DEFAULT 0,
@@ -481,37 +482,37 @@ CREATE TABLE IF NOT EXISTS propex.project_publics (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (project_id, public_id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_public_id (public_id ASC) VISIBLE,
-  CONSTRAINT fk_project_publics_projects
+  INDEX idx_project_publics_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_publics_public_id (public_id ASC) VISIBLE,
+  CONSTRAINT project_publics_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id),
-  CONSTRAINT fk_project_publics_publics
+    REFERENCES projects (id),
+  CONSTRAINT project_publics_fk_publics
     FOREIGN KEY (public_id)
-    REFERENCES propex.publics (id))
+    REFERENCES publics (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
 
 
 -- -----------------------------------------------------
--- TABLE PROJECT_TARGETS
+-- TABLE TARGETS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_targets;
+DROP TABLE IF EXISTS targets;
 
-CREATE TABLE IF NOT EXISTS propex.project_targets (
+CREATE TABLE IF NOT EXISTS targets (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   project_id BIGINT(20) UNSIGNED NOT NULL,
+  age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   men_number INT(11) NULL DEFAULT 0,
   women_number INT(11) NULL DEFAULT 0,
-  age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  CONSTRAINT fk_project_targets_projects
+  INDEX idx_targets_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT targets_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id))
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -520,9 +521,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE THEME_AREAS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.theme_areas;
+DROP TABLE IF EXISTS theme_areas;
 
-CREATE TABLE IF NOT EXISTS propex.theme_areas (
+CREATE TABLE IF NOT EXISTS theme_areas (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
@@ -536,23 +537,23 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE PROJECT_THEME_AREAS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.project_theme_areas;
+DROP TABLE IF EXISTS project_theme_areas;
 
-CREATE TABLE IF NOT EXISTS propex.project_theme_areas (
+CREATE TABLE IF NOT EXISTS project_theme_areas (
   project_id BIGINT(20) UNSIGNED NOT NULL,
   theme_area_id BIGINT(20) UNSIGNED NOT NULL,
   main TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (project_id, theme_area_id),
-  INDEX idx_project_id (project_id ASC) VISIBLE,
-  INDEX idx_theme_area_id (theme_area_id ASC) VISIBLE,
-  CONSTRAINT fk_project_theme_areas_projects
+  INDEX idx_project_theme_areas_project_id (project_id ASC) VISIBLE,
+  INDEX idx_project_theme_areas_theme_area_id (theme_area_id ASC) VISIBLE,
+  CONSTRAINT project_theme_areas_fk_projects
     FOREIGN KEY (project_id)
-    REFERENCES propex.projects (id),
-  CONSTRAINT fk_project_theme_areas_theme_areas
+    REFERENCES projects (id),
+  CONSTRAINT project_theme_areas_fk_theme_areas
     FOREIGN KEY (theme_area_id)
-    REFERENCES propex.theme_areas (id))
+    REFERENCES theme_areas (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;
@@ -561,9 +562,9 @@ COLLATE = utf8mb4_general_ci;
 -- -----------------------------------------------------
 -- TABLE STUDENTS
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS propex.students;
+DROP TABLE IF EXISTS students;
 
-CREATE TABLE IF NOT EXISTS propex.students (
+CREATE TABLE IF NOT EXISTS students (
   id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT(20) UNSIGNED NOT NULL,
   code VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
@@ -573,12 +574,35 @@ CREATE TABLE IF NOT EXISTS propex.students (
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NULL,
   PRIMARY KEY (id),
-  INDEX idx_user_id (user_id ASC) VISIBLE,
-  CONSTRAINT fk_students_users
+  INDEX idx_students_user_id (user_id ASC) VISIBLE,
+  CONSTRAINT students_fk_users
     FOREIGN KEY (user_id)
-    REFERENCES propex.users (id)
+    REFERENCES users (id)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_general_ci;
+
+
+-- -----------------------------------------------------
+-- TABLE TARGETS
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS targets;
+
+CREATE TABLE IF NOT EXISTS targets (
+  id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  project_id BIGINT(20) UNSIGNED NOT NULL,
+  age_range VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_general_ci' NOT NULL,
+  men_number INT(11) NULL DEFAULT 0,
+  women_number INT(11) NULL DEFAULT 0,
+  created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+  updated_at TIMESTAMP NULL,
+  PRIMARY KEY (id),
+  INDEX idx_targets_project_id (project_id ASC) VISIBLE,
+  CONSTRAINT targets_fk_projects
+    FOREIGN KEY (project_id)
+    REFERENCES projects (id))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_general_ci;

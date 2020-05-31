@@ -2,7 +2,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Req
 
 import { ThemeAreaRepository } from "../../repositories";
 import { ThemeArea, Page } from "../../entities";
-import { CustomAuth } from "src/services";
+import { CustomAuth } from "../../services";
 
 @Controller("/theme-areas")
 export class ThemeAreaCtrl {

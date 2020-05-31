@@ -4,9 +4,9 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Index, Un
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
 
+@Index("idx_students_user_id", [ "user" ])
+@Unique("uk_students_code", [ "code" ])
 @Entity({ name: "students" })
-@Index("idx_user_id", [ "user" ])
-@Unique("uk_student_code", [ "code" ])
 export class Student extends Audit {
 
     @Property({ name: "id" })

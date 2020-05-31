@@ -8,14 +8,14 @@ import { Attachment } from "./Attachment";
 import { Demand } from "./Demand";
 import { DisclosureMedia } from "./DisclosureMedia";
 import { Evaluation } from "./Evaluation";
-import { EventPresentation } from "./EventPresentation";
+import { Event } from "./Event";
 import { ExtensionLine } from "./ExtensionLine";
 import { FutureDevelopmentPlan } from "./FutureDevelopmentPlan";
 import { KnowledgeArea } from "./KnowledgeArea";
 import { Partner } from "./Partner";
 import { ProjectHumanResource } from "./ProjectHumanResource";
 import { ProjectPublic } from "./ProjectPublic";
-import { ProjectTarget } from "./ProjectTarget";
+import { Target } from "./Target";
 import { ProjectThemeArea } from "./ProjectThemeArea";
 import { Publication } from "./Publication";
 
@@ -99,8 +99,8 @@ export class Project extends Audit {
     public disclosureMedias: DisclosureMedia[];
 
     @Property({ name: "eventPresentations" })
-    @OneToMany(() => EventPresentation, (eventPresentation) => eventPresentation.project)
-    public eventPresentations: EventPresentation[];
+    @OneToMany(() => Event, (event) => event.project)
+    public events: Event[];
 
     @Property({ name: "evaluations" })
     @OneToMany(() => Evaluation, (evaluation) => evaluation.project)
@@ -130,9 +130,9 @@ export class Project extends Audit {
     @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.project)
     public projectPublics: ProjectPublic[];
 
-    @Property({ name: "projectTargets" })
-    @OneToMany(() => ProjectTarget, (projectTarget) => projectTarget.project)
-    public projectTargets: ProjectTarget[];
+    @Property({ name: "targets" })
+    @OneToMany(() => Target, (target) => target.project)
+    public targets: Target[];
 
     @Property({ name: "projectThemeAreas" })
     @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)

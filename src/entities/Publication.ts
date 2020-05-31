@@ -7,8 +7,8 @@ import { Attachment } from "./Attachment";
 import { PublicationType } from "../types";
 import { PublicationTypeEnumTransformer } from "../utils";
 
-@Index("idx_project_id", [ "project" ])
-@Index("idx_attachment_id", [ "attachment" ])
+@Index("idx_publications_project_id", [ "project" ])
+@Index("idx_publications_attachment_id", [ "attachment" ])
 @Entity({ name: "publications" })
 export class Publication extends Audit {
 

@@ -6,8 +6,8 @@ import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { ThemeArea } from "./ThemeArea";
 
-@Index("idx_project_id", [ "project" ])
-@Index("idx_theme_area_id", [ "themeArea" ])
+@Index("idx_project_theme_areas_project_id", [ "project" ])
+@Index("idx_project_theme_areas_theme_area_id", [ "themeArea" ])
 @Entity({ name: "project_theme_areas" })
 export class ProjectThemeArea extends Audit {
 

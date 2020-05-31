@@ -2,14 +2,14 @@ import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Pos
 import { Exception } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
-import { EventPresentationRepository, ProjectRepository } from "../../repositories";
-import { EventPresentation } from "../../entities";
+import { EventRepository, ProjectRepository } from "../../repositories";
+import { Event } from "../../entities";
 import { IContext } from "../../types";
 
 @Controller("/events")
-export class EventPresentationCtrl {
+export class EventCtrl {
 
-    constructor(private eventRepository: EventPresentationRepository, private projectRepository: ProjectRepository) {}
+    constructor(private eventRepository: EventRepository, private projectRepository: ProjectRepository) {}
 
     /**
      * Return a list of events.
@@ -22,7 +22,7 @@ export class EventPresentationCtrl {
         @Locals("context") context: IContext,
         @QueryParams("project") project: number | string,
         @QueryParams("q") q: string
-    ): Promise<EventPresentation[]> {
+    ): Promise<Event[]> {
         let query = this.eventRepository.createQueryBuilder("ep")
             .innerJoin("ep.project", "project");
 
@@ -49,8 +49,8 @@ export class EventPresentationCtrl {
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,
-        @Required() @BodyParams("event") event: EventPresentation
-    ): Promise<EventPresentation> {
+        @Required() @BodyParams("event") event: Event
+    ): Promise<Event> {
         const project = await this.projectRepository.findByContext(event.project.id, context);
         if (!project) {
             throw new Exception(400, "Project not found.");
@@ -65,7 +65,7 @@ export class EventPresentationCtrl {
      */
     @Get("/:id")
     @CustomAuth({})
-    public async get(@Required() @PathParams("id") id: number): Promise<EventPresentation | undefined> {
+    public async get(@Required() @PathParams("id") id: number): Promise<Event | undefined> {
         return this.eventRepository.findById(id);
     }
 

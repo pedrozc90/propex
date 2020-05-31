@@ -7,9 +7,9 @@ import { Project } from "./Project";
 import { User } from "./User";
 import moment from "moment";
 
-@Index("idx_user_id", [ "user" ])
-@Index("idx_project_id", [ "project" ])
-@Unique("uk_user_projects", [ "user", "project" ])
+@Index("idx_project_human_resources_user_id", [ "user" ])
+@Index("idx_project_human_resources_project_id", [ "project" ])
+@Unique("uk_project_human_resources_user_projects", [ "user", "project" ])
 @Entity({ name: "project_human_resources" })
 export class ProjectHumanResource extends Audit {
 

@@ -4,9 +4,9 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Index("idx_project_id", [ "project" ])
+@Index("idx_event_presentations_project_id", [ "project" ])
 @Entity({ name: "event_presentations" })
-export class EventPresentation extends Audit {
+export class Event extends Audit {
 
     @Property({ name: "id" })
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
@@ -29,7 +29,7 @@ export class EventPresentation extends Audit {
     public date: string;
 
     @Property({ name: "project" })
-    @ManyToOne(() => Project, (project) => project.eventPresentations, { nullable: false })
+    @ManyToOne(() => Project, (project) => project.events, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
 

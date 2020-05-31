@@ -4,8 +4,8 @@ import { Entity, PrimaryGeneratedColumn, Column, Unique, Index, ManyToOne, JoinC
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Index("idx_project_id", [ "project" ])
-@Unique("uk_partner_email", [ "email" ])
+@Index("idx_partners_project_id", [ "project" ])
+@Unique("uk_partners_email", [ "email" ])
 @Entity({ name: "partners" })
 export class Partner extends Audit {
 

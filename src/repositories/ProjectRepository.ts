@@ -2,10 +2,10 @@ import { EntityRepository } from "@tsed/typeorm";
 import { Unauthorized } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { Project, ProjectTarget } from "../entities";
+import { Project, Target } from "../entities";
 import { AgeRange, IContext, Scope } from "../types";
 import { AgeRangeEnumTransformer } from "../utils";
-import { ProjectTargetRepository } from "./ProjectTargetRepository";
+import { TargetRepository } from "./TargetRepository";
 
 const relations = [
     "disclosureMedias",
@@ -17,7 +17,7 @@ const relations = [
     "publications",
     "projectHumanResources",
     "projectPublics",
-    "projectTargets",
+    "targets",
     "projectThemeAreas",
     "activities",
     "extensionLines",
@@ -28,7 +28,7 @@ const relations = [
 @EntityRepository(Project)
 export class ProjectRepository extends GenericRepository<Project> {
 
-    constructor(private projectTargetRepository: ProjectTargetRepository) {
+    constructor(private targetRepository: TargetRepository) {
         super(relations);
     }
     

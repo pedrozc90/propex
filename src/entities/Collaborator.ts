@@ -5,7 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, Index } f
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
 
-@Index("idx_user_id", [ "user" ])
+@Index("idx_collaborators_user_id", [ "user" ])
 @Entity({ name: "collaborators" })
 export class Collaborator extends Audit {
 
