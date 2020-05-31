@@ -1,69 +1,96 @@
 # TODO List
 
-## Implementadas
+## NAO Implementadas
 
-1.  GET      /api/projects                                                  -- returna uma lista dos projectos cadastrados
-2.  POST     /api/projects                                                  -- cria um novo projecto (somente campos necessarios).
-3.  GET      /api/projects/:id                                              -- returna um projecto específico.
-4.  DELETE   /api/projects/:id                                              -- apagar um projeto.
+63. GET         /api/publications/                   
+63. POST        /api/publications/ 
 
-5.  GET      /api/projects/:id/disclosure-medias                            -- busca as medias do projeto.
-6.  POST     /api/projects/:id/disclosure-medias                            -- salva/update as medias do projeto.
-7.  DELETE   /api/projects/:id/disclosure-medias/:disclosureMediaId         -- delete uma media do projeto.
+## Implemented
 
-8.  GET      /api/projects/:id/extension-lines                              -- busca as linhas de extensão que o projeto se enquadra.
-9.  POST     /api/projects/:id/extension-lines                              -- salva/update as linhas de extensão do projeto.
-
-10. GET      /api/projects/:id/knowledge-areas                              -- busca as areas do conhecimento que o projeto se enquadra.
-11. POST     /api/projects/:id/knowledge-areas                              -- salva/update/deleta as areas doo conhecimento do projeto.
-
-12. GET      /api/projects/:id/publics                                      -- busca as informações do publicos que o projeto atende.
-13. POST     /api/projects/:id/publics                                      -- atualiza as informacoes dos publicos do projecto.
-
-14. GET      /api/projects/:id/targets                                      -- busca a lista de publico alvo do projeto.
-15. POST     /api/projects/:id/targets                                      -- atualiza a lista de publico alvo do projecto.
-
-16. GET      /api/projects/:id/students                                     -- busca a lista de studantes que fazem parte do projeto.
-
-17. GET      /api/projects/:id/collaborators                                -- busca a lista collaboradores/professores que fazem parte do projeto.
-
-## Não Implementadas
-
-8.  GET     /api/projects/:id/event-presentations
-9.  POST    /api/projects/:id/event-presentations
-10. DELETE  /api/projects/:id/event-presentations/:eventId
-
-11. GET     /api/projects/:id/demands
-12. POST    /api/projects/:id/demands
-13. DELETE  /api/projects/:id/demands/:demandId
-
-14. GET     /api/projects/:id/future-plans
-15. POST    /api/projects/:id/future-plans
-16. DELETE  /api/projects/:id/future-plans/:futurePlanId
-
-17. GET     /api/projects/:id/publications
-18. POST    /api/projects/:id/publications
-19. DELETE  /api/projects/:id/publications/:publicationId
-
-20. GET     /api/projects/:id/activities
-21. POST    /api/projects/:id/activities
-22. DELETE  /api/projects/:id/activities/:activityId
-
-23. GET     /api/projects/:id/attachments
-24. POST    /api/projects/:id/attachments
-25. DELETE  /api/projects/:id/attachments/:attachmentId
-
-## Alexandre
-
-2.  GET     /api/projects/:id/partners
-3.  POST    /api/projects/:id/partners
-4.  DELETE  /api/projects/:id/partners/:partnerId
-
-5.  GET     /api/projects/:id/evaluations
-6.  POST    /api/projects/:id/evaluations
-6.  DELETE  /api/projects/:id/evaluations/:evaluationId
-
-## Pedro
-
-1.  POST    /api/projects/:id/students
-2.  POST    /api/projects/:id/collaborators
+1.  GET         /api/activities/                     
+2.  POST        /api/activities/                     
+3.  GET         /api/activities/:id                  
+3.  DELETE      /api/activities/:id                  
+4.  POST        /api/auth/login                      
+5.  GET         /api/auth/logout                     
+6.  POST        /api/auth/register                   
+7.  GET         /api/demands/                        
+8.  POST        /api/demands/                        
+9.  GET         /api/demands/:id                     
+0.  DELETE      /api/demands/:id                     
+11. GET         /api/disclosure-medias/              
+12. POST        /api/disclosure-medias/              
+13. GET         /api/disclosure-medias/:id           
+13. DELETE      /api/disclosure-medias/:id           
+14. GET         /api/evaluations/                    
+15. POST        /api/evaluations/                    
+16. GET         /api/evaluations/:id                 
+17. DELETE      /api/evaluations/:id                 
+18. GET         /api/events/                         
+19. POST        /api/events/                         
+20. GET         /api/events/:id                      
+21. DELETE      /api/events/:id                      
+22. GET         /api/extension-lines/                
+23. GET         /api/extension-lines/list            
+23. POST        /api/extension-lines/                
+24. GET         /api/extension-lines/:id             
+25. DELETE      /api/extension-lines/:id             
+26. GET         /api/future-development-plans/       
+27. POST        /api/future-development-plans/       
+28. GET         /api/future-development-plans/:id    
+29. DELETE      /api/future-development-plans/:id    
+30. GET         /api/knowledge-areas/                
+31. GET         /api/knowledge-areas/list            
+32. POST        /api/knowledge-areas/                
+33. GET         /api/knowledge-areas/:id             
+33. DELETE      /api/knowledge-areas/:id             
+34. GET         /api/partners/                       
+35. POST        /api/partners/                       
+36. GET         /api/partners/:id                    
+37. DELETE      /api/partners/:id                    
+38. GET         /api/projects/                       
+39. POST        /api/projects/                       
+40. GET         /api/projects/:id                    
+41. GET         /api/projects/:id/activities         
+42. GET         /api/projects/:id/collaborators      
+43. POST        /api/projects/:id/collaborators      
+43. PUT         /api/projects/:id/collaborators      
+44. GET         /api/projects/:id/disclosure-medias  
+45. POST        /api/projects/:id/disclosure-medias  
+46. GET         /api/projects/:id/extension-lines    
+47. POST        /api/projects/:id/extension-lines    
+48. GET         /api/projects/:id/evaluations        
+49. POST        /api/projects/:id/evaluations        
+50. GET         /api/projects/:id/knowledge-areas    
+51. POST        /api/projects/:id/knowledge-areas    
+52. GET         /api/projects/:id/parterns           
+53. POST        /api/projects/:id/parterns           
+53. DELETE      /api/projects/:id/parterns/:parternId
+54. GET         /api/projects/:id/publics            
+55. POST        /api/projects/:id/publics            
+56. GET         /api/projects/:id/students           
+57. POST        /api/projects/:id/students           
+58. PUT         /api/projects/:id/students           
+59. GET         /api/projects/:id/targets            
+60. POST        /api/projects/:id/targets            
+61. GET         /api/projects/:id/theme-areas        
+62. POST        /api/projects/:id/theme-areas        
+<!-- 63. GET         /api/publications/                    -->
+<!-- 63. POST        /api/publications/                    -->
+64. GET         /api/publications/:id                
+65. DELETE      /api/publications/:id                
+66. GET         /api/publics/                        
+67. GET         /api/publics/list                    
+68. POST        /api/publics/                        
+69. GET         /api/publics/:id                     
+70. DELETE      /api/publics/:id                     
+71. GET         /api/theme-areas/                    
+72. GET         /api/theme-areas/list                
+73. POST        /api/theme-areas/                    
+73. GET         /api/theme-areas/:id                 
+74. DELETE      /api/theme-areas/:id                 
+75. GET         /api/users/                          
+76. POST        /api/users/                          
+77. GET         /api/users/:id                       
+78. POST        /api/users/:id/ativate               
+79. POST        /api/users/:id/desativate            
