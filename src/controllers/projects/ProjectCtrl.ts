@@ -1,5 +1,5 @@
 import { Controller, Locals, Get, Delete, Post, Put, QueryParams, PathParams, BodyParams, Required, $log } from "@tsed/common";
-import { Exception, Unauthorized, BadRequest, NotImplemented } from "@tsed/exceptions";
+import { Exception, Unauthorized, BadRequest, NotFound, NotImplemented } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
@@ -324,55 +324,84 @@ export class ProjectCtrl {
     // --------------------------------------------------
 
     /**
-     * Return a list of disclosure medias that belongs to a project.
-     * @param id                -- project id.
+     * Return a paginated list of disclosure medias that belongs to a project.
+     * @param id                            -- project id.
      */
     @Get("/:id/disclosure-medias")
     @CustomAuth({})
-    public async getDisclosureMedia(
-        @Locals("context") context: IContext,
-        @Required() @PathParams("id") id: number
-    ): Promise<DisclosureMedia[]> {
-        return this.DisclosureMediaRepository.createQueryBuilder("dm")
-            .innerJoin("dm.project", "p", "p.id = :projectId", { projectId: id })
-            .getMany();
+    public async getDisclosureMedia(@Required() @PathParams("id") id: number,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("date") date?: string,
+        @QueryParams("from") from?: string,
+        @QueryParams("to") to?: string
+    ): Promise<Page<DisclosureMedia>> {
+        let query = this.DisclosureMediaRepository.createQueryBuilder("dm")
+            .innerJoin("dm.project", "p", "p.id = :projectId", { projectId: id });
+        
+        if (q) {
+            query = query.where("dm.name LIKE :name", { name: `%${q}%` })
+                .orWhere("dm.link LIKE :link", { name: `%${q}%` });
+        }
+
+        if (date) query = query.where("dm.date = :date", { date });
+        if (from) query = query.where("dm.date >= :from", { from });
+        if (to) query = query.where("dm.date <= :to", { to });
+
+        query = query.orderBy("dm.date", "DESC")
+            .skip((page - 1) * rpp)
+            .take(rpp);
+        
+        return Page.of<DisclosureMedia>(await query.getMany(), page, rpp);
     }
 
     /**
      * Create/Update disclosure medias from a project.
-     * @param id                    -- project id
-     * @param disclosureMedias      -- disclosure medias data.
+     * @param id                            -- project id
+     * @param disclosureMedias              -- disclosure medias data.
      */
     @Post("/:id/disclosure-medias")
     @CustomAuth({})
-    public async setDisclosureMedia(@Locals("context") context: IContext,
+    public async setDisclosureMedia(
+        @Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
     ): Promise<any> {
+        // check if user is part of project.
         const project = await this.ProjectRepository.findByContext(id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found");
-        }
 
         // update existing entities
-        const updatedMedias = await this.DisclosureMediaRepository.save(disclosureMedias.filter((d) => !!d.id));
-
-        // save new entities
-        const createdMedias = await this.DisclosureMediaRepository.save(
-            disclosureMedias.filter((d) => !d.id).map((d) => {
-                d.project = project;
-                if (!d.date) {
-                    d.date = moment().format("YYYY-MM-DD").toString();
+        let mediasToUpdate = await Promise.all(
+            disclosureMedias.filter((dm) => !!dm.id).map(async (dm) => {
+                const tmp = await this.DisclosureMediaRepository.findOne({ id: dm.id });
+                if (!tmp) {
+                    throw new NotFound(`Disclosure media ${dm.id} do not exists.`);
                 }
-                return d;
+                return this.DisclosureMediaRepository.merge(tmp, dm);
             })
         );
+        
+        if (mediasToUpdate.length > 0) {
+            mediasToUpdate = await this.DisclosureMediaRepository.save(mediasToUpdate);
+        }
 
-        return {
-            message: "Disclosure Medias successfully updated!",
-            updated: updatedMedias.length || 0,
-            created: createdMedias.length || 0
+        // save new entities
+        let mediasToInsert = disclosureMedias.filter((d) => !d.id).map((d) => {
+            d.project = project;
+            if (!d.date) d.date = moment().format("YYYY-MM-DD").toString();
+            return d;
+        });
+        if (mediasToInsert.length > 0) {
+            mediasToInsert = await this.DisclosureMediaRepository.save(mediasToInsert);
+        }
+
+        const result = {
+            updated: mediasToUpdate.length || 0,
+            inserted: mediasToInsert.length || 0
         };
+
+        return ResultContent.of<any>(result).withMessage("Disclosure Medias successfully updated!");
     }
 
     // --------------------------------------------------
@@ -381,7 +410,7 @@ export class ProjectCtrl {
 
     /**
      * Returns all extension lines from a given project.
-     * @param id                -- project id.
+     * @param id                            -- project id.
      */
     @Get("/:id/extension-lines")
     @CustomAuth({})
@@ -561,31 +590,14 @@ export class ProjectCtrl {
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("publics") publics: Public[]
     ): Promise<ResultContent<Public[]>> {
+        // check if user is part of project.
         const project = await this.ProjectRepository.findByContext(id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found");
-        }
         
-        let savedPublics = await this.PublicRepository.createQueryBuilder("public")
-            .innerJoinAndSelect("public.projectPublics", "pp", "pp.project_id = :projectId", { projectId: id })
-            .getMany();
-        
-        // publics not received in the request need to be removed
-        const publicToDelete = savedPublics.filter((p) => publics.findIndex((r) => r.id === p.id) < 0);
-        if (publicToDelete && publicToDelete.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("projectPublics").of(project).remove(publicToDelete);
-        }
+        // update project publics.
+        // const savedPublics = await this.PublicRepository.overwrite(project, publics);
 
-        const publicToInsert = savedPublics.filter((p) => !!p.id && publics.findIndex((r) => r.id === p.id) < 0);
-        if (publicToInsert && publicToInsert.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).add(publicToInsert);
-        }
-
-        savedPublics = await this.PublicRepository.createQueryBuilder("public")
-            .innerJoinAndSelect("public.projectPublics", "pp", "pp.project_id = :projectId", { projectId: id })
-            .getMany();
-
-        return ResultContent.of<Public[]>(savedPublics).withMessage("Project publics successfully saved!");
+        // return ResultContent.of<Public[]>(savedPublics).withMessage("Project publics successfully saved!");
+        throw new NotImplemented("Method Not Implemented!");
     }
 
     // --------------------------------------------------

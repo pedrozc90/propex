@@ -1,10 +1,9 @@
 import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals, QueryParams } from "@tsed/common";
-import { BadRequest } from "@tsed/exceptions";
 
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
-import { DisclosureMedia } from "../../entities";
+import { DisclosureMedia, Page } from "../../entities";
 import { CustomAuth } from "../../services";
-import { IContext } from "src/types";
+import { IContext } from "../../types";
 
 @Controller("/disclosure-medias")
 export class DisclosureMediaCtrl {
@@ -18,13 +17,40 @@ export class DisclosureMediaCtrl {
      */
     @Get("/")
     @CustomAuth({})
-    public async fetch(
-        @Locals("context") context: IContext,
-        @Required() @QueryParams("project") project: number
-    ): Promise<DisclosureMedia[]> {
-        return this.disclosureMediaRepository.createQueryBuilder("dm")
-            .innerJoin("dm.project", "p", "p.id = :projectId", { projectId: project })
-            .getMany();
+    public async fetch(@Locals("context") context: IContext,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("date") date?: string,
+        @QueryParams("from") from?: string,
+        @QueryParams("to") to?: string,
+        @QueryParams("project") project?: number | string
+    ): Promise<Page<DisclosureMedia>> {
+        let query = this.disclosureMediaRepository.createQueryBuilder("dm")
+            .innerJoin("dm.project", "p");
+        
+        if (q) {
+            query = query.where("dm.name LIKE :name", { name: `%${q}%` })
+                .orWhere("dm.link LIKE :link", { name: `%${q}%` });
+        }
+
+        if (date) query = query.where("dm.date = :date", { date });
+        if (from) query = query.where("dm.date >= :from", { from });
+        if (to) query = query.where("dm.date <= :to", { to });
+
+        if (project) {
+            if (typeof project === "string") {
+                query = query.where("project.title LIKE :title", { title: `%${project}%` });
+            } else if (typeof project === "number") {
+                query = query.where("project.id = : id", { id: project });
+            }
+        }
+
+        query = query.orderBy("dm.date", "DESC")
+            .skip((page - 1) * rpp)
+            .take(rpp);
+
+        return Page.of<DisclosureMedia>(await query.getMany(), page, rpp);
     }
 
     /**
@@ -34,14 +60,11 @@ export class DisclosureMediaCtrl {
      */
     @Post("/")
     @CustomAuth({})
-    public async create(
+    public async save(
         @Locals("context") context: IContext,
         @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
     ): Promise<DisclosureMedia | undefined> {
         const project = await this.projectRepository.findByContext(disclosureMedia.project.id, context);
-        if (!project) {
-            throw new BadRequest("Project not found!");
-        }
         disclosureMedia.project = project;
         return this.disclosureMediaRepository.save(disclosureMedia);
     }
@@ -52,7 +75,7 @@ export class DisclosureMediaCtrl {
      */
     @Get("/:id")
     @CustomAuth({})
-    public async get(@PathParams("id") id: number): Promise<DisclosureMedia | undefined> {
+    public async get(@Required() @PathParams("id") id: number): Promise<DisclosureMedia | undefined> {
         return this.disclosureMediaRepository.findById(id);
     }
 
@@ -62,7 +85,7 @@ export class DisclosureMediaCtrl {
      */
     @Delete("/:id")
     @CustomAuth({})
-    public async delete(@PathParams("id") id: number): Promise<any> {
+    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.disclosureMediaRepository.deleteById(id);
     }
 

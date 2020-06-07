@@ -1,9 +1,9 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required, Locals } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required } from "@tsed/common";
 
 import { PublicRepository } from "../../repositories";
 import { Public, Page } from "../../entities";
 import { CustomAuth } from "../../services";
-import { IContext } from "../../types";
+import { Like } from "typeorm";
 
 @Controller("/publics")
 export class PublicCtrl {
@@ -19,21 +19,22 @@ export class PublicCtrl {
     @Get("/")
     @CustomAuth({})
     public async fetch(
-        @QueryParams("page") page: number,
-        @QueryParams("rpp") rpp: number,
-        @QueryParams("q") q: string
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string
     ): Promise<Page<Public>> {
-        return this.publicRepository.fetch({ page, rpp, q });
-    }
-
-    /**
-     * Return the complete list of publics.
-     * @param q                             -- search query string.
-     */
-    @Get("/list")
-    @CustomAuth({})
-    public async list(@QueryParams("q") q: string): Promise<Public[]> {
-        return this.publicRepository.list({ q });
+        const params: any = {};
+        if (rpp > 0) {
+            params.skip = (page - 1) * rpp;
+            params.take = rpp;
+        }
+        if (q) {
+            params.where = [
+                { name: Like(`%${q}%`) },
+                { cras: Like(`%${q}%`) }
+            ];
+        };
+        return Page.of(await this.publicRepository.find(params), page, rpp);
     }
 
     /**
@@ -43,10 +44,7 @@ export class PublicCtrl {
      */
     @Post("/")
     @CustomAuth({ role: "ADMIN" })
-    public async save(
-        @Locals("context") context: IContext,
-        @Required() @BodyParams("public") data: Public
-    ): Promise<Public | undefined> {
+    public async save(@Required() @BodyParams("public") data: Public): Promise<Public | undefined> {
         return this.publicRepository.save(data);
     }
 
@@ -56,7 +54,7 @@ export class PublicCtrl {
      */
     @Get("/:id")
     @CustomAuth({})
-    public async get(@PathParams("id") id: number): Promise<Public | undefined> {
+    public async get(@Required() @PathParams("id") id: number): Promise<Public | undefined> {
         return this.publicRepository.findById(id);
     }
 
@@ -66,7 +64,7 @@ export class PublicCtrl {
      */
     @Delete("/:id")
     @CustomAuth({ role: "ADMIN" })
-    public async delete(@PathParams("id") id: number): Promise<any> {
+    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.publicRepository.deleteById(id);
     }
 

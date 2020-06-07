@@ -1,11 +1,9 @@
 import { EntityRepository } from "@tsed/typeorm";
-import { Exception, Unauthorized } from "@tsed/exceptions";
+import { NotFound } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { Project, Target } from "../entities";
-import { AgeRange, IContext, Scope } from "../types";
-import { AgeRangeEnumTransformer } from "../utils";
-import { TargetRepository } from "./TargetRepository";
+import { Project } from "../entities";
+import { IContext } from "../types";
 
 const relations = [
     "disclosureMedias",
@@ -28,7 +26,7 @@ const relations = [
 @EntityRepository(Project)
 export class ProjectRepository extends GenericRepository<Project> {
 
-    constructor(private targetRepository: TargetRepository) {
+    constructor() {
         super(relations);
     }
     
@@ -52,7 +50,7 @@ export class ProjectRepository extends GenericRepository<Project> {
 
         const project = await query.getOne();
         if (!project) {
-            throw new Exception(404, "Project not found.");
+            throw new NotFound("Project not found."); // 404
         }
 
         return project;

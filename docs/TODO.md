@@ -24,23 +24,23 @@
 | POST             | /api/demands/                       | DONE     |
 | GET              | /api/demands/:id                    | DONE     |
 | DELETE           | /api/demands/:id                    | DONE     |
-| GET              | /api/disclosure-medias/             |          |
-| POST             | /api/disclosure-medias/             |          |
-| GET              | /api/disclosure-medias/:id          |          |
-| DELETE           | /api/disclosure-medias/:id          |          |
-| GET              | /api/evaluations/                   |          |
-| POST             | /api/evaluations/                   |          |
-| GET              | /api/evaluations/:id                |          |
-| DELETE           | /api/evaluations/:id                |          |
+| GET              | /api/disclosure-medias/             | DONE     |
+| POST             | /api/disclosure-medias/             | DONE     |
+| GET              | /api/disclosure-medias/:id          | DONE     |
+| DELETE           | /api/disclosure-medias/:id          | DONE     |
+| GET              | /api/evaluations/                   | DONE     |
+| POST             | /api/evaluations/                   | DONE     |
+| GET              | /api/evaluations/:id                | DONE     |
+| DELETE           | /api/evaluations/:id                | DONE     |
 | GET              | /api/events/                        |          |
 | POST             | /api/events/                        |          |
 | GET              | /api/events/:id                     |          |
 | DELETE           | /api/events/:id                     |          |
-| GET              | /api/extension-lines/               |          |
-| GET              | /api/extension-lines/list           |          |
-| POST             | /api/extension-lines/               |          |
-| GET              | /api/extension-lines/:id            |          |
-| DELETE           | /api/extension-lines/:id            |          |
+| GET              | /api/extension-lines/               | DONE     |
+| POST             | /api/extension-lines/               | DONE     |
+| PUT              | /api/extension-lines/               | DONE     |
+| GET              | /api/extension-lines/:id            | DONE     |
+| DELETE           | /api/extension-lines/:id            | DONE     |
 | GET              | /api/future-development-plans/      |          |
 | POST             | /api/future-development-plans/      |          |
 | GET              | /api/future-development-plans/:id   |          |
@@ -62,8 +62,8 @@
 | GET              | /api/projects/:id/collaborators     |          |
 | POST             | /api/projects/:id/collaborators     |          |
 | GET              | /api/projects/:id/demands           | DONE     |
-| GET              | /api/projects/:id/disclosure-medias |          |
-| POST             | /api/projects/:id/disclosure-medias |          |
+| GET              | /api/projects/:id/disclosure-medias | DONE     |
+| POST             | /api/projects/:id/disclosure-medias | DONE     |
 | GET              | /api/projects/:id/extension-lines   |          |
 | POST             | /api/projects/:id/extension-lines   |          |
 | GET              | /api/projects/:id/evaluations       |          |
@@ -72,8 +72,8 @@
 | POST             | /api/projects/:id/knowledge-areas   |          |
 | GET              | /api/projects/:id/parterns          |          |
 | POST             | /api/projects/:id/parterns          |          |
-| GET              | /api/projects/:id/publics           |          |
-| POST             | /api/projects/:id/publics           |          |
+| GET              | /api/projects/:id/publics           | DONE     |
+| POST             | /api/projects/:id/publics           | ???      |
 | GET              | /api/projects/:id/students          |          |
 | POST             | /api/projects/:id/students          |          |
 | GET              | /api/projects/:id/targets           | DONE     |
@@ -85,11 +85,10 @@
 | GET              | /api/publications/types             |          |
 | GET              | /api/publications/:id               |          |
 | DELETE           | /api/publications/:id               |          |
-| GET              | /api/publics/                       |          |
-| GET              | /api/publics/list                   |          |
-| POST             | /api/publics/                       |          |
-| GET              | /api/publics/:id                    |          |
-| DELETE           | /api/publics/:id                    |          |
+| GET              | /api/publics/                       | DONE     |
+| POST             | /api/publics/                       | DONE     |
+| GET              | /api/publics/:id                    | DONE     |
+| DELETE           | /api/publics/:id                    | DONE     |
 | GET              | /api/targets/                       | DONE     |
 | POST             | /api/targets/                       | DONE     |
 | GET              | /api/targets/age-ranges             | DONE     |
