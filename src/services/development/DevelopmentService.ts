@@ -40,14 +40,6 @@ export class DevelopmentService {
         const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
         const extensionLines = await this.ExtensionLineRepository.find({});
 
-        // transational example
-        // const ta = new ThemeArea();
-        // ta.name = "Debug";
-
-        // this.ProjectRepository.manager.transaction(async (em: EntityManager) => {
-        //     await em.save(ta);
-        // });
-
         return {};
     }
 

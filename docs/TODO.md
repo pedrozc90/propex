@@ -2,98 +2,107 @@
 
 ## NAO Implementadas
 
-63. GET         /api/publications/                   
-63. POST        /api/publications/ 
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
 
 ## Implemented
 
-1.  GET             /api/activities/                   
-2.  POST            /api/activities/                   
-3.  GET             /api/activities/:id                
-4.  DELETE          /api/activities/:id                
-5.  POST            /api/auth/login                    
-6.  GET             /api/auth/logout                   
-7.  POST            /api/auth/register                 
-8.  GET             /api/demands/                      
-9.  POST            /api/demands/                      
-10. GET             /api/demands/:id                   
-11. DELETE          /api/demands/:id                   
-12. GET             /api/disclosure-medias/            
-13. POST            /api/disclosure-medias/            
-14. GET             /api/disclosure-medias/:id         
-15. DELETE          /api/disclosure-medias/:id         
-16. GET             /api/evaluations/                  
-17. POST            /api/evaluations/                  
-18. GET             /api/evaluations/:id               
-19. DELETE          /api/evaluations/:id               
-20. GET             /api/events/                       
-21. POST            /api/events/                       
-22. GET             /api/events/:id                    
-23. DELETE          /api/events/:id                    
-24. GET             /api/extension-lines/              
-25. GET             /api/extension-lines/list          
-26. POST            /api/extension-lines/              
-27. GET             /api/extension-lines/:id           
-28. DELETE          /api/extension-lines/:id           
-29. GET             /api/future-development-plans/     
-30. POST            /api/future-development-plans/     
-31. GET             /api/future-development-plans/:id  
-32. DELETE          /api/future-development-plans/:id  
-33. GET             /api/knowledge-areas/              
-34. GET             /api/knowledge-areas/list          
-35. POST            /api/knowledge-areas/              
-36. GET             /api/knowledge-areas/:id           
-37. DELETE          /api/knowledge-areas/:id           
-38. GET             /api/partners/                     
-39. POST            /api/partners/                     
-40. GET             /api/partners/:id                  
-41. DELETE          /api/partners/:id                  
-42. GET             /api/projects/                     
-43. POST            /api/projects/                     
-44. GET             /api/projects/:id                  
-45. GET             /api/projects/:id/activities       
-46. GET             /api/projects/:id/collaborators    
-47. POST            /api/projects/:id/collaborators    
-48. GET             /api/projects/:id/disclosure-medias
-49. POST            /api/projects/:id/disclosure-medias
-50. GET             /api/projects/:id/extension-lines  
-51. POST            /api/projects/:id/extension-lines  
-52. GET             /api/projects/:id/evaluations      
-53. POST            /api/projects/:id/evaluations      
-54. GET             /api/projects/:id/knowledge-areas  
-55. POST            /api/projects/:id/knowledge-areas  
-56. GET             /api/projects/:id/parterns         
-57. POST            /api/projects/:id/parterns         
-58. GET             /api/projects/:id/publics          
-59. POST            /api/projects/:id/publics          
-60. GET             /api/projects/:id/students         
-61. POST            /api/projects/:id/students         
-62. GET             /api/projects/:id/targets          
-63. POST            /api/projects/:id/targets          
-64. GET             /api/projects/:id/theme-areas      
-65. POST            /api/projects/:id/theme-areas      
-66. GET             /api/publications/                 
-67. POST            /api/publications/                 
-68. GET             /api/publications/types            
-69. GET             /api/publications/:id              
-70. DELETE          /api/publications/:id              
-71. GET             /api/publics/                      
-72. GET             /api/publics/list                  
-73. POST            /api/publics/                      
-74. GET             /api/publics/:id                   
-75. DELETE          /api/publics/:id                   
-76. GET             /api/targets/                      
-77. POST            /api/targets/                      
-78. GET             /api/targets/age-ranges            
-79. GET             /api/targets/:id                   
-80. DELETE          /api/targets/:id                   
-81. GET             /api/theme-areas/                  
-82. GET             /api/theme-areas/list              
-83. POST            /api/theme-areas/                  
-84. GET             /api/theme-areas/:id               
-85. DELETE          /api/theme-areas/:id               
-86. GET             /api/users/                        
-87. POST            /api/users/                        
-88. GET             /api/users/:id                     
-89. POST            /api/users/:id/ativate             
-90. POST            /api/users/:id/desativate          
+
+| Method           | Endpoint                            | Progress |
+|:-----------------|:------------------------------------|:--------:|
+| GET              | /api/activities/                    |          |
+| POST             | /api/activities/                    |          |
+| GET              | /api/activities/:id                 |          |
+| DELETE           | /api/activities/:id                 |          |
+| POST             | /api/auth/login                     | DONE     |
+| GET              | /api/auth/logout                    |          |
+| POST             | /api/auth/register                  | DONE     |
+| GET              | /api/demands/                       | DONE     |
+| POST             | /api/demands/                       | DONE     |
+| GET              | /api/demands/:id                    | DONE     |
+| DELETE           | /api/demands/:id                    | DONE     |
+| GET              | /api/disclosure-medias/             |          |
+| POST             | /api/disclosure-medias/             |          |
+| GET              | /api/disclosure-medias/:id          |          |
+| DELETE           | /api/disclosure-medias/:id          |          |
+| GET              | /api/evaluations/                   |          |
+| POST             | /api/evaluations/                   |          |
+| GET              | /api/evaluations/:id                |          |
+| DELETE           | /api/evaluations/:id                |          |
+| GET              | /api/events/                        |          |
+| POST             | /api/events/                        |          |
+| GET              | /api/events/:id                     |          |
+| DELETE           | /api/events/:id                     |          |
+| GET              | /api/extension-lines/               |          |
+| GET              | /api/extension-lines/list           |          |
+| POST             | /api/extension-lines/               |          |
+| GET              | /api/extension-lines/:id            |          |
+| DELETE           | /api/extension-lines/:id            |          |
+| GET              | /api/future-development-plans/      |          |
+| POST             | /api/future-development-plans/      |          |
+| GET              | /api/future-development-plans/:id   |          |
+| DELETE           | /api/future-development-plans/:id   |          |
+| GET              | /api/knowledge-areas/               | DONE     |
+| GET              | /api/knowledge-areas/list           | DONE     |
+| POST             | /api/knowledge-areas/               | DONE     |
+| GET              | /api/knowledge-areas/:id            | DONE     |
+| DELETE           | /api/knowledge-areas/:id            | DONE     |
+| GET              | /api/partners/                      |          |
+| POST             | /api/partners/                      |          |
+| GET              | /api/partners/:id                   |          |
+| DELETE           | /api/partners/:id                   |          |
+| GET              | /api/projects/                      | DONE     |
+| POST             | /api/projects/                      | DONE     |
+| PUT              | /api/projects/                      | WORKING  |
+| GET              | /api/projects/:id                   | DONE     |
+| GET              | /api/projects/:id/activities        |          |
+| GET              | /api/projects/:id/collaborators     |          |
+| POST             | /api/projects/:id/collaborators     |          |
+| GET              | /api/projects/:id/demands           | DONE     |
+| GET              | /api/projects/:id/disclosure-medias |          |
+| POST             | /api/projects/:id/disclosure-medias |          |
+| GET              | /api/projects/:id/extension-lines   |          |
+| POST             | /api/projects/:id/extension-lines   |          |
+| GET              | /api/projects/:id/evaluations       |          |
+| POST             | /api/projects/:id/evaluations       |          |
+| GET              | /api/projects/:id/knowledge-areas   |          |
+| POST             | /api/projects/:id/knowledge-areas   |          |
+| GET              | /api/projects/:id/parterns          |          |
+| POST             | /api/projects/:id/parterns          |          |
+| GET              | /api/projects/:id/publics           |          |
+| POST             | /api/projects/:id/publics           |          |
+| GET              | /api/projects/:id/students          |          |
+| POST             | /api/projects/:id/students          |          |
+| GET              | /api/projects/:id/targets           | DONE     |
+| POST             | /api/projects/:id/targets           | DONE     |
+| GET              | /api/projects/:id/theme-areas       | DONE     |
+| POST             | /api/projects/:id/theme-areas       | DONE     |
+| GET              | /api/publications/                  |          |
+| POST             | /api/publications/                  |          |
+| GET              | /api/publications/types             |          |
+| GET              | /api/publications/:id               |          |
+| DELETE           | /api/publications/:id               |          |
+| GET              | /api/publics/                       |          |
+| GET              | /api/publics/list                   |          |
+| POST             | /api/publics/                       |          |
+| GET              | /api/publics/:id                    |          |
+| DELETE           | /api/publics/:id                    |          |
+| GET              | /api/targets/                       | DONE     |
+| POST             | /api/targets/                       | DONE     |
+| GET              | /api/targets/age-ranges             | DONE     |
+| GET              | /api/targets/:id                    | DONE     |
+| DELETE           | /api/targets/:id                    | DONE     |
+| GET              | /api/theme-areas/                   | DONE     |
+| GET              | /api/theme-areas/list               | DONE     |
+| POST             | /api/theme-areas/                   | DONE     |
+| GET              | /api/theme-areas/:id                | DONE     |
+| DELETE           | /api/theme-areas/:id                | DONE     |
+| GET              | /api/users/                         | DONE     |
+| POST             | /api/users/                         | DONE     |
+| PUT              | /api/users/                         | DONE     |
+| GET              | /api/users/:id                      | DONE     |
+| POST             | /api/users/:id/activate             | DONE     |
+| POST             | /api/users/:id/desactivate          | DONE     |

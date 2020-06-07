@@ -1,13 +1,20 @@
+import { Property } from "@tsed/common";
+
 export class PublicationType {
 
     public static readonly ARTIGO = new PublicationType("ARTIGO", "artigo");
     public static readonly CAPTULO = new PublicationType("CAPTULO", "captulo");
     public static readonly RESUMO = new PublicationType("RESUMO", "resumo");
 
-    constructor(private readonly key: string, public readonly name: string) {}
+    @Property({ name: "key" })
+    public readonly key: string;
 
-    public get value(): string {
-        return this.key;
+    @Property({ name: "description" })
+    public readonly description: string;
+
+    constructor(key: string, description: string) {
+        this.key = key;
+        this.description = description;
     }
 
     public static get keys(): string[] {

@@ -1,9 +1,8 @@
 import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
-import { Exception } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import { DemandRepository, ProjectRepository } from "../../repositories";
-import { Demand } from "../../entities";
+import { Demand, ResultContent } from "../../entities";
 import { IContext } from "../../types";
 
 @Controller("/demands")
@@ -35,7 +34,7 @@ export class DemandCtrl {
     }
 
     /**
-     * Save/Update a demand.
+     * create a new demand.
      * @param context                       -- user context.
      * @param demands                       -- demand data.
      */
@@ -44,13 +43,15 @@ export class DemandCtrl {
     public async save(
         @Locals("context") context: IContext,
         @Required() @BodyParams("demand") demand: Demand
-    ): Promise<Demand> {
+    ): Promise<ResultContent<Demand>> {
+        // check if  porject exists
         const project = await this.projectRepository.findByContext(demand.project.id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found.");
-        }
+
+        // save demand
         demand.project = project;
-        return this.demandRepository.save(demand);
+        demand = await this.demandRepository.save(demand);
+
+        return ResultContent.of<Demand>(demand).withMessage("Demand sucessfully saved.");
     }
 
     /**

@@ -8,24 +8,23 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
 
     /**
      * Used to marshal data when writing to the database.
-     * @param value     -- value to be transformed.
+     * @param value                         -- value to be transformed.
      */
-    public to(value: T): string | null {
-        if (!value) return null;
+    public to(value: T): string {
         return findEnumKey(this.e, value);
     }
 
     /**
      * Used to unmarshal data when reading from the database.
-     * @param value     -- value read from database.
+     * @param value                         -- value read from database.
      */
-    public from(value: K | string | any): T | any {
-        return this.e[value];
+    public from(value: string | K): T | undefined {
+        return (this.e as any)[value];
     }
 
     /**
      * Create a transformer for a enum.
-     * @param e -- enum
+     * @param e                             -- enum
      */
     public static of<T>(e: T): EnumValueTransformer<T, keyof T> {
         return new EnumValueTransformer<T, keyof T>(e);

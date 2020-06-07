@@ -43,14 +43,14 @@ module.exports = {
         "func-call-spacing": [ "error", "never" ],
 
         // indentation
-        "indent": [ "error", 4 ],
-        // "indent": [ "error", 4, {
-        //     "SwitchCase": 1,
-        //     "outerIIFEBody": 1,
-        //     "FunctionDeclaration": { "parameters": "first" },
-        //     "FunctionExpression": { "body": 1, "parameters": 2 },
-        //     "CallExpression": { "arguments": "first" }
-        // }],
+        // "indent": [ "error", 4 ],
+        "indent": [ "error", 4, {
+            "SwitchCase": 1,
+            // "outerIIFEBody": 1,
+            // "FunctionDeclaration": { "parameters": "first" },
+            // "FunctionExpression": { "body": 1, "parameters": 2 },
+            // "CallExpression": { "arguments": "first" }
+        }],
 
         "no-trailing-spaces": [ "error", {
             "skipBlankLines": true

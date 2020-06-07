@@ -1,3 +1,5 @@
+import { Property } from "@tsed/common";
+
 export class AttachmentType {
 
     public static readonly ASSIGNS_LIST = new AttachmentType("ASSIGNS_LIST", "assigns_list");
@@ -8,10 +10,15 @@ export class AttachmentType {
     public static readonly PUBLICATION = new AttachmentType("PUBLICATION", "publication");
     public static readonly VIDEO = new AttachmentType("VIDEO", "video");
 
-    constructor(private readonly key: string, public readonly name: string) {}
+    @Property({ name: "key" })
+    public readonly key: string;
 
-    public get value(): string {
-        return this.key;
+    @Property({ name: "description" })
+    public readonly description: string;
+
+    constructor(key: string, description: string) {
+        this.key = key;
+        this.description = description;
     }
 
     public static get keys(): string[] {

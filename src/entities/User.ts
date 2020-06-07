@@ -1,4 +1,4 @@
-import { Default, Format, Property, Required, IgnoreProperty, Allow } from "@tsed/common";
+import { Default, Format, Property, Required, IgnoreProperty, Allow, All } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn, OneToMany } from "typeorm";
 
@@ -10,6 +10,7 @@ export class UserCredentials {
 
     @Description("User email")
     @Example("yourname@domain.com")
+    @Format("email")
     @Required()
     @Property({ name: "email" })
     @Column({ name: "email", type: "varchar", length: 128, nullable: false })
@@ -59,8 +60,14 @@ export class User extends UserBasic {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id: number;
 
+    @Allow([ null, undefined ])
+    public name: string;
+
     @IgnoreProperty()
     public password: string;
+
+    @Allow([ null, undefined ])
+    public phone: string;
 
     @IgnoreProperty()
     @Description("Mark if user is active")

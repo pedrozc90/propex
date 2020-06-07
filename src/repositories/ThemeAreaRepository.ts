@@ -8,6 +8,10 @@ import { IOptions } from "../types";
 @EntityRepository(ThemeArea)
 export class ThemeAreaRepository extends GenericRepository<ThemeArea> {
 
+    /**
+     * Return a paginated list of theme areas.
+     * @param options                       -- query options.
+     */
     public async fetch(options: IOptions): Promise<Page<ThemeArea>> {
         const params: any = {};
         if (options.page && options.rpp) {
@@ -19,9 +23,13 @@ export class ThemeAreaRepository extends GenericRepository<ThemeArea> {
                 { name: Like(`%${options.q}%`) }
             ];
         };
-        return Page.of(await this.find(params), options.page, options.rpp);
+        return Page.of<ThemeArea>(await this.find(params), options.page, options.rpp);
     }
 
+    /**
+     * Returns a list of theme areas.
+     * @param options                       -- query options.
+     */
     public async list(options: any): Promise<ThemeArea[]> {
         const params: any = {};
         if (options.q) {

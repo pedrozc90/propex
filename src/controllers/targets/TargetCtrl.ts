@@ -1,9 +1,8 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, $log } from "@tsed/common";
-import { Exception, NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams } from "@tsed/common";
 
 import { CustomAuth } from "../../services";
 import { TargetRepository, ProjectRepository } from "../../repositories";
-import { Target } from "../../entities";
+import { Target, ResultContent, Page } from "../../entities";
 import { IContext, AgeRange } from "../../types";
 
 @Controller("/targets")
@@ -16,9 +15,17 @@ export class TargetCtrl {
      */
     @Get("/")
     @CustomAuth({})
-    public async fetch(): Promise<Target[]> {
-        const query = this.targetRepository.createQueryBuilder("t");
-        return query.getMany();
+    public async fetch(
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("project") project: number): Promise<Page<Target>> {
+        let query = this.targetRepository.createQueryBuilder("t");
+        if (project) {
+            query = query.innerJoin("t.project", "p", "p.id = :projectId", { projectId: project });
+        }
+        query = query.skip((page - 1) * rpp).take(rpp);
+
+        return Page.of<Target>(await query.getMany(), page, rpp);
     }
 
     /**
@@ -31,15 +38,21 @@ export class TargetCtrl {
     public async save(
         @Locals("context") context: IContext,
         @Required() @BodyParams("target") target: Target
-    ): Promise<any> {
+    ): Promise<ResultContent<Target>> {
         // check if user is part of project.
-        // const project = await this.projectRepository.findByContext(target.project.id, context);
-        // if (!project) {
-        //     throw new Exception(400, "Project not found.");
-        // }
-        // target.project = project;
+        const project = await this.projectRepository.findByContext(target.project.id, context);
+
+        let t = await this.targetRepository.findOne({ ageRange: target.ageRange, project: { id: project.id } });
+        if (t) {
+            t = this.targetRepository.merge(t, target);
+        } else {
+            t = target;
+            t.project = project;
+        }
+        t = await this.targetRepository.save(t);
+        
         // return this.targetRepository.save(target);
-        throw new NotImplemented("Method Not Implemented");
+        return ResultContent.of<Target>(t).withMessage("Target added to project.");
     }
 
     /**

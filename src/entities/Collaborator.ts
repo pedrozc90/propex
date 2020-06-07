@@ -31,7 +31,6 @@ export class Collaborator extends Audit {
     @Column({ name: "affiliation", type: "varchar", length: 255, nullable: false })
     public affiliation: string;
 
-    @Required()
     @Property({ name: "user" })
     @OneToOne(() => User, (user) => user.collaborator)
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })

@@ -1,0 +1,5 @@
+# files to ignore format
+node_modules/*
+docs/*
+commands/*
+.eslintrc.js

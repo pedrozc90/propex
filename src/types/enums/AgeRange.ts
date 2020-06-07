@@ -1,3 +1,5 @@
+import { Property } from "@tsed/common";
+
 export class AgeRange {
 
     public static readonly UNTIL_12 = new AgeRange("UNTIL_12", "Até 12 anos incompletos");
@@ -9,10 +11,15 @@ export class AgeRange {
     public static readonly FROM_61_TO_70 = new AgeRange("FROM_61_TO_70", "De 61a 70 anos");
     public static readonly OLDER_THAN_70 = new AgeRange("OLDER_THAN_70", "Acima de 70 anos");
 
-    constructor(private readonly key: string, public readonly name: string) {}
+    @Property({ name: "key" })
+    public readonly key: string;
 
-    public get value(): string {
-        return this.key;
+    @Property({ name: "description" })
+    public readonly description: string;
+
+    constructor(key: string, description: string) {
+        this.key = key;
+        this.description = description;
     }
 
     public static get keys(): string[] {

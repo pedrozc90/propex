@@ -28,12 +28,10 @@ export class AuthenticationService {
      * Load user context.
      * @param jwt                   -- decoded jwt token.
      */
-    public async context(jwt?: IJwt): Promise<IContext | undefined> {
-        if (!jwt) {
+    public async context(jwt?: IJwt): Promise<IContext> {
+        if (!jwt || !jwt.id) {
             throw new Unauthorized("Invalid token!");
         }
-        
-        if (!jwt.id) return;
 
         const user = await this.userRepository.findOne({ id: jwt.id, active: true })
             .catch((error: any) => {
@@ -56,11 +54,17 @@ export class AuthenticationService {
         return { user, collaborator, student, scope };
     }
 
-    private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope | undefined {
-        if (!user) return;
-        if (user.id === 1) return Scope.ADMIN;
-        if (collaborator) return Scope.COLLABORATOR;
-        if (student) return Scope.STUDENT;
+    private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope {
+        if (user) {
+            if (user.id === 1) {
+                return Scope.ADMIN;
+            } else if (collaborator) {
+                return Scope.COLLABORATOR;
+            } else if (student) {
+                return Scope.STUDENT;
+            }
+        }
+        return Scope.UNKNOWN;
     }
 
     /**
@@ -81,6 +85,7 @@ export class AuthenticationService {
         const now: number = Math.floor(Date.now() / 1000);
         const payload: any = {
             id: user.id,
+            email: user.email,
             iat: now
             // exp: now + JWT_EXPIRATION
         };

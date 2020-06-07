@@ -39,8 +39,8 @@ export class CustomAuthMiddleware implements IMiddleware {
         
         // user scope must match defined options, if options exists.
         // if options do not exists, just a valid token is required.
-        if ((options.role && options.role !== context?.scope?.value) ||
-            (options.scope && context && context.scope && !options.scope.includes(context.scope.value))) {
+        if ((options.role && options.role !== context.scope.key) ||
+            (options.scope && !options.scope.includes(context.scope.key))) {
             throw new Forbidden("You are not allowed here.");
         }
 

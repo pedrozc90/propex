@@ -1,5 +1,5 @@
 import { EntityRepository } from "@tsed/typeorm";
-import { Unauthorized } from "@tsed/exceptions";
+import { Exception, Unauthorized } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Project, Target } from "../entities";
@@ -52,10 +52,7 @@ export class ProjectRepository extends GenericRepository<Project> {
 
         const project = await query.getOne();
         if (!project) {
-            if (coodinator) {
-                throw new Unauthorized("Coordinator only is allowed here.");
-            }
-            throw new Unauthorized("You are not part of this project.");
+            throw new Exception(404, "Project not found.");
         }
 
         return project;

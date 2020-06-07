@@ -10,6 +10,7 @@ export interface IOptions {
     page?: number;
     rpp?: number;
     q?: string;
+    [key: string]: any;
 }
 
 export interface IEntity {
@@ -20,7 +21,7 @@ export interface IContext {
     user: User;
     collaborator?: Collaborator;
     student?: Student;
-    scope?: Scope;
+    scope: Scope;
 }
 
 // --------------------------------------------------

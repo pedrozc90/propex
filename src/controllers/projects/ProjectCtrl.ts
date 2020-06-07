@@ -5,7 +5,7 @@ import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Collaborator, DisclosureMedia, Evaluation, ExtensionLine, KnowledgeArea,
     Page, Partner, Project, ProjectBasic, ProjectHumanResource, Target,
-    ProjectThemeArea, Public, Student, ThemeArea, User, ResultContent, Activity } from "../../entities";
+    ProjectThemeArea, Public, Student, ThemeArea, User, ResultContent, Activity, Demand } from "../../entities";
 import { IContext, Scope, AgeRange } from "../../types";
 
 import moment from "moment";
@@ -60,8 +60,8 @@ export class ProjectCtrl {
 
         if (context.scope !== Scope.ADMIN) {
             query = query.where((qb) => {
-                const subquery = qb.subQuery().from(ProjectHumanResource, "x").select("x.project_id")
-                    .where("x.user_id = :userId", { userId: context.user?.id })
+                const subquery = qb.subQuery().from(ProjectHumanResource, "hr").select("hr.project_id")
+                    .where("hr.user_id = :userId", { userId: context.user?.id })
                     .getQuery();
                 return `p.id IN ${subquery}`;
             });
@@ -74,44 +74,38 @@ export class ProjectCtrl {
 
         query = query.skip((page - 1) * rpp).take(rpp);
 
-        return Page.of(await query.getMany(), page, rpp);
+        return Page.of<Project>(await query.getMany(), page, rpp);
     }
 
     /**
      * Create a new project.
+     * @param context                       -- user context.
      * @param project                       -- project data.
      */
     @Post("/")
     @CustomAuth({ scope: [ "ADMIN" ] })
-    public async create(
+    public async create(@Locals("context") context: IContext,
         @Required() @BodyParams("project") data: ProjectBasic,
         @Required() @BodyParams("coordinator") coordinator: User
-    ): Promise<any> {
-        // a coordinator is required to create a new project.
+    ): Promise<ResultContent<any>> {
         if (!coordinator) {
-            throw new BadRequest("Coordinator not found!");
+            throw new BadRequest("Required coordinator was not send!");
+        }
+        
+        const user = await this.UserRepository.findByIdOrEmail({ id: coordinator.id, email: coordinator.email });
+        if (!user) {
+            throw new Exception(404, "Please, coodinator user is not registed.");
         }
 
         // create a new project
         let project = new Project();
         project.title = data.title;
         project.program = data.program;
-
-        project = await this.ProjectRepository.save(project);
-
-        // verify/select coordinator user
-        let query = this.UserRepository.createQueryBuilder("user")
-            .innerJoinAndSelect("user.collaborator", "collaborator");
-            
-        if (coordinator.id) query = query.where("user.id = :id", { id: coordinator.id });
-        if (coordinator.email) query = query.orWhere("user.email = :email", { email: coordinator.email });
-
-        const user = await query.getOne();
-
-        if (!user) {
-            throw new BadRequest("User not found!");
-        }
+        project = await this.ProjectRepository.save(project).catch((err: Error) => {
+            throw new Exception(404, "Unable to save new project.", err);
+        });
         
+        // define user as project coordinator
         const phr = new ProjectHumanResource();
         phr.coordinate = true;
         phr.exclusive = true;
@@ -120,20 +114,36 @@ export class ProjectCtrl {
         phr.user = user;
 
         await this.ProjectHumanResourceRepository.save(phr)
-            .catch((error: Error) => {
-                $log.error(error.message);
-            });
+            .catch((error: Error) => $log.error(error.message));
 
-        // pre-save all targets age range with zero number men and women.
-        const targets = AgeRange.list.map((ageRange) => {
-            const t = new Target();
-            t.project = project;
-            t.ageRange = ageRange;
-            return t;
-        });
+        // create the default targets for this project.
+        const targets = this.TargetRepository.default(project);
         await this.TargetRepository.save(targets);
 
-        return { message: "Project successfully created!", id: project.id };
+        return ResultContent.of({ id: project.id, title: project.title }).withMessage("Project successfully created!");
+    }
+
+    @Put("/")
+    @CustomAuth({})
+    public async update(@Locals("context") context: IContext,
+        @Required() @BodyParams("project") data: Project
+    ): Promise<ResultContent<Project>> {
+        // check if project exists.
+        let project = await this.ProjectRepository.findById(data.id);
+        if (!project) {
+            throw new Exception(404, "Project not found!");
+        }
+
+        // update knowledge areas changes.
+        if (data.knowledgeAreas) {
+            await this.KnowledgeAreaRepository.overwrite(project, data.knowledgeAreas);
+        }
+
+        $log.warn("WORKING");
+
+        project = this.ProjectRepository.merge(project, data);
+
+        return ResultContent.of<Project>(project).withMessage("success");
     }
 
     /**
@@ -162,7 +172,7 @@ export class ProjectCtrl {
             .leftJoinAndSelect("p.demands", "demands")
             .leftJoinAndSelect("p.disclosureMedias", "disclosureMedias")
             .leftJoinAndSelect("p.evaluations", "evaluations")
-            .leftJoinAndSelect("p.eventPresentations", "eventPresentations")
+            .leftJoinAndSelect("p.events", "event")
             .leftJoinAndSelect("p.extensionLines", "extensionLines")
             .leftJoinAndSelect("p.futureDevelopmentPlans", "futureDevelopmentPlans")
             .leftJoinAndSelect("p.knowledgeAreas", "knowledgeAreas")
@@ -174,8 +184,8 @@ export class ProjectCtrl {
             .leftJoinAndSelect("projectPublics.public", "public")
 
             // load theme areas
-            .leftJoinAndSelect("p.projectThemeAreas", "projectThemeAreas")
-            .leftJoinAndSelect("projectThemeAreas.themeArea", "themeArea")
+            .leftJoinAndSelect("p.projectThemeAreas", "projectThemeArea")
+            .leftJoinAndSelect("projectThemeArea.themeArea", "themeArea")
 
             .leftJoinAndSelect("p.activities", "activities")
             .leftJoinAndSelect("p.attachments", "attachments")
@@ -184,24 +194,14 @@ export class ProjectCtrl {
             .leftJoinAndSelect("publications.attachment", "publicationsAttachments")
             
             // load human resouces (collaborators and students)
-            .leftJoinAndSelect("p.projectHumanResources", "projectHumanResources")
-            .leftJoinAndSelect("projectHumanResources.user", "user")
+            .leftJoinAndSelect("p.projectHumanResources", "projectHumanResource")
+            .leftJoinAndSelect("projectHumanResource.user", "user")
             .leftJoinAndSelect("user.collaborator", "collaborator")
             .leftJoinAndSelect("user.student", "student")
             .where("p.id = :id", { id });
 
         return query.getOne();
     }
-
-    // /**
-    //  * Delete a project. Only administrators have permission.
-    //  * @param id                -- project id.
-    //  */
-    // @Delete("/:id")
-    // @CustomAuth({ scope: [ "ADMIN" ] })
-    // public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-    //     return this.ProjectRepository.deleteById(id);
-    // }
 
     // --------------------------------------------------
     // ACTIVITIES
@@ -301,6 +301,25 @@ export class ProjectCtrl {
     }
 
     // --------------------------------------------------
+    // DEMANDS
+    // --------------------------------------------------
+
+    /**
+     * Return a list of disclosure medias that belongs to a project.
+     * @param id                -- project id.
+     */
+    @Get("/:id/demands")
+    @CustomAuth({})
+    public async getDemands(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number
+    ): Promise<Demand[]> {
+        return this.DemandRepository.createQueryBuilder("d")
+            .innerJoin("d.project", "p", "p.id = :projectId", { projectId: id })
+            .getMany();
+    }
+
+    // --------------------------------------------------
     // DISCLOSURE MEDIAS
     // --------------------------------------------------
 
@@ -310,7 +329,10 @@ export class ProjectCtrl {
      */
     @Get("/:id/disclosure-medias")
     @CustomAuth({})
-    public async getDisclosureMedia(@Required() @PathParams("id") id: number): Promise<DisclosureMedia[]> {
+    public async getDisclosureMedia(
+        @Locals("context") context: IContext,
+        @Required() @PathParams("id") id: number
+    ): Promise<DisclosureMedia[]> {
         return this.DisclosureMediaRepository.createQueryBuilder("dm")
             .innerJoin("dm.project", "p", "p.id = :projectId", { projectId: id })
             .getMany();
@@ -441,7 +463,7 @@ export class ProjectCtrl {
 
     /**
      * Return all knowledge areas from a given project.
-     * @param id                    -- project id.
+     * @param id                            -- project id.
      */
     @Get("/:id/knowledge-areas")
     @CustomAuth({})
@@ -453,8 +475,8 @@ export class ProjectCtrl {
 
     /**
      * Overwrite project knowledge areas, delete the items not send, and add the new items.
-     * @param id                -- project id.
-     * @param knowledgeAreas    -- list of knwoledge areas (they must exists in the database).
+     * @param id                            -- project id.
+     * @param knowledgeAreas                -- list of knwoledge areas (they must exists in the database).
      */
     @Post("/:id/knowledge-areas")
     @CustomAuth({})
@@ -462,30 +484,11 @@ export class ProjectCtrl {
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("knowledgeAreas") knowledgeAreas: KnowledgeArea[]
     ): Promise<ResultContent<KnowledgeArea[]>> {
+        // select project with user is part of.
         const project = await this.ProjectRepository.findByContext(id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found");
-        }
-        
-        // load extension lines which the project has connection.
-        let savedKnowledgeAreas = await this.KnowledgeAreaRepository.createQueryBuilder("ka")
-            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
-            .getMany();
-        
-        // extension lines not received in the request need to be removed
-        const knowledgeAreasToDelete = savedKnowledgeAreas.filter((a) => knowledgeAreas.findIndex((b) => b.id === a.id) < 0);
-        if (knowledgeAreasToDelete && knowledgeAreasToDelete.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).remove(knowledgeAreasToDelete);
-        }
 
-        const knowledgeAreasToInsert = knowledgeAreas.filter((a) => !!a.id && savedKnowledgeAreas.findIndex((b) => b.id === a.id) < 0);
-        if (knowledgeAreasToInsert && knowledgeAreasToInsert.length > 0) {
-            await this.ProjectRepository.createQueryBuilder("project").relation("knowledgeAreas").of(project).add(knowledgeAreasToInsert);
-        }
-
-        savedKnowledgeAreas = await this.KnowledgeAreaRepository.createQueryBuilder("ka")
-            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: id })
-            .getMany();
+        // save project knowledge areas relationship.
+        const savedKnowledgeAreas = await this.KnowledgeAreaRepository.overwrite(project, knowledgeAreas);
 
         return ResultContent.of<KnowledgeArea[]>(savedKnowledgeAreas).withMessage("Project knowledge areas successfully saved!");
     }
@@ -675,32 +678,13 @@ export class ProjectCtrl {
         @Required() @PathParams("id") id: number,
         @Required() @BodyParams("targets") targets: Target[]
     ): Promise<any> {
+        // select project if user is part of it.
         const project = await this.ProjectRepository.findByContext(id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found");
-        }
 
-        const savedTargets = await this.TargetRepository.find({
-            join: {
-                alias: "pt",
-                innerJoinAndSelect: { project: "pt.project" }
-            },
-            where: { project: { id } }
-        });
+        // update project target based on receiver array, and return the new array of targets.
+        const savedTargets = await this.TargetRepository.overwrite(project, targets);
 
-        if (!targets) {
-            throw new Exception(400, "Targets not found!");
-        }
-
-        savedTargets.map((t) => {
-            const f = targets.find((pt) => pt.ageRange === t.ageRange);
-            if (f) {
-                t.menNumber = f.menNumber;
-                t.womenNumber = f.womenNumber;
-            }
-            return t;
-        });
-        return this.TargetRepository.save(targets);
+        return ResultContent.of<Target[]>(savedTargets).withMessage("Target successfully saved.");
     }
 
     // --------------------------------------------------
@@ -737,55 +721,16 @@ export class ProjectCtrl {
     public async setThemeAreas(
         @Locals("context") context: IContext,
         @Required() @PathParams("id") id: number,
-        @BodyParams("main") main: ThemeArea[],
-        @BodyParams("secondary") secondary: ThemeArea[]
+        @BodyParams("main") main?: ThemeArea[],
+        @BodyParams("secondary") secondary?: ThemeArea[]
     ): Promise<any> {
+        // check if user is part of project.
         const project = await this.ProjectRepository.findByContext(id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found");
-        }
 
         // create project theme aread
-        const projectThemeAreas: ProjectThemeArea[] = [];
+        const projectThemeAreas = await this.ProjectThemeAreaRepository.overwrite(project, main, secondary);
 
-        projectThemeAreas.push(...main.map((ta) => {
-            const pta = new ProjectThemeArea();
-            pta.main = true;
-            pta.project = project;
-            pta.projectId = project.id;
-            pta.themeArea = ta;
-            pta.themeAreaId = ta.id;
-            return pta;
-        }));
-
-        projectThemeAreas.push(...secondary.map((ta) => {
-            const pta = new ProjectThemeArea();
-            pta.main = false;
-            pta.project = project;
-            pta.projectId = project.id;
-            pta.themeArea = ta;
-            pta.themeAreaId = ta.id;
-            return pta;
-        }));
-
-        // array of theme areas id received
-        const projectThemeAreaIds: number[] = projectThemeAreas.map((pta) => pta.themeArea.id);
-
-        // load saved project theme areas
-        const projectThemeAreasSaved: ProjectThemeArea[] = await this.ProjectThemeAreaRepository.createQueryBuilder("pta")
-            .innerJoinAndSelect("pta.project", "project", "pta.project_id = :projectId", { projectId: id })
-            .getMany();
-        
-        // filter project theme areas to be deleted
-        const projectThemeAreasToDelete: ProjectThemeArea[] = projectThemeAreasSaved.filter((ptas) => !projectThemeAreaIds.includes(ptas.themeAreaId));
-        if (projectThemeAreasToDelete.length > 0) {
-            await this.ProjectThemeAreaRepository.remove(projectThemeAreasToDelete);
-        }
-
-        // filter project theme areas to be inserted/updated
-        const projectThemeAreasToInsert: ProjectThemeArea[] = projectThemeAreas.filter((pta) => projectThemeAreasToDelete.findIndex((ptad) => ptad.themeAreaId === pta.themeArea.id) < 0);
-
-        return this.ProjectThemeAreaRepository.save(projectThemeAreasToInsert);
+        return ResultContent.of<ProjectThemeArea[]>(projectThemeAreas).withMessage("Project Theme Areas successfully saved.");
     }
 
 }

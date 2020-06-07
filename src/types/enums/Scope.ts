@@ -1,14 +1,28 @@
+import { Property } from "@tsed/common";
+
 export class Scope {
 
-    public static readonly ADMIN = new Scope("ADMIN", "administrador", 0);
-    public static readonly COORDENATOR = new Scope("COORDENATOR", "coordenador", 1);
-    public static readonly PROFESSOR = new Scope("PROFESSOR", "professor", 2);
-    public static readonly STUDENT = new Scope("STUDENT", "estudante", 3);
-    public static readonly COLLABORATOR = new Scope("COLLABORATOR", "colaborador", 4);
+    public static readonly UNKNOWN = new Scope("UNKNOWN", "unknown", 0);
+    public static readonly ADMIN = new Scope("ADMIN", "administrador", 100);
 
-    constructor(private readonly key: string,
-        public readonly name: string,
-        public readonly access: number = 0) {
+    public static readonly COORDENATOR = new Scope("COORDENATOR", "coordenador", 75);
+    public static readonly PROFESSOR = new Scope("PROFESSOR", "professor", 50);
+    public static readonly STUDENT = new Scope("STUDENT", "estudante", 25);
+    public static readonly COLLABORATOR = new Scope("COLLABORATOR", "colaborador", 25);
+
+    @Property({ name: "key" })
+    public readonly key: string;
+
+    @Property({ name: "description" })
+    public readonly description: string;
+
+    @Property({ name: "access" })
+    public readonly access: number;
+
+    constructor(key: string, description: string, access: number = 0) {
+        this.key = key;
+        this.description = description;
+        this.access = access;
     }
 
     public get isAdmin(): boolean {
@@ -21,10 +35,6 @@ export class Scope {
 
     public get isCollaborator(): boolean {
         return this === Scope.COLLABORATOR;
-    }
-
-    public get value(): string {
-        return this.key;
     }
 
     public static get keys(): string[] {
