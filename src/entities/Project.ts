@@ -98,7 +98,7 @@ export class Project extends Audit {
     @OneToMany(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
     public disclosureMedias: DisclosureMedia[];
 
-    @Property({ name: "eventPresentations" })
+    @Property({ name: "events" })
     @OneToMany(() => Event, (event) => event.project)
     public events: Event[];
 
