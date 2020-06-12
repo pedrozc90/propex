@@ -20,7 +20,7 @@ export class ProjectThemeAreaCtrl {
      * Return the list of theme areas connected to a given project.
      * @param id                            -- project id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getThemeAreas(@PathParams("projectId") projectId: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
         const query = this.ThemeAreaRepository.createQueryBuilder("ta")
@@ -41,7 +41,7 @@ export class ProjectThemeAreaCtrl {
      * @param main                          -- list of main theme areas.
      * @param secondary                     -- list of secondary theme areas.
      */
-    @Post("/:id/theme-areas")
+    @Post("")
     @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setThemeAreas(
         @Locals("context") context: IContext,

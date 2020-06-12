@@ -13,7 +13,7 @@ export class TargetCtrl {
     /**
      * Return a list of targets.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @QueryParams("page") page: number = 1,
@@ -33,7 +33,7 @@ export class TargetCtrl {
      * @param context                       -- user context.
      * @param target                        -- target data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

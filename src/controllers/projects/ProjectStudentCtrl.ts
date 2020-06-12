@@ -23,7 +23,7 @@ export class ProjectStudentCtrl {
      * @param period            -- search for student from a specific period.
      * @param q                 -- search query.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getStudents(
         @PathParams("projectId") projectId: number,
@@ -54,7 +54,7 @@ export class ProjectStudentCtrl {
         return query.getMany();
     }
 
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async postStudents(
         @Locals("context") context: IContext,

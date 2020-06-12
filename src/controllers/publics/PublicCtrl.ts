@@ -16,7 +16,7 @@ export class PublicCtrl {
      * @param rpp                           -- number of entities per page.
      * @param q                             -- search query string.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @QueryParams("page") page: number = 1,
@@ -42,7 +42,7 @@ export class PublicCtrl {
      * @param context                       -- user context.
      * @param data                          -- public data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ role: "ADMIN" })
     public async save(@Required() @BodyParams("public") data: Public): Promise<Public | undefined> {
         return this.publicRepository.save(data);

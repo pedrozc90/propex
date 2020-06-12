@@ -17,7 +17,7 @@ export class ProjectDemanCtrl {
      * Return a list of disclosure medias that belongs to a project.
      * @param id                -- project id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getDemands(
         @Required() @PathParams("projectId") projectId: number

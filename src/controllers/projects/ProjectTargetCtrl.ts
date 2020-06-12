@@ -15,15 +15,11 @@ export class ProjectTargetCtrl {
         // initialize stuff here
     }
 
-    // --------------------------------------------------
-    // TARGETS
-    // --------------------------------------------------
-
     /**
      * Return the list of targets witch the project attends.
      * @param id                            -- project id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getTargets(@PathParams("projectId") projectId: number): Promise<{ targets: Target[], total: number }> {
         const query = this.TargetRepository.createQueryBuilder("pt")
@@ -42,7 +38,7 @@ export class ProjectTargetCtrl {
      * @param id                            -- project id.
      * @param targets                       -- project targets.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async setTargets(
         @Locals("context") context: IContext,

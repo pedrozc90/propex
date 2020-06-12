@@ -22,7 +22,7 @@ export class ProjectActivityCtrl {
      * @param initDate                      -- initial date.
      * @param lastDate                      -- last date.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getActivities(@Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,

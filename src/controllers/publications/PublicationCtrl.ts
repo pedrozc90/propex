@@ -14,7 +14,7 @@ export class PublicationCtrl {
     /**
      * Return a list of publications.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(): Promise<any> {
         throw new NotImplemented("Method Not Implemented!");
@@ -25,7 +25,7 @@ export class PublicationCtrl {
      * @param context                       -- user context.
      * @param publication                   -- publication data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

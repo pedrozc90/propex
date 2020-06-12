@@ -20,7 +20,7 @@ export class UserCtrl {
      * @param rpp                           -- number of elements a page contains.
      * @param q                             -- extra query param, used for searching.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({ role: "ADMIN" })
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
@@ -47,7 +47,7 @@ export class UserCtrl {
      * Create/Update user information.
      * @param data                          -- user data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ role: "ADMIN" })
     public async create(@Req() request: Req, @Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
         if (data.id) {
@@ -93,7 +93,7 @@ export class UserCtrl {
      * Create/Update user information.
      * @param data                          -- user data.
      */
-    @Put("/")
+    @Put("")
     @CustomAuth({ role: "ADMIN" })
     public async save(@Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
         // check if user exists

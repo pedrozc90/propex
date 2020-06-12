@@ -16,7 +16,7 @@ export class EventCtrl {
      * @param context                       -- user context.
      * @param project                       -- project id or title.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @Locals("context") context: IContext,
@@ -45,7 +45,7 @@ export class EventCtrl {
      * @param context                       -- user context.
      * @param events                        -- event data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

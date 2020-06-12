@@ -20,7 +20,7 @@ export class ThemeAreaCtrl {
      * @param rpp                           -- number of entities per page.
      * @param q                             -- search query string.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
@@ -35,7 +35,7 @@ export class ThemeAreaCtrl {
      * @param context                       -- user context.
      * @param themeArea                     -- theme area data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ role: "ADMIN" })
     public async save(@Locals("context") context: IContext,
         @Required() @BodyParams("themeArea") themeArea: ThemeArea

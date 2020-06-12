@@ -15,7 +15,7 @@ export class ActivityCtrl {
      * @param context                       -- user context.
      * @param project                       -- project id or title.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @Locals("context") context: IContext,
@@ -39,7 +39,7 @@ export class ActivityCtrl {
      * @param context                       -- user context.
      * @param Activitys                   -- Activity data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

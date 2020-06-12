@@ -8,7 +8,7 @@ export class KnowledgeAreaCtrl {
 
     constructor(private knowledgeAreaRepository: KnowledgeAreaRepository) {}
 
-    @Get("/")
+    @Get("")
     public async fetch(@QueryParams("page") page: number, @QueryParams("rpp") rpp: number, @QueryParams("q") q: string): Promise<Page<KnowledgeArea>> {
         return this.knowledgeAreaRepository.fetch({ page, rpp, q });
     }
@@ -18,7 +18,7 @@ export class KnowledgeAreaCtrl {
         return this.knowledgeAreaRepository.list({ q });
     }
 
-    @Post("/")
+    @Post("")
     public async create(@BodyParams("knowledgeArea") knowledgeArea: KnowledgeArea): Promise<KnowledgeArea | undefined> {
         return this.knowledgeAreaRepository.save(knowledgeArea);
     }

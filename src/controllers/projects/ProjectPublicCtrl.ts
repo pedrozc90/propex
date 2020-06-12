@@ -16,16 +16,12 @@ export class ProjectPublicCtrl {
         // initialize stuff here
     }
 
-    // --------------------------------------------------
-    // PUBLICS
-    // --------------------------------------------------
-
     /**
      * Return all publics from a given project.
      * @param id                            -- project id.
      * @param directly                      -- filter direct publics.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getPublics(
         @Required() @PathParams("projectId") projectId: number,
@@ -47,7 +43,7 @@ export class ProjectPublicCtrl {
      * @param id                            -- project id.
      * @param publics                       -- project publics data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setPublics(
         @Locals("context") context: IContext,

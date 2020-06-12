@@ -34,7 +34,12 @@ import { ProjectDemanCtrl } from "./ProjectDemanCtrl";
         ProjectStudentCtrl,
         ProjectTargetCtrl,
         ProjectThemeAreaCtrl
-    ]
+    ],
+    routerOptions: {
+        caseSensitive: false,
+        mergeParams: false,
+        strict: true
+    }
 })
 export class ProjectCtrl {
 
@@ -54,7 +59,7 @@ export class ProjectCtrl {
      * @param rpp                           -- rows per page.
      * @param q                             -- query string (search).
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
@@ -91,7 +96,7 @@ export class ProjectCtrl {
      * @param context                       -- user context.
      * @param project                       -- project data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ scope: [ "ADMIN" ] })
     public async create(@Required() @BodyParams("project") data: ProjectBasic,
         @Required() @BodyParams("coordinator") coordinator: User
@@ -131,7 +136,7 @@ export class ProjectCtrl {
         return ResultContent.of({ id: project.id, title: project.title }).withMessage("Project successfully created!");
     }
 
-    @Put("/")
+    @Put("")
     @CustomAuth({})
     public async update(@Required() @BodyParams("project") data: Project): Promise<ResultContent<Project>> {
         // check if project exists.

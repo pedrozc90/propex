@@ -15,7 +15,7 @@ export class DisclosureMediaCtrl {
      * @param context                       -- user context.
      * @param project                       -- project title or id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
@@ -58,7 +58,7 @@ export class DisclosureMediaCtrl {
      * @param context                       -- user context/
      * @param disclosureMedia               -- disclosure media data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

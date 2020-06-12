@@ -15,7 +15,7 @@ export class DemandCtrl {
      * @param context                       -- user context.
      * @param project                       -- project id or title.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @Locals("context") context: IContext,
@@ -38,7 +38,7 @@ export class DemandCtrl {
      * @param context                       -- user context.
      * @param demands                       -- demand data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

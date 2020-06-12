@@ -18,7 +18,7 @@ export class ExtensionLineCtrl {
      * @param q                             -- query text.
      * @param project                       -- project id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @QueryParams("page") page: number = 1,
@@ -50,7 +50,7 @@ export class ExtensionLineCtrl {
      * @param request                       -- express request object.
      * @param extensionLine                 -- extension line data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({ role: "ADMIN" })
     public async create(
         @Req() request: Req,
@@ -70,7 +70,7 @@ export class ExtensionLineCtrl {
      * Save extension line chagnes.
      * @param extensionLine                 -- extension line data.
      */
-    @Put("/")
+    @Put("")
     @CustomAuth({ role: "ADMIN" })
     public async update(@Required() @BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ExtensionLine | undefined> {
         let el = await this.extensionLineRepository.findOne({ id: extensionLine.id });

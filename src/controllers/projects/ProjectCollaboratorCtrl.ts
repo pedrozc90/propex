@@ -24,7 +24,7 @@ export class ProjectCollaboratorCtrl {
      * @param exclusive                     -- mark if collaborator is exclusive of the project.
      * @param q                             -- search query.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getCollaborators(
         @PathParams("projectId") projectId: number,
@@ -58,7 +58,7 @@ export class ProjectCollaboratorCtrl {
         return query.getMany();
     }
 
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async postCollaborators(
         @Locals("context") context: IContext,

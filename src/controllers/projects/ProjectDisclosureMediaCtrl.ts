@@ -8,7 +8,7 @@ import { IContext } from "../../types";
 
 import moment from "moment";
 
-@Controller("/projectId/disclosure-medias")
+@Controller("/:projectId/disclosure-medias")
 @MergeParams(true)
 export class ProjectDisclosureMediaCtrl {
 
@@ -22,7 +22,7 @@ export class ProjectDisclosureMediaCtrl {
      * Return a paginated list of disclosure medias that belongs to a project.
      * @param id                            -- project id.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getDisclosureMedia(@Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
@@ -37,7 +37,7 @@ export class ProjectDisclosureMediaCtrl {
         
         if (q) {
             query = query.where("dm.name LIKE :name", { name: `%${q}%` })
-                .orWhere("dm.link LIKE :link", { name: `%${q}%` });
+                .orWhere("dm.link LIKE :link", { link: `%${q}%` });
         }
 
         if (date) query = query.where("dm.date = :date", { date });
@@ -56,7 +56,7 @@ export class ProjectDisclosureMediaCtrl {
      * @param id                            -- project id
      * @param disclosureMedias              -- disclosure medias data.
      */
-    @Post("/:id/disclosure-medias")
+    @Post("")
     @CustomAuth({})
     public async setDisclosureMedia(
         @Locals("context") context: IContext,

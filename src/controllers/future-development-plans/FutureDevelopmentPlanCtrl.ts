@@ -16,7 +16,7 @@ export class FutureDevelopmentPlanCtrl {
      * @param context                       -- user context.
      * @param project                       -- project id or title.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @Locals("context") context: IContext,
@@ -37,7 +37,7 @@ export class FutureDevelopmentPlanCtrl {
      * @param context                       -- user context.
      * @param plans                         -- future development plan data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

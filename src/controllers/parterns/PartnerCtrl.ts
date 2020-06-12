@@ -11,13 +11,13 @@ export class PartnerCtrl {
 
     constructor(private partnerRepository: PartnerRepository, private proejctRepository: ProjectRepository) {}
 
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(): Promise<any> {
         throw new NotImplemented("Method Not Implemented!");
     }
 
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,

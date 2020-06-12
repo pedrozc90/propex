@@ -15,7 +15,7 @@ export class ProjectPartnerCtrl {
         // initialize stuff here
     }
 
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async getParterns(
         @Locals("context") context: IContext,
@@ -27,7 +27,7 @@ export class ProjectPartnerCtrl {
         throw new NotImplemented("Method Not Implemented.");
     }
 
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async postParterns(
         @Locals("context") context: IContext,

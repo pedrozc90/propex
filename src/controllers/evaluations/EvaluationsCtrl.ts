@@ -15,7 +15,7 @@ export class EvaluationCtrl {
      * @param context                       -- user context.
      * @param project                       -- project id or title.
      */
-    @Get("/")
+    @Get("")
     @CustomAuth({})
     public async fetch(
         @Locals("context") context: IContext,
@@ -45,7 +45,7 @@ export class EvaluationCtrl {
      * @param context                       -- user context.
      * @param evaluations                   -- evaluation data.
      */
-    @Post("/")
+    @Post("")
     @CustomAuth({})
     public async save(@Required() @BodyParams("evaluation") evaluation: Evaluation): Promise<Evaluation> {
         return this.evaluationRepository.save(evaluation);

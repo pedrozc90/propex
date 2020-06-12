@@ -6,9 +6,6 @@ import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../e
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { Scope, IContext, IJwt } from "../../types";
 
-const JWT_SECRET_KEY: string | undefined = process.env.JWT_SECRET_KEY;
-const JWT_EXPIRATION: number = 1 * 60 * 60; // seconds
-
 @Service()
 export class AuthenticationService {
 
@@ -80,7 +77,7 @@ export class AuthenticationService {
      * @param user                  -- user data.
      */
     public async signJwtToken(user: User, rememberMe: boolean = false): Promise<string | null> {
-        if (!JWT_SECRET_KEY) return null;
+        if (!process.env.JWT_SECRET_KEY) return null;
 
         const now: number = Math.floor(Date.now() / 1000);
         const payload: any = {
@@ -89,13 +86,13 @@ export class AuthenticationService {
             iat: now
             // exp: now + JWT_EXPIRATION
         };
-        const secret: Secret = JWT_SECRET_KEY;
-        const options: SignOptions = {};
-        // algorithm: "RS256",
-        // expiresIn: JWT_EXPIRATION || "1h"
+        const secret: Secret = process.env.JWT_SECRET_KEY;
+        const options: SignOptions = {}; // algorithm: "RS256",
+
         if (!rememberMe) {
-            options.expiresIn = JWT_EXPIRATION || "24h";
+            options.expiresIn = process.env.JWT_SECRET_KEY || "24h";
         }
+
         return new Promise((resolve, reject) => {
             sign(payload, secret, options, (err: Error | null, token: string | undefined): void => {
                 if (err) {
@@ -112,9 +109,12 @@ export class AuthenticationService {
      * @param token                 -- jwt token taken from request headers
      */
     public async verifyJwtToken(token: string): Promise<any> {
-        if (!JWT_SECRET_KEY) return;
+        if (!process.env.JWT_SECRET_KEY) return;
+        
+        const secret: Secret = process.env.JWT_SECRET_KEY;
+
         return new Promise((resolve, reject) => {
-            verify(this.getJwtToken(token), JWT_SECRET_KEY, (err: VerifyErrors | null, decoded: object | undefined): any => {
+            verify(this.getJwtToken(token), secret, (err: VerifyErrors | null, decoded: object | undefined): any => {
                 if (err) {
                     reject(err);
                 } else {
@@ -134,7 +134,6 @@ export class AuthenticationService {
             throw new BadRequest("Token do not start with 'Bearer'");
         }
         return words[1];
-        // return token.substring(("Bearer").length).trim();
     }
 
     /**

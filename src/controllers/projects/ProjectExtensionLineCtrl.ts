@@ -19,7 +19,7 @@ export class ProjectExtensionLineCtrl {
      * Returns all extension lines from a given project.
      * @param projectId                     -- project id.
      */
-    @Get("/:id/extension-lines")
+    @Get("")
     @CustomAuth({})
     public async getExtensionLines(@Required() @PathParams("projectId") projectId: number): Promise<ExtensionLine[]> {
         return this.ExtensionLineRepository.createQueryBuilder("el")
@@ -32,7 +32,7 @@ export class ProjectExtensionLineCtrl {
      * @param projectId                     -- project id.
      * @param extensionLines                -- list of extension lines (they must exists in the database).
      */
-    @Post("/:id/extension-lines")
+    @Post("")
     @CustomAuth({})
     public async postExtensionLines(@Locals("context") context: IContext,
         @Required() @PathParams("projectId") projectId: number,
