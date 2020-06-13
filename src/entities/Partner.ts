@@ -33,6 +33,7 @@ export class Partner extends Audit {
     @Column({ name: "phone", type: "varchar", length: 20, nullable: false })
     public phone: string;
 
+    @Property({ name: "project" })
     @ManyToOne(() => Project, (project) => project.partners, { nullable: false })
     @JoinColumn({ name: "project_id", referencedColumnName: "id" })
     public project: Project;
