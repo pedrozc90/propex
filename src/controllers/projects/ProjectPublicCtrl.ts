@@ -1,3 +1,4 @@
+import { isBoolean } from "@tsed/core";
 import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams } from "@tsed/common";
 import { NotImplemented } from "@tsed/exceptions";
 
@@ -30,7 +31,7 @@ export class ProjectPublicCtrl {
         let query = this.PublicRepository.createQueryBuilder("pb")
             .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId });
         
-        if (directly) {
+        if (isBoolean(directly)) {
             query = query.where("ppb.directly = :directly", { directly: (directly) ? 1 : 0 });
         }
 

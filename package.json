@@ -41,6 +41,7 @@
         "@tsed/common": "^5.57.5",
         "@tsed/core": "^5.57.5",
         "@tsed/di": "^5.57.5",
+        "@tsed/exceptions": "^5.57.5",
         "@tsed/swagger": "^5.57.5",
         "@tsed/typeorm": "^5.57.5",
         "@types/swagger-schema-official": "^2.0.21",
