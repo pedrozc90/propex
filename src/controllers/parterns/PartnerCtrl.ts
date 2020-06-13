@@ -1,37 +1,74 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals } from "@tsed/common";
-import { BadRequest, Exception, NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams, Put, Req } from "@tsed/common";
+import { BadRequest, NotFound } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
-import { PartnerRepository, ProjectRepository } from "../../repositories";
-import { Partner } from "../../entities";
-import { IContext } from "src/types";
+import { PartnerRepository } from "../../repositories";
+import { Partner, Page } from "../../entities";
+import { IContext } from "../../types";
 
 @Controller("/partners")
 export class PartnerCtrl {
 
-    constructor(private partnerRepository: PartnerRepository, private proejctRepository: ProjectRepository) {}
+    constructor(private partnerRepository: PartnerRepository) {}
 
+    /**
+     * Return a paginated list of partners.
+     * @param page                          -- page number.
+     * @param rpp                           -- rows per page.
+     * @param q                             -- query string;
+     * @param project                       -- project id or title.
+     */
     @Get("")
     @CustomAuth({})
-    public async fetch(): Promise<any> {
-        throw new NotImplemented("Method Not Implemented!");
+    public async fetch(
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") project?: string | number
+    ): Promise<Page<Partner>> {
+        return this.partnerRepository.fetch({ page, rpp, q, project });
     }
 
+    /**
+     * Create a new partner.
+     * @param context                       -- user context.
+     * @param request                       -- express request object.
+     * @param data                          -- partner data.
+     */
     @Post("")
     @CustomAuth({})
-    public async save(
+    public async create(
         @Locals("context") context: IContext,
-        @Required() @BodyParams("partner") partner: Partner
-    ): Promise<any> {
-        if (!partner.project || !partner.project.id) {
-            throw new BadRequest("Partner is not related to any project.");
+        @Req() request: Req,
+        @Required() @BodyParams("partner") data: Partner
+    ): Promise<Partner> {
+        if (!data.project) {
+            throw new BadRequest("Missing project data.");
         }
 
-        // check if user is part of project.
-        const project = await this.proejctRepository.findByContext(partner.project.id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found.");
+        const partner = await this.partnerRepository.findMatch(data, data.project);
+
+        if (partner) {
+            throw new BadRequest(`Please, use PUT ${request.path} to update a partner data.`);
         }
+
+        return this.partnerRepository.save(data);
+    }
+
+    /**
+     * Update partner data.
+     * @param data                          -- partner data.
+     */
+    @Put("")
+    @CustomAuth({})
+    public async update(@Required() @BodyParams("partner") data: Partner): Promise<any> {
+        let partner = await this.partnerRepository.findMatch(data, data.project);
+        if (!partner) {
+            throw new NotFound("Partner not found.");
+        }
+
+        partner = this.partnerRepository.merge(partner, data);
+
         return this.partnerRepository.save(partner);
     }
 
