@@ -2,7 +2,7 @@ import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Pos
 
 import { CustomAuth } from "../../services";
 import { DemandRepository, ProjectRepository } from "../../repositories";
-import { Demand, ResultContent } from "../../entities";
+import { Demand, ResultContent, Page } from "../../entities";
 import { IContext } from "../../types";
 
 @Controller("/demands")
@@ -17,20 +17,30 @@ export class DemandCtrl {
      */
     @Get("")
     @CustomAuth({})
-    public async fetch(
-        @Locals("context") context: IContext,
-        @Required() @QueryParams("project") project: number | string
-    ): Promise<Demand[]> {
-        let query = this.demandRepository.createQueryBuilder("d")
-            .innerJoin("d.project", "project");
+    public async fetch(@Locals("context") context: IContext,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") project?: number | string
+    ): Promise<Page<Demand>> {
+        const query = this.demandRepository.createQueryBuilder("demand");
 
-        if (typeof project === "string") {
-            query = query.where("project.title LIKE :title", { title: `%${project}%` });
-        } else if (typeof project === "number") {
-            query = query.where("project.id = : id", { id: project });
+        if (project) {
+            if (typeof project === "string") {
+                query.innerJoin("demand.project", "project", "project.title LIKE :title", { title: `%${project}%` });
+            } else if (typeof project === "number") {
+                query.innerJoin("demand.project", "project", "project.id = : id", { id: project });
+            }
         }
 
-        return query.getMany();
+        if (q) {
+            query.where("demand.description LIKE :description", { description: `%${q}%` })
+                .orWhere("demand.justification LIKE :justification", { justification: `%${q}%` });
+        }
+
+        query.skip((page - 1) * rpp).take(rpp);
+
+        return Page.of<Demand>(await query.getMany(), page, rpp);
     }
 
     /**
