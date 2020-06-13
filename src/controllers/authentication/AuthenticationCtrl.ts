@@ -1,7 +1,7 @@
-import { $log, BodyParams, Controller, Get, Post, Required, Res } from "@tsed/common";
+import { $log, BodyParams, Controller, Post, Required, Res } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
-import { AuthenticationService } from "../../services";
+import { AuthenticationService, CustomAuth } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";
 import { IToken } from "../../types";
 
@@ -12,8 +12,8 @@ export class AuthenticationCtrl {
 
     /**
      * Login user by creating  a jwt token.
-     * @param username      -- username from login form.
-     * @param password      -- password from login form.
+     * @param username                      -- username from login form.
+     * @param password                      -- password from login form.
      */
     @Post("/login")
     public async login(@Required() @BodyParams("credentials") credentials: UserCredentials): Promise<IToken> {
@@ -40,18 +40,22 @@ export class AuthenticationCtrl {
 
     /**
      * Logout and redirect back to login page.
-     * @param req       -- express request object.
-     * @param res       -- express response object.
-     * @param next      -- express next function.
+     * @param req                           -- express request object.
+     * @param res                           -- express response object.
+     * @param next                          -- express next function.
      */
     @Post("/logout")
-    public async logout(@Res() res: Res): Promise<void> {
-        res.redirect("http://localhost:9000/index.html");
+    @CustomAuth({})
+    public async logout(@Res() res: Res): Promise<any> {
+        if (process.env.WEBPAGE_URL) {
+            res.redirect(process.env.WEBPAGE_URL);
+        }
+        return { message: "sucess" };
     }
 
     /**
      * Create a new user.
-     * @param user      -- user instance
+     * @param user                          -- user instance
      */
     @Post("/register")
     public async register(@Required() @BodyParams("user") user: UserBasic): Promise<User | null> {
