@@ -3,7 +3,7 @@ import { Controller, Locals, Get, Post, PathParams, BodyParams, Required, MergeP
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Target, ResultContent } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/:projectId/targets")
 @MergeParams(true)

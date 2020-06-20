@@ -5,7 +5,7 @@ import { NotImplemented } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Public, ResultContent } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/:projectId/publics")
 @MergeParams(true)
@@ -28,11 +28,11 @@ export class ProjectPublicCtrl {
         @Required() @PathParams("projectId") projectId: number,
         @QueryParams("directly") directly?: boolean
     ): Promise<Public[]> {
-        let query = this.PublicRepository.createQueryBuilder("pb")
+        const query = this.PublicRepository.createQueryBuilder("pb")
             .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId });
         
         if (isBoolean(directly)) {
-            query = query.where("ppb.directly = :directly", { directly: (directly) ? 1 : 0 });
+            query.where("ppb.directly = :directly", { directly: (directly) ? 1 : 0 });
         }
 
         return query.getMany();

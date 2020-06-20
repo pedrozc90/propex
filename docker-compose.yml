@@ -38,7 +38,7 @@ services:
         image: mysql:8.0
         restart: unless-stopped
         volumes:
-            - mysqlvolume:/var/lib/mysql
+            - mysql-volume:/var/lib/mysql
             - ./docs/scripts:/home/scripts
             # - ./docs/scripts:/docker-entrypoint-initdb.d/
         ports:
@@ -53,8 +53,8 @@ services:
             - backend
 
 volumes:
-    mysqlvolume:
-        name: mysqlvolume
+    mysql-volume:
+        name: mysql-volume
         driver: local
 
 networks:

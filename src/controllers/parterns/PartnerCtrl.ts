@@ -4,7 +4,7 @@ import { BadRequest, NotFound } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import { PartnerRepository } from "../../repositories";
 import { Partner, Page } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/partners")
 export class PartnerCtrl {

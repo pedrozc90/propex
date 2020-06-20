@@ -1,15 +1,15 @@
-import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
-import { Exception } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams, Put, Req } from "@tsed/common";
+import { BadRequest, NotFound } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import { FutureDevelopmentPlanRepository, ProjectRepository } from "../../repositories";
-import { FutureDevelopmentPlan } from "../../entities";
-import { IContext } from "../../types";
+import { FutureDevelopmentPlan, Page } from "../../entities";
+import { IContext } from "../../core/types";
 
 @Controller("/future-development-plans")
 export class FutureDevelopmentPlanCtrl {
 
-    constructor(private planRepository: FutureDevelopmentPlanRepository, private projectRepository: ProjectRepository) {}
+    constructor(private futureDevelopmentPlanRepository: FutureDevelopmentPlanRepository, private projectRepository: ProjectRepository) {}
 
     /**
      * Return a list of future development plans.
@@ -19,17 +19,12 @@ export class FutureDevelopmentPlanCtrl {
     @Get("")
     @CustomAuth({})
     public async fetch(
-        @Locals("context") context: IContext,
-        @QueryParams("q") q: string
-    ): Promise<FutureDevelopmentPlan[]> {
-        let query = this.planRepository.createQueryBuilder("ep");
-
-        if (q) {
-            query = query.where("ep.activities LIKE :activities", { activities: `%${q}%` })
-                .orWhere("ep.expected_results LIKE :expectedResults", { expectedResults: `%${q}%` });
-        }
-
-        return query.getMany();
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") project?: string | number
+    ): Promise<Page<FutureDevelopmentPlan>> {
+        return this.futureDevelopmentPlanRepository.fetch({ page, rpp, q, project });
     }
 
     /**
@@ -41,14 +36,39 @@ export class FutureDevelopmentPlanCtrl {
     @CustomAuth({})
     public async save(
         @Locals("context") context: IContext,
-        @Required() @BodyParams("plan") plan: FutureDevelopmentPlan
+        @Required() @BodyParams("futureDevelopmentPlan") futureDevelopmentPlan: FutureDevelopmentPlan
     ): Promise<FutureDevelopmentPlan> {
-        const project = await this.projectRepository.findByContext(plan.project.id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found.");
+        const project = await this.projectRepository.findByContext(futureDevelopmentPlan.project.id, context);
+
+        futureDevelopmentPlan.project = project;
+        return this.futureDevelopmentPlanRepository.save(futureDevelopmentPlan);
+    }
+
+    /**
+     * Save/Update a plan.
+     * @param context                       -- user context.
+     * @param plans                         -- future development plan data.
+     */
+    @Put("")
+    @CustomAuth({})
+    public async update(
+        @Req() request: Req,
+        @Required() @BodyParams("futureDevelopmentPlan") data: FutureDevelopmentPlan
+    ): Promise<FutureDevelopmentPlan> {
+        if (!data.id) {
+            throw new BadRequest(`Please use POST ${request.path} to create a new future development plan.`);
         }
-        plan.project = project;
-        return this.planRepository.save(plan);
+
+        // check if its already exists
+        let futureDevelopmentPlan = await this.futureDevelopmentPlanRepository.findOne(data.id);
+        if (!futureDevelopmentPlan) {
+            throw new NotFound("Future development plan not found.");
+        }
+
+        // update fields
+        futureDevelopmentPlan = this.futureDevelopmentPlanRepository.merge(futureDevelopmentPlan, data);
+
+        return this.futureDevelopmentPlanRepository.save(futureDevelopmentPlan);
     }
 
     /**
@@ -58,7 +78,7 @@ export class FutureDevelopmentPlanCtrl {
     @Get("/:id")
     @CustomAuth({})
     public async get(@Required() @PathParams("id") id: number): Promise<FutureDevelopmentPlan | undefined> {
-        return this.planRepository.findById(id);
+        return this.futureDevelopmentPlanRepository.findById(id);
     }
 
     /**
@@ -68,7 +88,7 @@ export class FutureDevelopmentPlanCtrl {
     @Delete("/:id")
     @CustomAuth({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        return this.planRepository.deleteById(id);
+        return this.futureDevelopmentPlanRepository.deleteById(id);
     }
 
 }

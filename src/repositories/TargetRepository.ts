@@ -3,7 +3,7 @@ import { Exception } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Target, Project } from "../entities";
-import { AgeRange } from "../types";
+import { AgeRange } from "../core/types";
 
 @EntityRepository(Target)
 export class TargetRepository extends GenericRepository<Target> {

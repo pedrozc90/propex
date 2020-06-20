@@ -3,7 +3,7 @@ import { Like } from "typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { KnowledgeArea, Project, Page } from "../entities";
-import { IOptions } from "../types";
+import { IOptions } from "../core/types";
 
 @EntityRepository(KnowledgeArea)
 export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {

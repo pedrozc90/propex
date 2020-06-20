@@ -1,9 +1,8 @@
-import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
+import { Controller, Get, PathParams, Delete, Required, QueryParams, Post, BodyParams } from "@tsed/common";
 
 import { CustomAuth } from "../../services";
 import { EvaluationRepository } from "../../repositories";
-import { Evaluation } from "../../entities";
-import { IContext } from "../../types";
+import { Evaluation, Page } from "../../entities";
 
 @Controller("/evaluations")
 export class EvaluationCtrl {
@@ -11,33 +10,21 @@ export class EvaluationCtrl {
     constructor(private evaluationRepository: EvaluationRepository) {}
 
     /**
-     * Return a list of evaluations.
-     * @param context                       -- user context.
+     * Return a paginated list of Evaluations.
+     * @param page                          -- page number.
+     * @param rpp                           -- rows per page.
+     * @param q                             -- query string.
      * @param project                       -- project id or title.
      */
     @Get("")
     @CustomAuth({})
     public async fetch(
-        @Locals("context") context: IContext,
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
         @QueryParams("project") project?: number | string
-    ): Promise<Evaluation[]> {
-        let query = this.evaluationRepository.createQueryBuilder("ev")
-            .innerJoin("ev.project", "project");
-
-        if (q) {
-            query = query.where(`ev.description LIKE '%${q}%'`);
-        }
-
-        if (project) {
-            if (typeof project === "string") {
-                query = query.where("project.title LIKE :title", { title: `%${project}%` });
-            } else if (typeof project === "number") {
-                query = query.where("project.id = : id", { id: project });
-            }
-        }
-
-        return query.getMany();
+    ): Promise<Page<Evaluation>> {
+        return this.evaluationRepository.fetch({ page, rpp, q, project });
     }
 
     /**

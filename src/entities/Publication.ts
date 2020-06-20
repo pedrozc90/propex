@@ -4,8 +4,8 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Index } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 import { Attachment } from "./Attachment";
-import { PublicationType } from "../types";
-import { PublicationTypeEnumTransformer } from "../utils";
+import { PublicationType } from "../core/types";
+import { PublicationTypeEnumTransformer } from "../core/utils";
 
 @Index("idx_publications_project_id", [ "project" ])
 @Index("idx_publications_attachment_id", [ "attachment" ])

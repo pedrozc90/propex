@@ -5,7 +5,7 @@ import { Exception, BadRequest, Unauthorized } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { User, Page, ResultContent } from "../../entities";
-import { IContext } from "src/types";
+import { IContext } from "../../core/types";
 
 @Controller("/users")
 export class UserCtrl {

@@ -3,8 +3,8 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Index, U
 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
-import { AgeRange } from "../types";
-import { AgeRangeEnumTransformer } from "../utils";
+import { AgeRange } from "../core/types";
+import { AgeRangeEnumTransformer } from "../core/utils";
 
 @Unique("uk_targets_age_range_project", [ "project", "ageRange" ])
 @Index("idx_targets_project_id", [ "project" ])

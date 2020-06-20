@@ -1,8 +1,9 @@
 import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
+
 import { Partner, Project, Page } from "../entities";
-import { IOptions } from "src/types";
+import { IOptions } from "../core/types";
 
 @EntityRepository(Partner)
 export class PartnerRepository extends GenericRepository<Partner> {

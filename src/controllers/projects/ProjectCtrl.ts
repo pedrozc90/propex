@@ -4,7 +4,9 @@ import { Exception, Unauthorized, BadRequest } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Page, Project, ProjectBasic, ProjectHumanResource, User, ResultContent } from "../../entities";
-import { IContext, Scope } from "../../types";
+import { IContext, Scope } from "../../core/types";
+
+import { StringUtils } from "../../core/utils";
 
 import { ProjectDisclosureMediaCtrl } from "./ProjectDisclosureMediaCtrl";
 import { ProjectEvaluationCtrl } from "./ProjectEvaluationCtrl";
@@ -34,12 +36,7 @@ import { ProjectDemanCtrl } from "./ProjectDemanCtrl";
         ProjectStudentCtrl,
         ProjectTargetCtrl,
         ProjectThemeAreaCtrl
-    ],
-    routerOptions: {
-        caseSensitive: false,
-        mergeParams: false,
-        strict: true
-    }
+    ]
 })
 export class ProjectCtrl {
 
@@ -64,16 +61,16 @@ export class ProjectCtrl {
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q: string
+        @QueryParams("q") q?: string
     ): Promise<Page<Project>> {
-        let query = this.ProjectRepository.createQueryBuilder("p")
+        const query = this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.projectHumanResources", "phr")
-            .innerJoinAndSelect("phr.user", "usr")
+            .leftJoinAndSelect("phr.user", "usr")
             .leftJoin("usr.collaborator", "clb")
             .leftJoin("usr.student", "std");
 
         if (context.scope !== Scope.ADMIN) {
-            query = query.where((qb) => {
+            query.where((qb) => {
                 const subquery = qb.subQuery().from(ProjectHumanResource, "hr").select("hr.project_id")
                     .where("hr.user_id = :userId", { userId: context.user?.id })
                     .getQuery();
@@ -81,12 +78,12 @@ export class ProjectCtrl {
             });
         }
 
-        if (q) {
-            query = query.where("p.title LIKE :title", { title: `%${q}%` })
+        if (StringUtils.isNotEmpty(q)) {
+            query.where("p.title LIKE :title", { title: `%${q}%` })
                 .orWhere("p.program LIKE :program", { program: `%${q}%` });
         }
 
-        query = query.skip((page - 1) * rpp).take(rpp);
+        query.skip((page - 1) * rpp).take(rpp);
 
         return Page.of<Project>(await query.getMany(), page, rpp);
     }

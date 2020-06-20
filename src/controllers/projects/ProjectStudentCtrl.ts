@@ -4,7 +4,9 @@ import { NotImplemented } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Student } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
+
+import * as StringUtils from "../../core/utils/StringUtils";
 
 @Controller("/:projectId/students")
 @MergeParams(true)
@@ -31,24 +33,24 @@ export class ProjectStudentCtrl {
         @QueryParams("period") period?: string,
         @QueryParams("q") q?: string
     ): Promise<Student[]> {
-        let query = this.StudentRepository.createQueryBuilder("std")
+        const query = this.StudentRepository.createQueryBuilder("std")
             .innerJoinAndSelect("std.user", "usr")
             .innerJoinAndSelect("usr.projectHumanResources", "phr")
             .innerJoin("phr.project", "p", "p.id = :projectId", { projectId });
         
         if (scholarship !== undefined && scholarship !== null) {
-            query = query.where("std.scholarship = :scholarship", { scholarship: (scholarship) ? 1 : 0 });
+            query.where("std.scholarship = :scholarship", { scholarship: (scholarship) ? 1 : 0 });
         }
 
         // NÃO FUNCIONA (???)
         if (period) {
-            query = query.where(`std.period = '${period}'`);
+            query.where("std.period = :period", { period });
         }
 
-        if (q) {
-            query = query.where(`std.code LIKE '%${q}%'`)
-                .orWhere(`std.course LIKE '%${q}%'`)
-                .orWhere(`usr.name LIKE '%${q}%'`);
+        if (StringUtils.isNotEmpty(q)) {
+            query.where("std.code LIKE :code", { code: `%${q}%` })
+                .orWhere("std.course LIKE :course", { course: `%${q}%` })
+                .orWhere("usr.name LIKE :name", { name: `%${q}%` });
         }
 
         return query.getMany();

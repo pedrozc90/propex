@@ -3,7 +3,7 @@ import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page } from "../../entities";
 import { CustomAuth } from "../../services";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/disclosure-medias")
 export class DisclosureMediaCtrl {
@@ -26,27 +26,27 @@ export class DisclosureMediaCtrl {
         @QueryParams("to") to?: string,
         @QueryParams("project") project?: number | string
     ): Promise<Page<DisclosureMedia>> {
-        let query = this.disclosureMediaRepository.createQueryBuilder("dm")
+        const query = this.disclosureMediaRepository.createQueryBuilder("dm")
             .innerJoin("dm.project", "p");
         
         if (q) {
-            query = query.where("dm.name LIKE :name", { name: `%${q}%` })
+            query.where("dm.name LIKE :name", { name: `%${q}%` })
                 .orWhere("dm.link LIKE :link", { name: `%${q}%` });
         }
 
-        if (date) query = query.where("dm.date = :date", { date });
-        if (from) query = query.where("dm.date >= :from", { from });
-        if (to) query = query.where("dm.date <= :to", { to });
+        if (date) query.where("dm.date = :date", { date });
+        if (from) query.where("dm.date >= :from", { from });
+        if (to) query.where("dm.date <= :to", { to });
 
         if (project) {
             if (typeof project === "string") {
-                query = query.where("project.title LIKE :title", { title: `%${project}%` });
+                query.where("project.title LIKE :title", { title: `%${project}%` });
             } else if (typeof project === "number") {
-                query = query.where("project.id = : id", { id: project });
+                query.where("project.id = : id", { id: project });
             }
         }
 
-        query = query.orderBy("dm.date", "DESC")
+        query.orderBy("dm.date", "DESC")
             .skip((page - 1) * rpp)
             .take(rpp);
 

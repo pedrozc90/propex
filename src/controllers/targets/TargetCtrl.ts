@@ -3,7 +3,7 @@ import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals
 import { CustomAuth } from "../../services";
 import { TargetRepository, ProjectRepository } from "../../repositories";
 import { Target, ResultContent, Page } from "../../entities";
-import { IContext, AgeRange } from "../../types";
+import { IContext, AgeRange } from "../../core/types";
 
 @Controller("/targets")
 export class TargetCtrl {
@@ -18,12 +18,17 @@ export class TargetCtrl {
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("project") project: number): Promise<Page<Target>> {
-        let query = this.targetRepository.createQueryBuilder("t");
+        @QueryParams("project") project?: string | number): Promise<Page<Target>> {
+        const query = this.targetRepository.createQueryBuilder("t");
+        
         if (project) {
-            query = query.innerJoin("t.project", "p", "p.id = :projectId", { projectId: project });
+            if (typeof project === "string") {
+                query.innerJoin("t.project", "p", "p.title LIKE :project", { project });
+            } else {
+                query.innerJoin("t.project", "p", "p.id = :projectId", { projectId: project });
+            }
         }
-        query = query.skip((page - 1) * rpp).take(rpp);
+        query.skip((page - 1) * rpp).take(rpp);
 
         return Page.of<Target>(await query.getMany(), page, rpp);
     }

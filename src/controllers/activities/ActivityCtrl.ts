@@ -3,7 +3,7 @@ import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Pos
 import { CustomAuth } from "../../services";
 import { ActivityRepository } from "../../repositories";
 import { Activity } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/activities")
 export class ActivityCtrl {
@@ -21,14 +21,14 @@ export class ActivityCtrl {
         @Locals("context") context: IContext,
         @QueryParams("project") project: number | string
     ): Promise<Activity[]> {
-        let query = this.activityRepository.createQueryBuilder("activity")
+        const query = this.activityRepository.createQueryBuilder("activity")
             .innerJoin("activity.project", "project");
 
         // project = JSON.parse(project as string);
         if (typeof project === "string") {
-            query = query.where("project.title LIKE :title", { title: `%${project}%` });
+            query.where("project.title LIKE :title", { title: `%${project}%` });
         } else if (typeof project === "number") {
-            query = query.where("project.id = :id", { id: project });
+            query.where("project.id = :id", { id: project });
         }
 
         return query.getMany();

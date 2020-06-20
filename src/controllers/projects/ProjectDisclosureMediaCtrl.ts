@@ -4,7 +4,9 @@ import { NotFound } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { DisclosureMedia, Page, ResultContent } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
+
+import { StringUtils } from "../../core/utils";
 
 import moment from "moment";
 
@@ -32,19 +34,19 @@ export class ProjectDisclosureMediaCtrl {
         @QueryParams("from") from?: string,
         @QueryParams("to") to?: string
     ): Promise<Page<DisclosureMedia>> {
-        let query = this.DisclosureMediaRepository.createQueryBuilder("dm")
+        const query = this.DisclosureMediaRepository.createQueryBuilder("dm")
             .innerJoin("dm.project", "p", "p.id = :projectId", { projectId });
         
-        if (q) {
-            query = query.where("dm.name LIKE :name", { name: `%${q}%` })
+        if (StringUtils.isNotEmpty(q)) {
+            query.where("dm.name LIKE :name", { name: `%${q}%` })
                 .orWhere("dm.link LIKE :link", { link: `%${q}%` });
         }
 
-        if (date) query = query.where("dm.date = :date", { date });
-        if (from) query = query.where("dm.date >= :from", { from });
-        if (to) query = query.where("dm.date <= :to", { to });
+        if (date) query.where("dm.date = :date", { date });
+        if (from) query.where("dm.date >= :from", { from });
+        if (to) query.where("dm.date <= :to", { to });
 
-        query = query.orderBy("dm.date", "DESC")
+        query.orderBy("dm.date", "DESC")
             .skip((page - 1) * rpp)
             .take(rpp);
         

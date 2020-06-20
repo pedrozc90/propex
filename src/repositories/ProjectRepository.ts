@@ -3,7 +3,7 @@ import { NotFound } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Project } from "../entities";
-import { IContext } from "../types";
+import { IContext } from "../core/types";
 
 const relations = [
     "disclosureMedias",
@@ -36,16 +36,16 @@ export class ProjectRepository extends GenericRepository<Project> {
      * @param id                    -- project id.
      */
     public async findByContext(id: number, context: IContext, coodinator: boolean = false): Promise<Project> {
-        let query = this.createQueryBuilder("p")
-            .innerJoin("p.projectHumanResources", "phr")
+        const query = this.createQueryBuilder("p")
+            .leftJoin("p.projectHumanResources", "phr")
             .where("p.id = :id", { id });
 
         if (!context.scope || !context.scope.isAdmin) {
-            query = query.innerJoin("phr.user", "usr", "user.id = :userId", { userId: context.user?.id });
+            query.innerJoin("phr.user", "usr", "user.id = :userId", { userId: context.user?.id });
         }
 
         if (coodinator) {
-            query = query.where("phr.coordinator = :coordinator", { coodinator: true });
+            query.where("phr.coordinator = :coordinator", { coodinator: true });
         }
 
         const project = await query.getOne();

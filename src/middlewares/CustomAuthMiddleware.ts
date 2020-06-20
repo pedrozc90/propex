@@ -2,7 +2,7 @@ import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/com
 import { Forbidden, Unauthorized } from "@tsed/exceptions";
 
 import { AuthenticationService } from "../services";
-import { ICustomAuthOptions, IJwt } from "../types";
+import { ICustomAuthOptions, IJwt } from "../core/types";
 
 @Middleware()
 export class CustomAuthMiddleware implements IMiddleware {

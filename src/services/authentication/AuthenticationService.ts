@@ -1,10 +1,11 @@
 import { Service, $log } from "@tsed/common";
-import { BadRequest, Unauthorized } from "@tsed/exceptions";
+import { BadRequest, Unauthorized, NotFound } from "@tsed/exceptions";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 
 import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
-import { Scope, IContext, IJwt } from "../../types";
+import { Scope, IContext, IJwt } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Service()
 export class AuthenticationService {
@@ -25,39 +26,52 @@ export class AuthenticationService {
      * Load user context.
      * @param jwt                   -- decoded jwt token.
      */
-    public async context(jwt?: IJwt): Promise<IContext> {
+    public async context(jwt?: IJwt): Promise<Context> {
         if (!jwt || !jwt.id) {
             throw new Unauthorized("Invalid token!");
         }
 
-        const user = await this.userRepository.findOne({ id: jwt.id, active: true })
-            .catch((error: any) => {
-                $log.error(error.message);
-            });
+        const user = await this.userRepository.createQueryBuilder("user")
+            .leftJoinAndSelect("user.collaborator", "collaborator")
+            .leftJoinAndSelect("user.student", "student")
+            .where("user.id = :id", { id: jwt.id })
+            .andWhere("user.active = :active", { active: 1 })
+            .getOne();
+        
         if (!user) {
-            throw new Unauthorized("User is inative!");
+            throw new NotFound("User not found.");
         }
 
-        const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
-            .innerJoin("collaborator.user", "user", "collaborator.user_id = :userId", { userId: user?.id })
-            .getOne();
+        // const user = await this.userRepository.findOne({ id: jwt.id, active: true })
+        //     .catch((error: any) => {
+        //         $log.error(error.message);
+        //     });
+        // if (!user) {
+        //     throw new Unauthorized("User is inative!");
+        // }
 
-        const student = await this.studentRepository.createQueryBuilder("student")
-            .innerJoin("student.user", "user", "student.user_id = :userId", { userId: user?.id })
-            .getOne();
+        // const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
+        //     .innerJoin("collaborator.user", "user", "collaborator.user_id = :userId", { userId: user?.id })
+        //     .getOne();
 
-        const scope = this.defineScope(user, collaborator, student);
-        
-        return { user, collaborator, student, scope };
+        // const student = await this.studentRepository.createQueryBuilder("student")
+        //     .innerJoin("student.user", "user", "student.user_id = :userId", { userId: user?.id })
+        //     .getOne();
+
+        const context = new Context();
+        context.user = user;
+        context.scope = this.defineScope(user);
+
+        return context;
     }
 
-    private defineScope(user?: User, collaborator?: Collaborator, student?: Student): Scope {
+    private defineScope(user?: User): Scope {
         if (user) {
             if (user.id === 1) {
                 return Scope.ADMIN;
-            } else if (collaborator) {
+            } else if (user.collaborator) {
                 return Scope.COLLABORATOR;
-            } else if (student) {
+            } else if (user.student) {
                 return Scope.STUDENT;
             }
         }
@@ -98,6 +112,7 @@ export class AuthenticationService {
                 if (err) {
                     reject(err);
                 } else {
+                    $log.debug(`[Authentication] user: ${user.email}, token: ${token}`);
                     resolve(token);
                 }
             });

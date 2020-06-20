@@ -31,18 +31,18 @@ export class ProjectActivityCtrl {
         @QueryParams("init_date") initDate?: string,
         @QueryParams("last_date") lastDate?: string
     ): Promise<Page<Activity>> {
-        let query = this.ActivityRepository.createQueryBuilder("activity")
+        const query = this.ActivityRepository.createQueryBuilder("activity")
             .innerJoin("activity.project", "project", "project.id = :projectId", { projectId });
 
         if (q) {
-            query = query.where("activity.name LIKE :name", { name: `%${q}%` })
+            query.where("activity.name LIKE :name", { name: `%${q}%` })
                 .orWhere("activity.description LIKE :description", { description: `%${q}%` });
         }
 
-        if (initDate) query = query.where(`activity.date > ${initDate}`);
-        if (lastDate) query = query.where(`activity.date < ${lastDate}`);
+        if (initDate) query.where(`activity.date > ${initDate}`);
+        if (lastDate) query.where(`activity.date < ${lastDate}`);
 
-        query = query.skip((page - 1) * rpp).take(rpp);
+        query.skip((page - 1) * rpp).take(rpp);
 
         return Page.of(await query.getMany(), page, rpp);
     }

@@ -1,11 +1,11 @@
+import { isBoolean } from "@tsed/core";
 import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams } from "@tsed/common";
 import { NotImplemented } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import * as Repo from "../../repositories";
 import { Collaborator } from "../../entities";
-import { IContext } from "../../types";
-import { isBoolean } from "@tsed/core";
+import { IContext } from "../../core/types";
 
 @Controller("/:projectId/collaborators")
 @MergeParams(true)
@@ -32,21 +32,21 @@ export class ProjectCollaboratorCtrl {
         @QueryParams("exclusive") exclusive?: boolean,
         @QueryParams("q") q?: string
     ): Promise<Collaborator[]> {
-        let query = this.CollaboratorRepository.createQueryBuilder("clb")
+        const query = this.CollaboratorRepository.createQueryBuilder("clb")
             .innerJoinAndSelect("clb.user", "usr")
             .innerJoinAndSelect("usr.projectHumanResources", "phr", "phr.project_id = :projectId", { projectId });
             // .innerJoin("phr.project", "p", "p.id = :projectId", { projectId });
         
         if (isBoolean(coordinate)) {
-            query = query.where("phr.coordinate = :coordinate", { coordinate: (coordinate) ? 1 : 0 });
+            query.where("phr.coordinate = :coordinate", { coordinate: (coordinate) ? 1 : 0 });
         }
         
         if (isBoolean(exclusive)) {
-            query = query.where("phr.exclusive = :exclusive", { exclusive: (exclusive) ? 1 : 0 });
+            query.where("phr.exclusive = :exclusive", { exclusive: (exclusive) ? 1 : 0 });
         }
 
         if (q) {
-            query = query.where("std.academic_function LIKE :function", { function: `%${q}%` })
+            query.where("std.academic_function LIKE :function", { function: `%${q}%` })
                 .orWhere("std.profissional_registry LIKE :registry", { registry: `%${q}%` })
                 .orWhere("std.affiliation LIKE :affiliation", { affiliation: `%${q}%` })
                 .orWhere("usr.name LIKE :name", { name: `%${q}%` })

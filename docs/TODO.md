@@ -9,7 +9,7 @@
 | GET              | /api/activities/:id                        |             |
 | DELETE           | /api/activities/:id                        |             |
 | POST             | /api/auth/login                            | DONE        |
-| POST             | /api/auth/logout                           |             | -- CREATE ENVIRONMENTAL VARIABLE TO STORE WEBPAGE URL
+| POST             | /api/auth/logout                           | DONE        |
 | POST             | /api/auth/register                         | DONE        |
 | GET              | /api/demands                               | DONE        |
 | POST             | /api/demands                               | DONE        |
@@ -23,19 +23,21 @@
 | POST             | /api/evaluations                           | DONE        |
 | GET              | /api/evaluations/:id                       | DONE        |
 | DELETE           | /api/evaluations/:id                       | DONE        |
-| GET              | /api/events                                |             |
-| POST             | /api/events                                |             |
-| GET              | /api/events/:id                            |             |
-| DELETE           | /api/events/:id                            |             |
+| GET              | /api/events                                | DONE        |
+| POST             | /api/events                                | DONE        |
+| PUT              | /api/events                                | DONE        |
+| GET              | /api/events/:id                            | DONE        |
+| DELETE           | /api/events/:id                            | DONE        |
 | GET              | /api/extension-lines                       | DONE        |
 | POST             | /api/extension-lines                       | DONE        |
 | PUT              | /api/extension-lines                       | DONE        |
 | GET              | /api/extension-lines/:id                   | DONE        |
 | DELETE           | /api/extension-lines/:id                   | DONE        |
-| GET              | /api/future-development-plans              |             |
-| POST             | /api/future-development-plans              |             |
-| GET              | /api/future-development-plans/:id          |             |
-| DELETE           | /api/future-development-plans/:id          |             |
+| GET              | /api/future-development-plans              | DONE        |
+| POST             | /api/future-development-plans              | DONE        |
+| PUT              | /api/future-development-plans              | DONE        |
+| GET              | /api/future-development-plans/:id          | DONE        |
+| DELETE           | /api/future-development-plans/:id          | DONE        |
 | GET              | /api/knowledge-areas                       | DONE        |
 | POST             | /api/knowledge-areas                       | DONE        |
 | GET              | /api/knowledge-areas/:id                   | DONE        |

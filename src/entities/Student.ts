@@ -25,7 +25,7 @@ export class Student extends Audit {
 
     @Required()
     @Property({ name: "period" })
-    @Column({ name: "period", type: "int", width: 11, nullable: false })
+    @Column({ name: "period", type: "varchar", length: 16, nullable: false })
     public period: string;
 
     @Required()

@@ -1,10 +1,10 @@
-import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
-import { Exception } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams, Req, Put } from "@tsed/common";
+import { BadRequest, NotFound } from "@tsed/exceptions";
 
 import { CustomAuth } from "../../services";
 import { EventRepository, ProjectRepository } from "../../repositories";
-import { Event } from "../../entities";
-import { IContext } from "../../types";
+import { Event, Page } from "../../entities";
+import { IContext } from "../../core/types";
 
 @Controller("/events")
 export class EventCtrl {
@@ -19,43 +19,53 @@ export class EventCtrl {
     @Get("")
     @CustomAuth({})
     public async fetch(
-        @Locals("context") context: IContext,
-        @QueryParams("project") project: number | string,
-        @QueryParams("q") q: string
-    ): Promise<Event[]> {
-        let query = this.eventRepository.createQueryBuilder("ep")
-            .innerJoin("ep.project", "project");
-
-        if (typeof project === "string") {
-            query = query.where("project.title LIKE :title", { title: `%${project}%` });
-        } else if (typeof project === "number") {
-            query = query.where("project.id = : id", { id: project });
-        }
-
-        if (q) {
-            query = query.where("ep.name LIKE :name", { name: `%${q}%` })
-                .orWhere("ep.modality LIKE :modality", { modality: `%${q}%` });
-        }
-
-        return query.getMany();
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") project?: number | string
+    ): Promise<Page<Event>> {
+        return this.eventRepository.fetch({ page, rpp, q, project });
     }
 
     /**
      * Save/Update a event.
+     * @param request                       -- express request object.
      * @param context                       -- user context.
      * @param events                        -- event data.
      */
     @Post("")
     @CustomAuth({})
     public async save(
+        @Req() request: Req,
         @Locals("context") context: IContext,
         @Required() @BodyParams("event") event: Event
     ): Promise<Event> {
-        const project = await this.projectRepository.findByContext(event.project.id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found.");
+        if (event.id) {
+            throw new BadRequest(`Please use PUT ${request.path} to modify event entities.`);
         }
+
+        const project = await this.projectRepository.findByContext(event.project.id, context);
+
         event.project = project;
+        return this.eventRepository.save(event);
+    }
+
+    /**
+     * Save/Update a event.
+     * @param request                       -- express request object.
+     * @param context                       -- user context.
+     * @param events                        -- event data.
+     */
+    @Put("")
+    @CustomAuth({})
+    public async update(@Required() @BodyParams("event") data: Event): Promise<Event> {
+        let event = await this.eventRepository.findOne(data.id, { relations: [ "project" ] });
+        if (!event) {
+            throw new NotFound("Event not found.");
+        }
+
+        event = this.eventRepository.merge(event, data);
+        
         return this.eventRepository.save(event);
     }
 

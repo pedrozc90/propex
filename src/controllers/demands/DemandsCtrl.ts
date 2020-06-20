@@ -3,7 +3,7 @@ import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Pos
 import { CustomAuth } from "../../services";
 import { DemandRepository, ProjectRepository } from "../../repositories";
 import { Demand, ResultContent, Page } from "../../entities";
-import { IContext } from "../../types";
+import { IContext } from "../../core/types";
 
 @Controller("/demands")
 export class DemandCtrl {

@@ -2,7 +2,7 @@ import { Repository, ObjectLiteral, DeleteResult } from "typeorm";
 import { HTTPException } from "@tsed/exceptions";
 
 import { Page } from "../../entities";
-import { IOptions } from "../../types";
+import { IOptions } from "../../core/types";
 
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
 

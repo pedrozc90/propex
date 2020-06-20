@@ -1,9 +1,9 @@
-import { $log, BodyParams, Controller, Post, Required, Res } from "@tsed/common";
+import { BodyParams, Controller, Post, Required, Res } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
 import { AuthenticationService, CustomAuth } from "../../services";
 import { User, UserBasic, UserCredentials } from "../../entities";
-import { IToken } from "../../types";
+import { IToken } from "../../core/types";
 
 @Controller("/auth")
 export class AuthenticationCtrl {
@@ -16,7 +16,10 @@ export class AuthenticationCtrl {
      * @param password                      -- password from login form.
      */
     @Post("/login")
-    public async login(@Required() @BodyParams("credentials") credentials: UserCredentials): Promise<IToken> {
+    public async login(
+        @Required() @BodyParams("credentials") credentials: UserCredentials,
+        @BodyParams("rememberMe") rememberMe?: boolean
+    ): Promise<IToken> {
         // retrive user information
         const user = await this.authenticationService.findByCredentials(credentials);
         if (!user) {
@@ -28,14 +31,12 @@ export class AuthenticationCtrl {
         }
 
         // sign jwt token
-        const token = await this.authenticationService.signJwtToken(user, credentials.rememberMe);
+        const token = await this.authenticationService.signJwtToken(user, rememberMe);
         if (!token) {
             throw new Unauthorized("Unable to create token!");
         }
 
-        $log.warn(`[Authentication] user: ${user.email}, token: ${token}`);
-
-        return { token };
+        return { token, user };
     }
 
     /**

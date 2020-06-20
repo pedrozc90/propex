@@ -4,8 +4,8 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, Index } 
 import { Audit } from "./generics/Audit";
 import { Project } from "./Project";
 
-@Index("idx_event_presentations_project_id", [ "project" ])
-@Entity({ name: "event_presentations" })
+@Index("idx_events_project_id", [ "project" ])
+@Entity({ name: "events" })
 export class Event extends Audit {
 
     @Property({ name: "id" })

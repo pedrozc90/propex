@@ -3,7 +3,7 @@ import { Like } from "typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { ThemeArea, Page } from "../entities";
-import { IOptions } from "../types";
+import { IOptions } from "../core/types";
 
 @EntityRepository(ThemeArea)
 export class ThemeAreaRepository extends GenericRepository<ThemeArea> {

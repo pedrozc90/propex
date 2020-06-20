@@ -4,7 +4,7 @@ import { Exception, NotImplemented } from "@tsed/exceptions";
 import { CustomAuth } from "../../services";
 import { PublicationRepository, ProjectRepository } from "../../repositories";
 import { Publication } from "../../entities";
-import { IContext, PublicationType } from "../../types";
+import { IContext, PublicationType } from "../../core/types";
 
 @Controller("/publications")
 export class PublicationCtrl {
