@@ -11,6 +11,9 @@ export class Context implements IContext {
     @Property({ name: "scope" })
     public scope: Scope = Scope.UNKNOWN;
 
+    @Property({ name: "projectIds" })
+    public projectIds?: number[] = [];
+
     public isAdmin(): boolean {
         return this.scope === Scope.ADMIN;
     }

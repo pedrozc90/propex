@@ -3,27 +3,32 @@ import { Like } from "typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { KnowledgeArea, Project, Page } from "../entities";
-import { IOptions } from "../core/types";
+
+import { StringUtils } from "../core/utils";
 
 @EntityRepository(KnowledgeArea)
 export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
+
+    constructor() {
+        super([ "projects" ]);
+    }
 
     /**
      * Return a paged list of all kowndledge areas saved in the database.
      * @param options                       -- query options.
      */
-    public async fetch(options: IOptions): Promise<Page<KnowledgeArea>> {
-        const params: any = {};
-        if (options.page && options.rpp) {
-            params.skip = (options.page - 1) * options.rpp;
-            params.take = options.rpp;
-        }
-        if (options.q) {
+    public async fetch(page: number = 1, rpp: number = 15, q?: string): Promise<Page<KnowledgeArea>> {
+        const params: any = {
+            skip: (page - 1) * rpp,
+            take: rpp
+        };
+        
+        if (StringUtils.isNotEmpty(q)) {
             params.where = [
-                { name: Like(`%${options.q}%`) }
+                { name: Like(`%${q}%`) }
             ];
         };
-        return Page.of(await this.find(params), options.page, options.rpp);
+        return Page.of(await this.find(params), page, rpp);
     }
 
     /**

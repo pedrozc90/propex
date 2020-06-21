@@ -2,8 +2,8 @@ import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals
 
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page } from "../../entities";
-import { CustomAuth } from "../../services";
-import { IContext } from "../../core/types";
+import { Authenticated } from "../../core/services";
+import { Context } from "../../core/models";
 
 @Controller("/disclosure-medias")
 export class DisclosureMediaCtrl {
@@ -16,41 +16,17 @@ export class DisclosureMediaCtrl {
      * @param project                       -- project title or id.
      */
     @Get("")
-    @CustomAuth({})
-    public async fetch(@Locals("context") context: IContext,
+    @Authenticated({})
+    public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
         @QueryParams("date") date?: string,
         @QueryParams("from") from?: string,
         @QueryParams("to") to?: string,
-        @QueryParams("project") project?: number | string
+        @QueryParams("project_id") projectId?: number
     ): Promise<Page<DisclosureMedia>> {
-        const query = this.disclosureMediaRepository.createQueryBuilder("dm")
-            .innerJoin("dm.project", "p");
-        
-        if (q) {
-            query.where("dm.name LIKE :name", { name: `%${q}%` })
-                .orWhere("dm.link LIKE :link", { name: `%${q}%` });
-        }
-
-        if (date) query.where("dm.date = :date", { date });
-        if (from) query.where("dm.date >= :from", { from });
-        if (to) query.where("dm.date <= :to", { to });
-
-        if (project) {
-            if (typeof project === "string") {
-                query.where("project.title LIKE :title", { title: `%${project}%` });
-            } else if (typeof project === "number") {
-                query.where("project.id = : id", { id: project });
-            }
-        }
-
-        query.orderBy("dm.date", "DESC")
-            .skip((page - 1) * rpp)
-            .take(rpp);
-
-        return Page.of<DisclosureMedia>(await query.getMany(), page, rpp);
+        return this.disclosureMediaRepository.fetch(page, rpp, q, date, from, to, projectId);
     }
 
     /**
@@ -59,9 +35,9 @@ export class DisclosureMediaCtrl {
      * @param disclosureMedia               -- disclosure media data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
     ): Promise<DisclosureMedia | undefined> {
         const project = await this.projectRepository.findByContext(disclosureMedia.project.id, context);
@@ -74,7 +50,7 @@ export class DisclosureMediaCtrl {
      * @param id                            -- disclosure media id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<DisclosureMedia | undefined> {
         return this.disclosureMediaRepository.findById(id);
     }
@@ -84,7 +60,7 @@ export class DisclosureMediaCtrl {
      * @param id                            -- disclosure media id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.disclosureMediaRepository.deleteById(id);
     }

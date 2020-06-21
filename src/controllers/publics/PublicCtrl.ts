@@ -1,9 +1,9 @@
 import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required } from "@tsed/common";
+import { Like } from "typeorm";
 
 import { PublicRepository } from "../../repositories";
 import { Public, Page } from "../../entities";
-import { CustomAuth } from "../../services";
-import { Like } from "typeorm";
+import { Authenticated } from "../../core/services";
 
 @Controller("/publics")
 export class PublicCtrl {
@@ -17,7 +17,7 @@ export class PublicCtrl {
      * @param q                             -- search query string.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -43,7 +43,7 @@ export class PublicCtrl {
      * @param data                          -- public data.
      */
     @Post("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async save(@Required() @BodyParams("public") data: Public): Promise<Public | undefined> {
         return this.publicRepository.save(data);
     }
@@ -53,7 +53,7 @@ export class PublicCtrl {
      * @param id                            -- public id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Public | undefined> {
         return this.publicRepository.findById(id);
     }
@@ -63,7 +63,7 @@ export class PublicCtrl {
      * @param id                            -- public id.
      */
     @Delete("/:id")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.publicRepository.deleteById(id);
     }

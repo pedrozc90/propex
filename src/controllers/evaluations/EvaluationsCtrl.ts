@@ -1,6 +1,6 @@
 import { Controller, Get, PathParams, Delete, Required, QueryParams, Post, BodyParams } from "@tsed/common";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { EvaluationRepository } from "../../repositories";
 import { Evaluation, Page } from "../../entities";
 
@@ -17,14 +17,14 @@ export class EvaluationCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") project?: number | string
+        @QueryParams("project") projectId?: number
     ): Promise<Page<Evaluation>> {
-        return this.evaluationRepository.fetch({ page, rpp, q, project });
+        return this.evaluationRepository.fetch(page, rpp, q, projectId);
     }
 
     /**
@@ -33,7 +33,7 @@ export class EvaluationCtrl {
      * @param evaluations                   -- evaluation data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(@Required() @BodyParams("evaluation") evaluation: Evaluation): Promise<Evaluation> {
         return this.evaluationRepository.save(evaluation);
     }
@@ -43,7 +43,7 @@ export class EvaluationCtrl {
      * @param id                            -- evaluation id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Evaluation | undefined> {
         return this.evaluationRepository.findById(id);
     }
@@ -53,7 +53,7 @@ export class EvaluationCtrl {
      * @param id                            -- evaluation id.
      */
     @Delete("/:id")
-    @CustomAuth({ scope: [ "ADMIN", "COORDINATOR" ] })
+    @Authenticated({ scope: [ "ADMIN", "COORDINATOR" ] })
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.evaluationRepository.deleteById(id);
     }

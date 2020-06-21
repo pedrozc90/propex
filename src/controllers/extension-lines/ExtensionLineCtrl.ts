@@ -1,8 +1,7 @@
 import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required, Put, Req } from "@tsed/common";
 import { BadRequest, NotFound } from "@tsed/exceptions";
-import { Like } from "typeorm";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { ExtensionLineRepository } from "../../repositories";
 import { ExtensionLine, Page } from "../../entities";
 
@@ -19,30 +18,14 @@ export class ExtensionLineCtrl {
      * @param project                       -- project id.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
     ): Promise<Page<ExtensionLine>> {
-        const params: any = {};
-        if (rpp > 0) {
-            params.skip = (page - 1) * rpp;
-            params.take = rpp;
-        }
-        if (q) {
-            params.where = [
-                { name: Like(`%${q}%`) },
-                { operation: Like(`%${q}%`) }
-            ];
-        };
-        // if (project) {
-        //     params.join = {
-        //         alias: "el",
-        //         innerJoin: { projects: "el.projects" }
-        //     };
-        // }
-        return Page.of(await this.extensionLineRepository.find(params), page, rpp);
+        return this.extensionLineRepository.fetch(page, rpp, q, projectId);
     }
 
     /**
@@ -51,7 +34,7 @@ export class ExtensionLineCtrl {
      * @param extensionLine                 -- extension line data.
      */
     @Post("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async create(
         @Req() request: Req,
         @Required() @BodyParams("extensionLine") extensionLine: ExtensionLine
@@ -71,7 +54,7 @@ export class ExtensionLineCtrl {
      * @param extensionLine                 -- extension line data.
      */
     @Put("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async update(@Required() @BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ExtensionLine | undefined> {
         let el = await this.extensionLineRepository.findOne({ id: extensionLine.id });
         if (!el) {
@@ -86,8 +69,8 @@ export class ExtensionLineCtrl {
      * @param id                            -- extension line id.
      */
     @Get("/:id")
-    @CustomAuth({})
-    public async get(@Required() @PathParams("id") id: number): Promise<ExtensionLine | undefined> {
+    @Authenticated({})
+    public async get(@PathParams("id") id: number): Promise<ExtensionLine | undefined> {
         return this.extensionLineRepository.findById(id);
     }
 
@@ -96,8 +79,8 @@ export class ExtensionLineCtrl {
      * @param id                            -- extension line id.
      */
     @Delete("/:id")
-    @CustomAuth({ role: "ADMIN" })
-    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
+    @Authenticated({ role: "ADMIN" })
+    public async delete(@PathParams("id") id: number): Promise<any> {
         return this.extensionLineRepository.deleteById(id);
     }
 

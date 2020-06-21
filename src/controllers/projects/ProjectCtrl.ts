@@ -1,7 +1,7 @@
 import { Controller, Locals, Get, Post, Put, QueryParams, PathParams, BodyParams, Required, $log } from "@tsed/common";
 import { Exception, Unauthorized, BadRequest } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import * as Repo from "../../repositories";
 import { Page, Project, ProjectBasic, ProjectHumanResource, User, ResultContent } from "../../entities";
 import { IContext, Scope } from "../../core/types";
@@ -57,7 +57,7 @@ export class ProjectCtrl {
      * @param q                             -- query string (search).
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -94,7 +94,7 @@ export class ProjectCtrl {
      * @param project                       -- project data.
      */
     @Post("")
-    @CustomAuth({ scope: [ "ADMIN" ] })
+    @Authenticated({ scope: [ "ADMIN" ] })
     public async create(@Required() @BodyParams("project") data: ProjectBasic,
         @Required() @BodyParams("coordinator") coordinator: User
     ): Promise<ResultContent<any>> {
@@ -134,7 +134,7 @@ export class ProjectCtrl {
     }
 
     @Put("")
-    @CustomAuth({})
+    @Authenticated({})
     public async update(@Required() @BodyParams("project") data: Project): Promise<ResultContent<Project>> {
         // check if project exists.
         let project = await this.ProjectRepository.findById(data.id);
@@ -162,7 +162,7 @@ export class ProjectCtrl {
      * @param id                            -- project id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Locals("context") context: IContext,
         @Required() @PathParams("id") id: number
     ): Promise<Project | undefined> {

@@ -1,21 +1,19 @@
 import { isBoolean } from "@tsed/core";
-import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams } from "@tsed/common";
+import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams, UseBeforeEach } from "@tsed/common";
 import { NotImplemented } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { CollaboratorRepository, ProjectRepository } from "../../repositories";
 import { Collaborator } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/collaborators")
 @MergeParams(true)
 export class ProjectCollaboratorCtrl {
 
-    constructor(
-        private CollaboratorRepository: Repo.CollaboratorRepository,
-        private ProjectRepository: Repo.ProjectRepository) {
-        // initialize stuff here
-    }
+    constructor(private collaboratorRepository: CollaboratorRepository, private projectRepository: ProjectRepository) {}
 
     /**
      * Returns a list of collaborators working in a project.
@@ -25,14 +23,14 @@ export class ProjectCollaboratorCtrl {
      * @param q                             -- search query.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getCollaborators(
         @PathParams("projectId") projectId: number,
         @QueryParams("coordinate") coordinate?: boolean,
         @QueryParams("exclusive") exclusive?: boolean,
         @QueryParams("q") q?: string
     ): Promise<Collaborator[]> {
-        const query = this.CollaboratorRepository.createQueryBuilder("clb")
+        const query = this.collaboratorRepository.createQueryBuilder("clb")
             .innerJoinAndSelect("clb.user", "usr")
             .innerJoinAndSelect("usr.projectHumanResources", "phr", "phr.project_id = :projectId", { projectId });
             // .innerJoin("phr.project", "p", "p.id = :projectId", { projectId });
@@ -59,13 +57,13 @@ export class ProjectCollaboratorCtrl {
     }
 
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async postCollaborators(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("collaborators") collaborators: Collaborator[]
     ): Promise<any> {
-        const project = await this.ProjectRepository.findByContext(projectId, context);
+        const project = await this.projectRepository.findByContext(projectId, context);
 
         $log.debug(project, collaborators);
 

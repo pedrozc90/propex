@@ -1,10 +1,10 @@
 import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams, Put, Req } from "@tsed/common";
 import { BadRequest, NotFound } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { PartnerRepository } from "../../repositories";
 import { Partner, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/partners")
 export class PartnerCtrl {
@@ -19,7 +19,7 @@ export class PartnerCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -36,9 +36,9 @@ export class PartnerCtrl {
      * @param data                          -- partner data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async create(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Req() request: Req,
         @Required() @BodyParams("partner") data: Partner
     ): Promise<Partner> {
@@ -60,7 +60,7 @@ export class PartnerCtrl {
      * @param data                          -- partner data.
      */
     @Put("")
-    @CustomAuth({})
+    @Authenticated({})
     public async update(@Required() @BodyParams("partner") data: Partner): Promise<any> {
         let partner = await this.partnerRepository.findMatch(data, data.project);
         if (!partner) {
@@ -77,7 +77,7 @@ export class PartnerCtrl {
      * @param id                            -- partner id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Partner | undefined> {
         return this.partnerRepository.findById(id);
     }
@@ -87,7 +87,7 @@ export class PartnerCtrl {
      * @param id                            -- partner id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.partnerRepository.deleteById(id);
     }

@@ -101,6 +101,9 @@ module.exports = {
         "space-infix-ops": [ "error", { "int32Hint": true }],
         "space-in-parens": [ "error", "never" ],
         "space-unary-ops": "error",
-        "template-tag-spacing": [ "error", "always" ]
+        "template-tag-spacing": [ "error", "always" ],
+        "no-multi-spaces": [ "error", {
+            "ignoreEOLComments": true
+        }]
     }
 }

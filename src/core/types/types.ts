@@ -39,7 +39,7 @@ export interface IToken {
     user?: User;
 }
 
-export interface ICustomAuthOptions extends IAuthOptions {
+export interface IAuthenticatedOptions extends IAuthOptions {
     role?: string;
     scope?: string[];
 }

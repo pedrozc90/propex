@@ -14,9 +14,9 @@ export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
      * Fetch a list of documents from a collection.
      * @param options   -- pagination and search options
      */
-    public async fetch(options: IOptions): Promise<Page<T>> {
-        const page: number = options.page || 1;
-        const rpp: number = options.rpp || 0;
+    public async fetch(...params: any): Promise<Page<T>> {
+        const page: number = params.page || 1;
+        const rpp: number = params.rpp || 0;
 
         const query = this.createQueryBuilder()
             .skip((page - 1) * rpp).take(rpp);

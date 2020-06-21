@@ -2,7 +2,7 @@ import { Controller, Get, QueryParams, Required, BodyParams, Post, PathParams, L
 import { Exception, BadRequest, Unauthorized } from "@tsed/exceptions";
 // import { EntityManager, Transaction, TransactionManager } from "typeorm";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { User, Page, ResultContent } from "../../entities";
 import { IContext } from "../../core/types";
@@ -21,7 +21,7 @@ export class UserCtrl {
      * @param q                             -- extra query param, used for searching.
      */
     @Get("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async fetch(@Locals("context") context: IContext,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -48,7 +48,7 @@ export class UserCtrl {
      * @param data                          -- user data.
      */
     @Post("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async create(@Req() request: Req, @Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
         if (data.id) {
             throw new BadRequest(`Please, try PUT ${request.path} to update users information.`);
@@ -94,7 +94,7 @@ export class UserCtrl {
      * @param data                          -- user data.
      */
     @Put("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async save(@Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
         // check if user exists
         let user = await this.userRepository.findUserInfo({ id: data.id, email: data.email });
@@ -126,7 +126,7 @@ export class UserCtrl {
      * @param id                            -- user id.
      */
     @Get("/:id")
-    @CustomAuth({ scope: [ "ADMIN" ] })
+    @Authenticated({ scope: [ "ADMIN" ] })
     public async get(@PathParams("id") id: number): Promise<User | undefined> {
         return this.userRepository.createQueryBuilder("user")
             .leftJoinAndSelect("user.student", "student")
@@ -140,7 +140,7 @@ export class UserCtrl {
      * @param id                            -- user id.
      */
     @Post("/:id/activate")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async ativate(@Locals("context") context: IContext, @Required() @PathParams("id") id: number): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
             throw new Unauthorized("Invalid action fot admin users.");
@@ -154,7 +154,7 @@ export class UserCtrl {
      * @param id                            -- user id.
      */
     @Post("/:id/desactivate")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async desativate(@Locals("context") context: IContext, @Required() @PathParams("id") id: number): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
             throw new Unauthorized("Invalid action fot admin users.");

@@ -1,6 +1,6 @@
 import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { ActivityRepository } from "../../repositories";
 import { Activity } from "../../entities";
 import { IContext } from "../../core/types";
@@ -16,7 +16,7 @@ export class ActivityCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @Locals("context") context: IContext,
         @QueryParams("project") project: number | string
@@ -40,7 +40,7 @@ export class ActivityCtrl {
      * @param Activitys                   -- Activity data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
         @Locals("context") context: IContext,
         @Required() @BodyParams("Activity") Activitys: Activity

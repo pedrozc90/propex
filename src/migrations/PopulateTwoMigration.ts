@@ -19,7 +19,7 @@ export class PopulateTwoMigrationl1589006000000 implements MigrationInterface {
         };
 
         for (const p of projects) {
-            await queryRunner.query(`INSERT INTO projects (title, program) VALUES ('${p.title}', '${p.prgram}')`);
+            await queryRunner.query(`INSERT INTO projects (title, program) VALUES ('${p.title}', '${p.program}')`);
         };
 
         await queryRunner.query(`INSERT INTO project_human_resources (project_id, user_id, coordinate, exclusive, workload, dt_admission) VALUES

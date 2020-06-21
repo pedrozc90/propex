@@ -1,7 +1,7 @@
 import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, $log } from "@tsed/common";
 import { Exception, NotImplemented } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { PublicationRepository, ProjectRepository } from "../../repositories";
 import { Publication } from "../../entities";
 import { IContext, PublicationType } from "../../core/types";
@@ -15,7 +15,7 @@ export class PublicationCtrl {
      * Return a list of publications.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(): Promise<any> {
         throw new NotImplemented("Method Not Implemented!");
     }
@@ -26,7 +26,7 @@ export class PublicationCtrl {
      * @param publication                   -- publication data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
         @Locals("context") context: IContext,
         @Required() @BodyParams("publication") publication: Publication
@@ -44,7 +44,7 @@ export class PublicationCtrl {
      * Return a list of publications.
      */
     @Get("/types")
-    @CustomAuth({})
+    @Authenticated({})
     public async listTypes(): Promise<PublicationType[]> {
         return PublicationType.list;
     }
@@ -54,7 +54,7 @@ export class PublicationCtrl {
      * @param id                            -- publication id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Publication | undefined> {
         return this.publicationRepository.findById(id);
     }
@@ -64,7 +64,7 @@ export class PublicationCtrl {
      * @param id                            -- publication id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.publicationRepository.deleteById(id);
     }

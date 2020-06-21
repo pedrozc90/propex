@@ -1,9 +1,10 @@
-import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams } from "@tsed/common";
+import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams, Put, Req } from "@tsed/common";
+import { NotFound, BadRequest } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { DemandRepository, ProjectRepository } from "../../repositories";
 import { Demand, ResultContent, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/demands")
 export class DemandCtrl {
@@ -16,8 +17,8 @@ export class DemandCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
-    public async fetch(@Locals("context") context: IContext,
+    @Authenticated({})
+    public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
@@ -49,16 +50,70 @@ export class DemandCtrl {
      * @param demands                       -- demand data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
-        @Required() @BodyParams("demand") demand: Demand
+        @Req() request: Req,
+        @Locals("context") context: Context,
+        @Required() @BodyParams("demand") data: Demand
     ): Promise<ResultContent<Demand>> {
-        // check if  porject exists
-        const project = await this.projectRepository.findByContext(demand.project.id, context);
+        // check if user is part of project
+        const project = await this.projectRepository.findByContext(data.project.id, context);
 
-        // save demand
+        let demand = await this.demandRepository.findOne({
+            where: {
+                id: data.id,
+                project: { id: project.id }
+            },
+            join: {
+                alias: "d",
+                innerJoin: { project: "d.project" }
+            }
+        });
+
+        if (demand) {
+            throw new BadRequest(`Please use PUT ${request.path} to update a existing demand.`);
+        }
+
+        demand = this.demandRepository.create(data);
         demand.project = project;
+        demand = await this.demandRepository.save(demand);
+
+        return ResultContent.of<Demand>(demand).withMessage("Demand sucessfully saved.");
+    }
+
+    /**
+     * create a new demand.
+     * @param context                       -- user context.
+     * @param demands                       -- demand data.
+     */
+    @Put("")
+    @Authenticated({})
+    public async update(
+        @Locals("context") context: Context,
+        @Required() @BodyParams("demand") data: Demand
+    ): Promise<ResultContent<Demand>> {
+        // check if user is part of project
+        const project = await this.projectRepository.findByContext(data.project.id, context);
+
+        let demand = await this.demandRepository.findOne({
+            where: {
+                id: data.id,
+                project: { id: project.id }
+            },
+            join: {
+                alias: "d",
+                innerJoin: { project: "d.project" }
+            }
+        });
+
+        if (!demand) {
+            throw new NotFound("Demand not found.");
+        }
+        
+        // merge changes
+        demand = this.demandRepository.merge(demand, data);
+
+        // update demand
         demand = await this.demandRepository.save(demand);
 
         return ResultContent.of<Demand>(demand).withMessage("Demand sucessfully saved.");
@@ -69,7 +124,7 @@ export class DemandCtrl {
      * @param id                            -- demand id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Demand | undefined> {
         return this.demandRepository.findById(id);
     }
@@ -79,7 +134,7 @@ export class DemandCtrl {
      * @param id                            -- demand id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.demandRepository.deleteById(id);
     }

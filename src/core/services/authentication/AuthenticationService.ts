@@ -2,17 +2,16 @@ import { Service, $log } from "@tsed/common";
 import { BadRequest, Unauthorized, NotFound } from "@tsed/exceptions";
 import { Secret, SignOptions, VerifyErrors, sign, verify } from "jsonwebtoken";
 
-import { User, UserCredentials, UserBasic, Collaborator, Student } from "../../entities";
-import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
-import { Scope, IContext, IJwt } from "../../core/types";
-import { Context } from "../../core/models";
+import { User, UserCredentials, UserBasic } from "../../../entities";
+import { UserRepository, ProjectHumanResourceRepository } from "../../../repositories";
+import { Scope, IJwt } from "../../types";
+import { Context } from "../../models";
 
 @Service()
 export class AuthenticationService {
 
     constructor(private userRepository: UserRepository,
-        private collaboratorRepository: CollaboratorRepository,
-        private studentRepository: StudentRepository) {}
+        private projectHumanResourceRepository: ProjectHumanResourceRepository) {}
 
     /**
      * Find user by credentials.
@@ -42,38 +41,28 @@ export class AuthenticationService {
             throw new NotFound("User not found.");
         }
 
-        // const user = await this.userRepository.findOne({ id: jwt.id, active: true })
-        //     .catch((error: any) => {
-        //         $log.error(error.message);
-        //     });
-        // if (!user) {
-        //     throw new Unauthorized("User is inative!");
-        // }
+        const result = await this.projectHumanResourceRepository.createQueryBuilder("phr")
+            .where("phr.user_id = :userId", { userId: 2 })
+            .select("phr.project_id", "projectId")
+            .getRawMany();
 
-        // const collaborator = await this.collaboratorRepository.createQueryBuilder("collaborator")
-        //     .innerJoin("collaborator.user", "user", "collaborator.user_id = :userId", { userId: user?.id })
-        //     .getOne();
-
-        // const student = await this.studentRepository.createQueryBuilder("student")
-        //     .innerJoin("student.user", "user", "student.user_id = :userId", { userId: user?.id })
-        //     .getOne();
+        const projectIds = result.map((r) => r.projectId);
 
         const context = new Context();
         context.user = user;
         context.scope = this.defineScope(user);
+        context.projectIds = projectIds;
 
         return context;
     }
 
-    private defineScope(user?: User): Scope {
-        if (user) {
-            if (user.id === 1) {
-                return Scope.ADMIN;
-            } else if (user.collaborator) {
-                return Scope.COLLABORATOR;
-            } else if (user.student) {
-                return Scope.STUDENT;
-            }
+    private defineScope(user: User): Scope {
+        if (user.id === 1) {
+            return Scope.ADMIN;
+        } else if (user.collaborator) {
+            return Scope.COLLABORATOR;
+        } else if (user.student) {
+            return Scope.STUDENT;
         }
         return Scope.UNKNOWN;
     }

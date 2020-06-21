@@ -1,17 +1,16 @@
-import { Controller, Get, QueryParams, PathParams, Required, MergeParams } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Required, MergeParams, UseBeforeEach } from "@tsed/common";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { ActivityRepository } from "../../repositories";
 import { Page, Activity } from "../../entities";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/activities")
 @MergeParams(true)
 export class ProjectActivityCtrl {
 
-    constructor(
-        private ActivityRepository: Repo.ActivityRepository) {
-        // initialize stuff here
-    }
+    constructor(private activityRepository: ActivityRepository) {}
 
     /**
      * Return a list of activities tied to a project.
@@ -23,7 +22,7 @@ export class ProjectActivityCtrl {
      * @param lastDate                      -- last date.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getActivities(@Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -31,7 +30,7 @@ export class ProjectActivityCtrl {
         @QueryParams("init_date") initDate?: string,
         @QueryParams("last_date") lastDate?: string
     ): Promise<Page<Activity>> {
-        const query = this.ActivityRepository.createQueryBuilder("activity")
+        const query = this.activityRepository.createQueryBuilder("activity")
             .innerJoin("activity.project", "project", "project.id = :projectId", { projectId });
 
         if (q) {

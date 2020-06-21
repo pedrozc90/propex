@@ -2,33 +2,25 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Event, Page } from "../entities";
-import { IOptions } from "../core/types";
 
-const relations = [ "project" ];
+import { StringUtils } from "../core/utils";
 
 @EntityRepository(Event)
 export class EventRepository extends GenericRepository<Event> {
 
     constructor() {
-        super(relations);
+        super([ "project" ]);
     }
 
-    public async fetch(options: IOptions): Promise<Page<Event>> {
-        const page = options.page || 1;
-        const rpp = options.rpp || 15;
-        const q = options.q;
-        const project = options.project;
-
+    public async fetch(page: number = 1, rpp: number = 15, q?: string, projectId?: number): Promise<Page<Event>> {
         const query = this.createQueryBuilder("ep")
             .innerJoin("ep.project", "project");
 
-        if (typeof project === "string") {
-            query.where("project.title LIKE :title", { title: `%${project}%` });
-        } else if (typeof project === "number") {
-            query.where("project.id = :id", { id: project });
+        if (projectId) {
+            query.where("project.id = :projectId", { projectId });
         }
 
-        if (q) {
+        if (StringUtils.isNotEmpty(q)) {
             query.where("ep.name LIKE :name", { name: `%${q}%` })
                 .orWhere("ep.modality LIKE :modality", { modality: `%${q}%` });
         }

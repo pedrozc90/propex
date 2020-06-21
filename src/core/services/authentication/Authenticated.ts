@@ -2,12 +2,12 @@ import { UseAuth } from "@tsed/common";
 import { applyDecorators } from "@tsed/core";
 import { Operation, Responses, Security } from "@tsed/swagger";
 
-import { CustomAuthMiddleware } from "../../middlewares/CustomAuthMiddleware";
-import { ICustomAuthOptions } from "../../core/types";
+import { AuthenticatedMiddleware } from "../../../middlewares/AuthenticatedMiddleware";
+import { IAuthenticatedOptions } from "../../types";
 
-export function CustomAuth(options: ICustomAuthOptions = {}): Function {
+export function Authenticated(options: IAuthenticatedOptions = {}): Function {
     return applyDecorators(
-        UseAuth(CustomAuthMiddleware, options),
+        UseAuth(AuthenticatedMiddleware, options),
         Security("http", ...(options.scope || [])),
         Operation({
             parameters: [

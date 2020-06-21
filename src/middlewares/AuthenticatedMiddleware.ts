@@ -1,11 +1,11 @@
 import { EndpointInfo, IMiddleware, Middleware, Next, Req, Res } from "@tsed/common";
 import { Forbidden, Unauthorized } from "@tsed/exceptions";
 
-import { AuthenticationService } from "../services";
-import { ICustomAuthOptions, IJwt } from "../core/types";
+import { AuthenticationService } from "../core/services";
+import { IAuthenticatedOptions, IJwt } from "../core/types";
 
 @Middleware()
-export class CustomAuthMiddleware implements IMiddleware {
+export class AuthenticatedMiddleware implements IMiddleware {
 
     constructor(private authenticationService: AuthenticationService) {}
 
@@ -21,7 +21,7 @@ export class CustomAuthMiddleware implements IMiddleware {
         @EndpointInfo() endpoint: EndpointInfo
     ): Promise<void> {
         // retrieve options given to the @UseAuth decorator
-        const options: ICustomAuthOptions = endpoint.get(CustomAuthMiddleware) || {};
+        const options: IAuthenticatedOptions = endpoint.get(AuthenticatedMiddleware) || {};
 
         // retrieve token from request headers
         const token: string | undefined = request.header("Authorization");

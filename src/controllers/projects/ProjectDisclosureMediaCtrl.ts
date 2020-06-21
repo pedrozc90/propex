@@ -1,31 +1,27 @@
-import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, MergeParams } from "@tsed/common";
+import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, MergeParams, UseBeforeEach } from "@tsed/common";
 import { NotFound } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page, ResultContent } from "../../entities";
 import { IContext } from "../../core/types";
 
-import { StringUtils } from "../../core/utils";
-
 import moment from "moment";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/disclosure-medias")
 @MergeParams(true)
 export class ProjectDisclosureMediaCtrl {
 
-    constructor(
-        private DisclosureMediaRepository: Repo.DisclosureMediaRepository,
-        private ProjectRepository: Repo.ProjectRepository) {
-        // initialize stuff here
-    }
+    constructor(private disclosureMediaRepository: DisclosureMediaRepository, private projectRepository: ProjectRepository) {}
 
     /**
      * Return a paginated list of disclosure medias that belongs to a project.
      * @param id                            -- project id.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getDisclosureMedia(@Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -34,23 +30,7 @@ export class ProjectDisclosureMediaCtrl {
         @QueryParams("from") from?: string,
         @QueryParams("to") to?: string
     ): Promise<Page<DisclosureMedia>> {
-        const query = this.DisclosureMediaRepository.createQueryBuilder("dm")
-            .innerJoin("dm.project", "p", "p.id = :projectId", { projectId });
-        
-        if (StringUtils.isNotEmpty(q)) {
-            query.where("dm.name LIKE :name", { name: `%${q}%` })
-                .orWhere("dm.link LIKE :link", { link: `%${q}%` });
-        }
-
-        if (date) query.where("dm.date = :date", { date });
-        if (from) query.where("dm.date >= :from", { from });
-        if (to) query.where("dm.date <= :to", { to });
-
-        query.orderBy("dm.date", "DESC")
-            .skip((page - 1) * rpp)
-            .take(rpp);
-        
-        return Page.of<DisclosureMedia>(await query.getMany(), page, rpp);
+        return this.disclosureMediaRepository.fetch(page, rpp, q, date, from, to, projectId);
     }
 
     /**
@@ -59,28 +39,28 @@ export class ProjectDisclosureMediaCtrl {
      * @param disclosureMedias              -- disclosure medias data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async setDisclosureMedia(
         @Locals("context") context: IContext,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
     ): Promise<any> {
         // check if user is part of project.
-        const project = await this.ProjectRepository.findByContext(projectId, context);
+        const project = await this.projectRepository.findByContext(projectId, context);
 
         // update existing entities
         let mediasToUpdate = await Promise.all(
             disclosureMedias.filter((dm) => !!dm.id).map(async (dm) => {
-                const tmp = await this.DisclosureMediaRepository.findOne({ id: dm.id });
+                const tmp = await this.disclosureMediaRepository.findOne({ id: dm.id });
                 if (!tmp) {
                     throw new NotFound(`Disclosure media ${dm.id} do not exists.`);
                 }
-                return this.DisclosureMediaRepository.merge(tmp, dm);
+                return this.disclosureMediaRepository.merge(tmp, dm);
             })
         );
         
         if (mediasToUpdate.length > 0) {
-            mediasToUpdate = await this.DisclosureMediaRepository.save(mediasToUpdate);
+            mediasToUpdate = await this.disclosureMediaRepository.save(mediasToUpdate);
         }
 
         // save new entities
@@ -90,7 +70,7 @@ export class ProjectDisclosureMediaCtrl {
             return d;
         });
         if (mediasToInsert.length > 0) {
-            mediasToInsert = await this.DisclosureMediaRepository.save(mediasToInsert);
+            mediasToInsert = await this.disclosureMediaRepository.save(mediasToInsert);
         }
 
         const result = {

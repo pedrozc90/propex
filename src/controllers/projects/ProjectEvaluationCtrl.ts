@@ -1,12 +1,14 @@
-import { $log, BodyParams, Controller, Get, Locals, MergeParams, PathParams, Post, QueryParams, Required } from "@tsed/common";
+import { $log, BodyParams, Controller, Get, Locals, MergeParams, PathParams, Post, QueryParams, Required, UseBeforeEach } from "@tsed/common";
 
 import { NotImplemented } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
 import { EvaluationRepository, ProjectRepository } from "../../repositories";
 import { Evaluation, Page } from "../../entities";
 import { IContext } from "../../core/types";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/evaluations")
 @MergeParams(true)
 export class ProjectEvaluationCtrl {
@@ -23,7 +25,7 @@ export class ProjectEvaluationCtrl {
      * @param rpp                           -- rows per page.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getEvaluation(@Locals("context") context: IContext,
         @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
@@ -40,7 +42,7 @@ export class ProjectEvaluationCtrl {
     }
 
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async postEvaluation(
         @Locals("context") context: IContext,
         @Required() @PathParams("projectId") projectId: number,

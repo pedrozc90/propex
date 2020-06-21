@@ -1,10 +1,10 @@
 import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams, Put, Req } from "@tsed/common";
 import { BadRequest, NotFound } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { FutureDevelopmentPlanRepository, ProjectRepository } from "../../repositories";
 import { FutureDevelopmentPlan, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/future-development-plans")
 export class FutureDevelopmentPlanCtrl {
@@ -17,14 +17,14 @@ export class FutureDevelopmentPlanCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") project?: string | number
+        @QueryParams("project_id") projectId?: number
     ): Promise<Page<FutureDevelopmentPlan>> {
-        return this.futureDevelopmentPlanRepository.fetch({ page, rpp, q, project });
+        return this.futureDevelopmentPlanRepository.fetch(page, rpp, q, projectId);
     }
 
     /**
@@ -33,9 +33,9 @@ export class FutureDevelopmentPlanCtrl {
      * @param plans                         -- future development plan data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("futureDevelopmentPlan") futureDevelopmentPlan: FutureDevelopmentPlan
     ): Promise<FutureDevelopmentPlan> {
         const project = await this.projectRepository.findByContext(futureDevelopmentPlan.project.id, context);
@@ -50,7 +50,7 @@ export class FutureDevelopmentPlanCtrl {
      * @param plans                         -- future development plan data.
      */
     @Put("")
-    @CustomAuth({})
+    @Authenticated({})
     public async update(
         @Req() request: Req,
         @Required() @BodyParams("futureDevelopmentPlan") data: FutureDevelopmentPlan
@@ -76,7 +76,7 @@ export class FutureDevelopmentPlanCtrl {
      * @param id                            -- future development plan id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<FutureDevelopmentPlan | undefined> {
         return this.futureDevelopmentPlanRepository.findById(id);
     }
@@ -86,7 +86,7 @@ export class FutureDevelopmentPlanCtrl {
      * @param id                            -- future development plan id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.futureDevelopmentPlanRepository.deleteById(id);
     }

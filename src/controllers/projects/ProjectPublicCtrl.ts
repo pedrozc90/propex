@@ -1,19 +1,21 @@
 import { isBoolean } from "@tsed/core";
-import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams } from "@tsed/common";
+import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams, UseBeforeEach } from "@tsed/common";
 import { NotImplemented } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { ProjectRepository, PublicRepository } from "../../repositories";
 import { Public, ResultContent } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/publics")
 @MergeParams(true)
 export class ProjectPublicCtrl {
 
     constructor(
-        private ProjectRepository: Repo.ProjectRepository,
-        private PublicRepository: Repo.PublicRepository) {
+        private projectRepository: ProjectRepository,
+        private publicRepository: PublicRepository) {
         // initialize stuff here
     }
 
@@ -23,12 +25,12 @@ export class ProjectPublicCtrl {
      * @param directly                      -- filter direct publics.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getPublics(
         @Required() @PathParams("projectId") projectId: number,
         @QueryParams("directly") directly?: boolean
     ): Promise<Public[]> {
-        const query = this.PublicRepository.createQueryBuilder("pb")
+        const query = this.publicRepository.createQueryBuilder("pb")
             .innerJoinAndSelect("pb.projectPublics", "ppb", "ppb.project_id = :projectId", { projectId });
         
         if (isBoolean(directly)) {
@@ -45,14 +47,14 @@ export class ProjectPublicCtrl {
      * @param publics                       -- project publics data.
      */
     @Post("")
-    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
+    @Authenticated({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setPublics(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("publics") publics: Public[]
     ): Promise<ResultContent<Public[]>> {
         // check if user is part of project.
-        const project = await this.ProjectRepository.findByContext(projectId, context);
+        const project = await this.projectRepository.findByContext(projectId, context);
         
         $log.debug(project, publics);
         // update project publics.

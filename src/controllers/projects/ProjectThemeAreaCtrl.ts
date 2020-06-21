@@ -1,18 +1,20 @@
-import { Controller, Locals, Get, Post, PathParams, BodyParams, Required, MergeParams } from "@tsed/common";
+import { Controller, Locals, Get, Post, PathParams, BodyParams, Required, MergeParams, UseBeforeEach } from "@tsed/common";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { ProjectRepository, ProjectThemeAreaRepository, ThemeAreaRepository } from "../../repositories";
 import { ProjectThemeArea, ThemeArea, ResultContent } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/theme-areas")
 @MergeParams(true)
 export class ProjectThemeAreaCtrl {
 
     constructor(
-        private ProjectRepository: Repo.ProjectRepository,
-        private ProjectThemeAreaRepository: Repo.ProjectThemeAreaRepository,
-        private ThemeAreaRepository: Repo.ThemeAreaRepository) {
+        private projectRepository: ProjectRepository,
+        private projectThemeAreaRepository: ProjectThemeAreaRepository,
+        private themeAreaRepository: ThemeAreaRepository) {
         // initialize stuff here
     }
 
@@ -21,9 +23,9 @@ export class ProjectThemeAreaCtrl {
      * @param id                            -- project id.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getThemeAreas(@PathParams("projectId") projectId: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
-        const query = this.ThemeAreaRepository.createQueryBuilder("ta")
+        const query = this.themeAreaRepository.createQueryBuilder("ta")
             .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId });
         
         // load project's main theme areas
@@ -42,18 +44,18 @@ export class ProjectThemeAreaCtrl {
      * @param secondary                     -- list of secondary theme areas.
      */
     @Post("")
-    @CustomAuth({ scope: [ "ADMIN", "COORDENATOR" ] })
+    @Authenticated({ scope: [ "ADMIN", "COORDENATOR" ] })
     public async setThemeAreas(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @BodyParams("main") main?: ThemeArea[],
         @BodyParams("secondary") secondary?: ThemeArea[]
     ): Promise<any> {
         // check if user is part of project.
-        const project = await this.ProjectRepository.findByContext(projectId, context);
+        const project = await this.projectRepository.findByContext(projectId, context);
 
         // create project theme aread
-        const projectThemeAreas = await this.ProjectThemeAreaRepository.overwrite(project, main, secondary);
+        const projectThemeAreas = await this.projectThemeAreaRepository.overwrite(project, main, secondary);
 
         return ResultContent.of<ProjectThemeArea[]>(projectThemeAreas).withMessage("Project Theme Areas successfully saved.");
     }

@@ -1,7 +1,7 @@
 import { BodyParams, Controller, Post, Required, Res } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
-import { AuthenticationService, CustomAuth } from "../../services";
+import { AuthenticationService, Authenticated } from "../../core/services";
 import { User, UserBasic, UserCredentials } from "../../entities";
 import { IToken } from "../../core/types";
 
@@ -46,7 +46,7 @@ export class AuthenticationCtrl {
      * @param next                          -- express next function.
      */
     @Post("/logout")
-    @CustomAuth({})
+    @Authenticated({})
     public async logout(@Res() res: Res): Promise<any> {
         if (process.env.WEBPAGE_URL) {
             res.redirect(process.env.WEBPAGE_URL);

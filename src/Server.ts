@@ -28,8 +28,8 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
     ],
     statics: { "/static": `${rootDir}/static` },
     logger: {
-        debug: true,
-        level: "info",
+        debug: (process.env.NODE_ENV === "development"),
+        level: (process.env.NODE_ENV === "development") ? "debug" : "info",
         requestFields: [ "reqId", "method", "url", "headers", "body", "query", "params", "duration" ],
         ignoreUrlPatterns: [ "/api-docs" ],
         logRequest: true,

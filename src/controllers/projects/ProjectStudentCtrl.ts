@@ -1,20 +1,22 @@
-import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams } from "@tsed/common";
+import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, $log, MergeParams, UseBeforeEach } from "@tsed/common";
 import { NotImplemented } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
-import * as Repo from "../../repositories";
+import { ProjectValidationMiddleware } from "../../middlewares";
+import { Authenticated } from "../../core/services";
+import { ProjectRepository, StudentRepository } from "../../repositories";
 import { Student } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 import * as StringUtils from "../../core/utils/StringUtils";
 
+@UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/students")
 @MergeParams(true)
 export class ProjectStudentCtrl {
 
     constructor(
-        private ProjectRepository: Repo.ProjectRepository,
-        private StudentRepository: Repo.StudentRepository) {
+        private projectRepository: ProjectRepository,
+        private studentRepository: StudentRepository) {
         // initialize stuff here
     }
 
@@ -26,14 +28,14 @@ export class ProjectStudentCtrl {
      * @param q                 -- search query.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async getStudents(
         @PathParams("projectId") projectId: number,
         @QueryParams("scholarship") scholarship?: boolean,
         @QueryParams("period") period?: string,
         @QueryParams("q") q?: string
     ): Promise<Student[]> {
-        const query = this.StudentRepository.createQueryBuilder("std")
+        const query = this.studentRepository.createQueryBuilder("std")
             .innerJoinAndSelect("std.user", "usr")
             .innerJoinAndSelect("usr.projectHumanResources", "phr")
             .innerJoin("phr.project", "p", "p.id = :projectId", { projectId });
@@ -57,13 +59,13 @@ export class ProjectStudentCtrl {
     }
 
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async postStudents(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("students") students: Student[]
     ): Promise<any> {
-        const project = await this.ProjectRepository.findByContext(projectId, context);
+        const project = await this.projectRepository.findByContext(projectId, context);
 
         $log.debug(project, students);
 

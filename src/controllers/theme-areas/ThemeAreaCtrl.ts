@@ -2,7 +2,7 @@ import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Req
 
 import { ThemeAreaRepository } from "../../repositories";
 import { ThemeArea, Page } from "../../entities";
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 
 @Controller("/theme-areas")
 export class ThemeAreaCtrl {
@@ -16,7 +16,7 @@ export class ThemeAreaCtrl {
      * @param q                             -- search query string.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -31,7 +31,7 @@ export class ThemeAreaCtrl {
      * @param themeArea                     -- theme area data.
      */
     @Post("")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async save(@Required() @BodyParams("themeArea") themeArea: ThemeArea): Promise<ThemeArea | undefined> {
         return this.themeAreaRepository.save(themeArea);
     }
@@ -41,7 +41,7 @@ export class ThemeAreaCtrl {
      * @param q                             -- search query string.
      */
     @Get("/list")
-    @CustomAuth({})
+    @Authenticated({})
     public async list(@QueryParams("q") q?: string): Promise<ThemeArea[]> {
         return this.themeAreaRepository.list({ q });
     }
@@ -51,7 +51,7 @@ export class ThemeAreaCtrl {
      * @param id                            -- theme area id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<ThemeArea | undefined> {
         return this.themeAreaRepository.findById(id);
     }
@@ -61,7 +61,7 @@ export class ThemeAreaCtrl {
      * @param id                            -- theme area id.
      */
     @Delete("/:id")
-    @CustomAuth({ role: "ADMIN" })
+    @Authenticated({ role: "ADMIN" })
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.themeAreaRepository.deleteById(id);
     }

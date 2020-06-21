@@ -1,7 +1,7 @@
 import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, BodyParams, Req, Put } from "@tsed/common";
 import { BadRequest, NotFound } from "@tsed/exceptions";
 
-import { CustomAuth } from "../../services";
+import { Authenticated } from "../../core/services";
 import { EventRepository, ProjectRepository } from "../../repositories";
 import { Event, Page } from "../../entities";
 import { IContext } from "../../core/types";
@@ -17,14 +17,14 @@ export class EventCtrl {
      * @param project                       -- project id or title.
      */
     @Get("")
-    @CustomAuth({})
+    @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") project?: number | string
+        @QueryParams("project") projectId?: number
     ): Promise<Page<Event>> {
-        return this.eventRepository.fetch({ page, rpp, q, project });
+        return this.eventRepository.fetch(page, rpp, q, projectId);
     }
 
     /**
@@ -34,7 +34,7 @@ export class EventCtrl {
      * @param events                        -- event data.
      */
     @Post("")
-    @CustomAuth({})
+    @Authenticated({})
     public async save(
         @Req() request: Req,
         @Locals("context") context: IContext,
@@ -57,7 +57,7 @@ export class EventCtrl {
      * @param events                        -- event data.
      */
     @Put("")
-    @CustomAuth({})
+    @Authenticated({})
     public async update(@Required() @BodyParams("event") data: Event): Promise<Event> {
         let event = await this.eventRepository.findOne(data.id, { relations: [ "project" ] });
         if (!event) {
@@ -74,7 +74,7 @@ export class EventCtrl {
      * @param id                            -- event id.
      */
     @Get("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Event | undefined> {
         return this.eventRepository.findById(id);
     }
@@ -84,7 +84,7 @@ export class EventCtrl {
      * @param id                            -- event id.
      */
     @Delete("/:id")
-    @CustomAuth({})
+    @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
         return this.eventRepository.deleteById(id);
     }
