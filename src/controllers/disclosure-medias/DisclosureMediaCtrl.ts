@@ -1,4 +1,5 @@
-import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals, QueryParams } from "@tsed/common";
+import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals, QueryParams, Put, Req } from "@tsed/common";
+import { NotFound, BadRequest } from "@tsed/exceptions";
 
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page } from "../../entities";
@@ -38,11 +39,41 @@ export class DisclosureMediaCtrl {
     @Authenticated({})
     public async save(
         @Locals("context") context: Context,
+        @Req() request: Req,
         @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
     ): Promise<DisclosureMedia | undefined> {
         const project = await this.projectRepository.findByContext(disclosureMedia.project.id, context);
-        disclosureMedia.project = project;
-        return this.disclosureMediaRepository.save(disclosureMedia);
+
+        let dm = await this.disclosureMediaRepository.findOne({ id: disclosureMedia.id });
+        if (dm) {
+            throw new BadRequest(`Please, use PUT ${request.path} to update a disclosure media data.`);
+        }
+
+        dm = this.disclosureMediaRepository.create(disclosureMedia);
+        dm.project = project;
+
+        return this.disclosureMediaRepository.save(dm);
+    }
+
+    /**
+     * Create/Update a disclosure media.
+     * @param context                       -- user context/
+     * @param disclosureMedia               -- disclosure media data.
+     */
+    @Put("")
+    @Authenticated({})
+    public async update(
+        @Locals("context") context: Context,
+        @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
+    ): Promise<DisclosureMedia | undefined> {
+        await this.projectRepository.findByContext(disclosureMedia.project.id, context);
+        
+        let dm = await this.disclosureMediaRepository.findOne({ id: disclosureMedia.id });
+        if (!dm) {
+            throw new NotFound("Disclouse media not found.");
+        }
+        dm = this.disclosureMediaRepository.merge(dm, disclosureMedia);
+        return this.disclosureMediaRepository.save(dm);
     }
 
     /**

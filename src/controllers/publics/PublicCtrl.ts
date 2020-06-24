@@ -1,4 +1,5 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required, Put, Req } from "@tsed/common";
+import { BadRequest, NotFound } from "@tsed/exceptions";
 import { Like } from "typeorm";
 
 import { PublicRepository } from "../../repositories";
@@ -44,7 +45,32 @@ export class PublicCtrl {
      */
     @Post("")
     @Authenticated({ role: "ADMIN" })
-    public async save(@Required() @BodyParams("public") data: Public): Promise<Public | undefined> {
+    public async create(
+        @Req() request: Req,
+        @Required() @BodyParams("public") data: Public
+    ): Promise<Public | undefined> {
+        const p = await this.publicRepository.findOne(data.id);
+        if (p) {
+            throw new BadRequest(`Please, use PUT ${request.path} to update a public data.`);
+        }
+        return this.publicRepository.save(data);
+    }
+
+    /**
+     * Create/Update a public data.
+     * @param context                       -- user context.
+     * @param data                          -- public data.
+     */
+    @Put("")
+    @Authenticated({ role: "ADMIN" })
+    public async update(
+        @Required() @BodyParams("public") data: Public
+    ): Promise<Public | undefined> {
+        let p = await this.publicRepository.findOne(data.id);
+        if (!p) {
+            throw new NotFound("Public not found.");
+        }
+        p = this.publicRepository.merge(p, data);
         return this.publicRepository.save(data);
     }
 

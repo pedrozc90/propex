@@ -35,7 +35,13 @@ export class EvaluationCtrl {
     @Post("")
     @Authenticated({})
     public async save(@Required() @BodyParams("evaluation") evaluation: Evaluation): Promise<Evaluation> {
-        return this.evaluationRepository.save(evaluation);
+        let e = await this.evaluationRepository.findOne({ id: evaluation.id });
+        if (!e) {
+            e = this.evaluationRepository.create(evaluation);
+        } else {
+            e = this.evaluationRepository.merge(e, evaluation);
+        }
+        return this.evaluationRepository.save(e);
     }
 
     /**

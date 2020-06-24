@@ -1,4 +1,6 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required } from "@tsed/common";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required, Put, Req } from "@tsed/common";
+import { NotFound, BadRequest } from "@tsed/exceptions";
+import { Equal } from "typeorm";
 
 import { ThemeAreaRepository } from "../../repositories";
 import { ThemeArea, Page } from "../../entities";
@@ -26,24 +28,50 @@ export class ThemeAreaCtrl {
     }
 
     /**
-     * Create/Update a theme area data.
+     * Create a theme area data.
      * @param context                       -- user context.
      * @param themeArea                     -- theme area data.
      */
     @Post("")
     @Authenticated({ role: "ADMIN" })
-    public async save(@Required() @BodyParams("themeArea") themeArea: ThemeArea): Promise<ThemeArea | undefined> {
-        return this.themeAreaRepository.save(themeArea);
+    public async create(
+        @Req() request: Req,
+        @Required() @BodyParams("themeArea") themeArea: ThemeArea
+    ): Promise<ThemeArea | undefined> {
+        let ta = await this.themeAreaRepository.findOne({
+            where: [
+                { id: themeArea.id },
+                { name: Equal(themeArea.name) }
+            ]
+        });
+        if (ta) {
+            throw new BadRequest(`Please, use PUT ${request.path} to update a theme area data.`);
+        }
+        ta = this.themeAreaRepository.create(themeArea);
+        return this.themeAreaRepository.save(ta);
     }
 
     /**
-     * Return the complete list of theme areas.
-     * @param q                             -- search query string.
+     * Update a theme area data.
+     * @param context                       -- user context.
+     * @param themeArea                     -- theme area data.
      */
-    @Get("/list")
-    @Authenticated({})
-    public async list(@QueryParams("q") q?: string): Promise<ThemeArea[]> {
-        return this.themeAreaRepository.list({ q });
+    @Put("")
+    @Authenticated({ role: "ADMIN" })
+    public async update(
+        @Required() @BodyParams("themeArea") themeArea: ThemeArea
+    ): Promise<ThemeArea | undefined> {
+        let ta = await this.themeAreaRepository.findOne({
+            where: [
+                { id: themeArea.id },
+                { name: Equal(themeArea.name) }
+            ]
+        });
+        if (!ta) {
+            throw new NotFound("ThemeArea not found.");
+        }
+        ta = this.themeAreaRepository.merge(ta, themeArea);
+        return this.themeAreaRepository.save(themeArea);
     }
 
     /**

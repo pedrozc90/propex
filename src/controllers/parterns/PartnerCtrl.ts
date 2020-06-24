@@ -42,16 +42,13 @@ export class PartnerCtrl {
         @Req() request: Req,
         @Required() @BodyParams("partner") data: Partner
     ): Promise<Partner> {
-        if (!data.project) {
-            throw new BadRequest("Missing project data.");
-        }
-
         const partner = await this.partnerRepository.findMatch(data, data.project);
-
         if (partner) {
             throw new BadRequest(`Please, use PUT ${request.path} to update a partner data.`);
         }
-
+        if (!data.project) {
+            throw new BadRequest("Missing project data.");
+        }
         return this.partnerRepository.save(data);
     }
 
@@ -66,9 +63,7 @@ export class PartnerCtrl {
         if (!partner) {
             throw new NotFound("Partner not found.");
         }
-
         partner = this.partnerRepository.merge(partner, data);
-
         return this.partnerRepository.save(partner);
     }
 

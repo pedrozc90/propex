@@ -1,5 +1,6 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Put } from "@tsed/common";
-import { NotFound } from "@tsed/exceptions";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Put, Required, Req } from "@tsed/common";
+import { NotFound, BadRequest } from "@tsed/exceptions";
+import { Equal } from "typeorm";
 
 import { Authenticated } from "../../core/services";
 import { KnowledgeAreaRepository } from "../../repositories";
@@ -21,21 +22,39 @@ export class KnowledgeAreaCtrl {
     }
 
     @Post("")
-    @Authenticated({})
-    public async create(@BodyParams("knowledgeArea") knowledgeArea: KnowledgeArea): Promise<KnowledgeArea | undefined> {
+    @Authenticated({ role: "ADMIN" })
+    public async create(
+        @Req() request: Req,
+        @Required() @BodyParams("knowledgeArea") knowledgeArea: KnowledgeArea
+    ): Promise<KnowledgeArea | undefined> {
+        let ka = await this.knowledgeAreaRepository.findOne({
+            where: [
+                { id: knowledgeArea.id },
+                { name: Equal(knowledgeArea.name) }
+            ]
+        });
+        if (ka) {
+            throw new BadRequest(`Please, use PUT ${request.path} to update a theme area data.`);
+        }
+        ka = this.knowledgeAreaRepository.create(knowledgeArea);
         return this.knowledgeAreaRepository.save(knowledgeArea);
     }
 
     @Put("")
-    @Authenticated({})
-    public async update(@BodyParams("knowledgeArea") data: KnowledgeArea): Promise<KnowledgeArea | undefined> {
-        let knowledgeArea = await this.knowledgeAreaRepository.findOne({ id: data.id });
-        if (!knowledgeArea) {
+    @Authenticated({ role: "ADMIN" })
+    public async update(
+        @Required() @BodyParams("knowledgeArea") knowledgeArea: KnowledgeArea
+    ): Promise<KnowledgeArea | undefined> {
+        let ka = await this.knowledgeAreaRepository.findOne({
+            where: [
+                { id: knowledgeArea.id },
+                { name: Equal(knowledgeArea.name) }
+            ]
+        });
+        if (!ka) {
             throw new NotFound("Knowledge area not found.");
         }
-
-        knowledgeArea = this.knowledgeAreaRepository.merge(knowledgeArea, data);
-
+        ka = this.knowledgeAreaRepository.merge(ka, knowledgeArea);
         return this.knowledgeAreaRepository.save(knowledgeArea);
     }
 
