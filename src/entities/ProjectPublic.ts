@@ -1,4 +1,4 @@
-import { Property, Required, Default } from "@tsed/common";
+import { Property, Default } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -26,20 +26,17 @@ export class ProjectPublic extends Audit {
     @JoinColumn({ name: "public_id", referencedColumnName: "id" })
     public public: Public;
 
-    @Required()
     @Default(false)
     @Property({ name: "directly" })
     @Column({ name: "directly", type: "boolean", default: false, nullable: false })
     public directly: boolean = false;
 
-    @Required()
     @Property({ name: "othersTitle" })
     @Column({ name: "others_title", type: "varchar", length: 255, nullable: true })
-    public otherPublicTitle: number;
+    public otherPublicTitle: string;
 
-    @Required()
     @Property({ name: "othersCras" })
     @Column({ name: "others_cras", type: "varchar", length: 255, nullable: true })
-    public otherPublicCras: number;
+    public otherPublicCras: string;
     
 }

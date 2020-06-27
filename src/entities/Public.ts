@@ -17,6 +17,10 @@ export class Public extends Audit {
     @Column({ name: "name", type: "varchar", length: 255, nullable: false })
     public name: string;
 
+    @Property({ name: "customizable" })
+    @Column({ name: "customizable", type: "boolean", default: false, nullable: false })
+    public customizable: boolean = false;
+
     @Description("Centro de Referência de Assitência Social - CRAS")
     @Property({ name: "cras" })
     @Column({ name: "cras", type: "varchar", length: 255, nullable: true })

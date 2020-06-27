@@ -100,7 +100,7 @@
         { "name": "Moradores de área de ocupação" },
         { "name": "Outras ONG’s" },
         { "name": "Organizações/movimentos populares" },
-        { "name": "Outros" }
+        { "name": "Outros", "customizable": true }
     ]
 
 }

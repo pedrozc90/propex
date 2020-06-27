@@ -1,11 +1,17 @@
--- select * from disclosure_medias dm
---     inner join projects p on p.id = dm.project_id
---     inner join project_human_resources phr on phr.project_id = p.id
---     inner join users usr on usr.id = phr.user_id
---     where dm.project_id = 1;
-
--- select * from disclosure_medias;
-
-select * from project_human_resources phr;
-
-select phr.project_id from project_human_resources phr where phr.user_id = 2;
+SELECT `pb`.`created_at` AS `pb_created_at`,
+ `pb`.`updated_at` AS `pb_updated_at`,
+ `pb`.`project_id` AS `pb_project_id`,
+ `pb`.`public_id` AS `pb_public_id`,
+ `pb`.`directly` AS `pb_directly`,
+ `pb`.`others_title` AS `pb_others_title`,
+ `pb`.`others_cras` AS `pb_others_cras`,
+ `public`.`created_at` AS `public_created_at`,
+ `public`.`updated_at` AS `public_updated_at`,
+ `public`.`id` AS `public_id`,
+ `public`.`name` AS `public_name`,
+ `public`.`customizable` AS `public_customizable`,
+ `public`.`cras` AS `public_cras`,
+ `public`.`deleted_at` AS `public_deleted_at`
+  FROM `project_publics` `pb`
+  INNER JOIN `publics` `public` ON `public`.`id`=`pb`.`public_id`
+  WHERE pb.project_id = 1

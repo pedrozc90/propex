@@ -26,7 +26,7 @@ export class ProjectValidationMiddleware implements IMiddleware {
         // if true, verify if user is part of project.
         if (params.length > 0) {
             const projectId = JSON.parse(request.params.projectId);
-            console.log(projectId);
+            // console.log(projectId);
 
             const project = await this.projectRepository.findByContext(projectId, context);
             

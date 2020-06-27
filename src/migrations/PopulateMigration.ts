@@ -23,7 +23,7 @@ export class PopulateMigrationl1589005000000 implements MigrationInterface {
         };
 
         for (const p of publics) {
-            await queryRunner.query(`INSERT INTO publics (name) VALUES ('${p.name}')`);
+            await queryRunner.query(`INSERT INTO publics (name, cras, customizable) VALUES ('${p.name}', '${p.cras}', ${(p.customizable) ? 1 : 0})`);
         };
     }
 

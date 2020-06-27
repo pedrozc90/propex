@@ -72,8 +72,10 @@
 | POST             | /api/projects/:projectId/knowledge-areas   | DONE        | project_knowledge_areas                         |
 | GET              | /api/projects/:projectId/partners          |             | partners                                        |
 | POST             | /api/projects/:projectId/partners          |             | partners                                        |
-| GET              | /api/projects/:projectId/publics           |             | project_publics                                 |
-| POST             | /api/projects/:projectId/publics           |             | project_publics                                 |
+| GET              | /api/projects/:projectId/publics           | DONE        | project_publics                                 |
+| POST             | /api/projects/:projectId/publics           | DONE        | project_publics                                 |
+| PUT              | /api/projects/:projectId/publics           | DONE        | project_publics                                 |
+| DELETE           | /api/projects/:projectId/publics/:publicId | DONE        | project_publics                                 |
 | GET              | /api/projects/:projectId/students          |             | project_human_resources + user + students       |
 | POST             | /api/projects/:projectId/students          |             | project_human_resources + user + students       |
 | GET              | /api/projects/:projectId/targets           |             | targets                                         |
