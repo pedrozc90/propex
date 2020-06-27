@@ -4,7 +4,8 @@ import { Exception, NotImplemented } from "@tsed/exceptions";
 import { Authenticated } from "../../core/services";
 import { PublicationRepository, ProjectRepository } from "../../repositories";
 import { Publication } from "../../entities";
-import { IContext, PublicationType } from "../../core/types";
+import { PublicationType } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/publications")
 export class PublicationCtrl {
@@ -28,7 +29,7 @@ export class PublicationCtrl {
     @Post("")
     @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("publication") publication: Publication
     ): Promise<any> {
         // check if user is part of project.

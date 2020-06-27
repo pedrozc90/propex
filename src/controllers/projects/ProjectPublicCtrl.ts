@@ -52,7 +52,7 @@ export class ProjectPublicCtrl {
      */
     @Post("")
     @Authenticated({ scope: [ "ADMIN", "COORDENATOR" ] })
-    public async create(
+    public async save(
         @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("projectPublics") projectPublics: ProjectPublic[]
@@ -60,39 +60,44 @@ export class ProjectPublicCtrl {
         // check if user is part of project.
         const project = await this.projectRepository.findByContext(projectId, context);
         
-        projectPublics = await Promise.all(projectPublics.map(async (pb: ProjectPublic) => {
-            const p = await this.publicRepository.findOne({ id: pb.public.id });
+        let toInsert: ProjectPublic[] = [];
+
+        for (const pb of projectPublics) {
+            // current public id
+            const publicId: number = (pb.public) ? pb.public.id : pb.publicId;
+
+            const p = await this.publicRepository.findOne({ id: publicId });
             if (!p) {
-                throw new NotFound("Public not found");
+                throw new NotFound(`Public ${pb.public.name || publicId} not found`);
             }
 
-            let t = await this.projectPublicRepository.findOne({ projectId, publicId: p.id });
-            if (!t) {
-                t = this.projectPublicRepository.create(pb);
-                t.project = project;
+            let tmp = await this.projectPublicRepository.findOne({ projectId, publicId: p.id });
+            if (!tmp) {
+                tmp = this.projectPublicRepository.create(pb);
+                tmp.project = project;
             } else {
-                t = this.projectPublicRepository.merge(t, pb);
+                tmp = this.projectPublicRepository.merge(tmp, pb);
             }
-            t.public = p;
+            tmp.public = p;
 
-            return t;
-        }));
+            toInsert.push(tmp);
+        }
 
-        projectPublics = await this.projectPublicRepository.save(projectPublics);
+        toInsert = await this.projectPublicRepository.save(toInsert);
 
-        return ResultContent.of<ProjectPublic[]>(projectPublics)
+        return ResultContent.of<ProjectPublic[]>(toInsert)
             .withMessage("Project public sucessfully saved!");
     }
 
     /**
-     * Overwrite project_public relationship.
+     * Overwrite all realtionship between project and theme areas.
      * @param context                       -- user context.
      * @param projectId                     -- project id.
      * @param projectPublics                -- project_public data.
      */
     @Put("")
     @Authenticated({ scope: [ "ADMIN", "COORDENATOR" ] })
-    public async update(
+    public async overwrite(
         @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("projectPublics") projectPublics: ProjectPublic[]
@@ -100,20 +105,21 @@ export class ProjectPublicCtrl {
         // check if user is part of project.
         const project = await this.projectRepository.findByContext(projectId, context);
         
-        const ids = projectPublics.map((v) => v.public.id || v.publicId);
+        const ids = projectPublics.map((v) => (v.public) ? v.public.id : v.publicId);
 
         // find project_public to delete
         const toDelete = await this.projectPublicRepository.find({ projectId, publicId: Not(In(ids)) });
         
         if (toDelete.length > 0) {
-            await this.projectPublicRepository.delete({ projectId, publicId: In(toDelete.map((v) => v.publicId)) });
+            // await this.projectPublicRepository.delete({ projectId, publicId: In(toDelete.map((v) => v.publicId)) });
+            await this.projectPublicRepository.remove(toDelete);
         }
 
         // find project_public to update
         const toUpdate = await this.projectPublicRepository.find({ projectId, publicId: In(ids) });
 
         toUpdate.map(async (pb) => {
-            const index = projectPublics.findIndex((v) => (v.public.id === pb.publicId || v.publicId === pb.publicId));
+            const index = projectPublics.findIndex((v) => ((v.public && v.public.id === pb.publicId) || v.publicId === pb.publicId));
             if (index >= 0) {
                 pb = this.projectPublicRepository.merge(pb, projectPublics[index]);
                 pb = await this.projectPublicRepository.save(pb);

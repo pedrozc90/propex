@@ -5,7 +5,7 @@ import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page, ResultContent } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 import moment from "moment";
 
@@ -41,7 +41,7 @@ export class ProjectDisclosureMediaCtrl {
     @Post("")
     @Authenticated({})
     public async setDisclosureMedia(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
     ): Promise<any> {

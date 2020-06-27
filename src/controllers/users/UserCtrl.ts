@@ -5,7 +5,7 @@ import { Exception, BadRequest, Unauthorized } from "@tsed/exceptions";
 import { Authenticated } from "../../core/services";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { User, Page, ResultContent } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/users")
 export class UserCtrl {
@@ -22,7 +22,7 @@ export class UserCtrl {
      */
     @Get("")
     @Authenticated({ role: "ADMIN" })
-    public async fetch(@Locals("context") context: IContext,
+    public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
@@ -141,7 +141,7 @@ export class UserCtrl {
      */
     @Post("/:id/activate")
     @Authenticated({ role: "ADMIN" })
-    public async ativate(@Locals("context") context: IContext, @Required() @PathParams("id") id: number): Promise<any> {
+    public async ativate(@Locals("context") context: Context, @Required() @PathParams("id") id: number): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
             throw new Unauthorized("Invalid action fot admin users.");
         }
@@ -155,7 +155,7 @@ export class UserCtrl {
      */
     @Post("/:id/desactivate")
     @Authenticated({ role: "ADMIN" })
-    public async desativate(@Locals("context") context: IContext, @Required() @PathParams("id") id: number): Promise<any> {
+    public async desativate(@Locals("context") context: Context, @Required() @PathParams("id") id: number): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
             throw new Unauthorized("Invalid action fot admin users.");
         }

@@ -4,7 +4,7 @@ import { BadRequest, NotFound } from "@tsed/exceptions";
 import { Authenticated } from "../../core/services";
 import { EventRepository, ProjectRepository } from "../../repositories";
 import { Event, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/events")
 export class EventCtrl {
@@ -37,7 +37,7 @@ export class EventCtrl {
     @Authenticated({})
     public async save(
         @Req() request: Req,
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("event") event: Event
     ): Promise<Event> {
         if (event.id) {

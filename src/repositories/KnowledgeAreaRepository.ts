@@ -45,10 +45,17 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
         return this.find(params);
     }
 
-    public async findByProject(projectId: number): Promise<KnowledgeArea[]> {
+    public async findManyByProject(projectId: number): Promise<KnowledgeArea[]> {
         return this.createQueryBuilder("ka")
-            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId: projectId })
+            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId })
             .getMany();
+    }
+
+    public async findByProject(id: number, projectId: number): Promise<KnowledgeArea | undefined> {
+        return this.createQueryBuilder("ka")
+            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId })
+            .where("ka.id = :id", { id })
+            .getOne();
     }
 
     /**
@@ -58,7 +65,7 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
      */
     public async overwrite(project: Project, knowledgeAreas: KnowledgeArea[]): Promise<KnowledgeArea[]> {
         // load extension lines which the project has connection.
-        const savedKnowledgeAreas = await this.findByProject(project.id);
+        const savedKnowledgeAreas = await this.findManyByProject(project.id);
         
         // find kownledge areas the to deleted (elements that are saved on database but not in the received array)
         const knowledgeAreasToDelete = savedKnowledgeAreas.filter((a) => knowledgeAreas.findIndex((b) => b.id === a.id) < 0);
@@ -72,7 +79,7 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
             await this.createQueryBuilder("knowledgeAreas").relation("projects").of(knowledgeAreasToInsert).add(project);
         }
 
-        return this.findByProject(project.id);
+        return this.findManyByProject(project.id);
     }
     
 }

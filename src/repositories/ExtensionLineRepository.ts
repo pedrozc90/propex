@@ -34,6 +34,19 @@ export class ExtensionLineRepository extends GenericRepository<ExtensionLine> {
         return Page.of(await this.find(params), page, rpp);
     }
 
+    public async findManyByProject(projectId: number): Promise<ExtensionLine[]> {
+        return this.createQueryBuilder("el")
+            .innerJoin("el.projects", "p", "p.id = :projectId", { projectId })
+            .getMany();
+    }
+
+    public async findByProject(id: number, projectId: number): Promise<ExtensionLine | undefined> {
+        return this.createQueryBuilder("el")
+            .innerJoin("el.projects", "p", "p.id = :projectId", { projectId })
+            .where("el.id = :id", { id })
+            .getOne();
+    }
+
     /**
      * Return the last number of extension lines.
      */

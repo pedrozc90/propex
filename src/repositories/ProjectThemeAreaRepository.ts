@@ -10,10 +10,21 @@ export class ProjectThemeAreaRepository extends GenericRepository<ProjectThemeAr
      * Search project theme areas of a specific project.
      * @param projectId                     -- porject id.
      */
-    public async findByProject(projectId: number): Promise<ProjectThemeArea[]> {
+    public async findManyByProject(projectId: number): Promise<ProjectThemeArea[]> {
         return this.createQueryBuilder("pta")
-            .innerJoinAndSelect("pta.project", "project", "pta.project_id = :projectId", { projectId })
+            .innerJoinAndSelect("pta.project", "p", "p.id = :projectId", { projectId })
             .getMany();
+    }
+
+    /**
+     * Search project theme areas of a specific project.
+     * @param projectId                     -- porject id.
+     */
+    public async findByProject(themeAreaId: number, projectId: number): Promise<ProjectThemeArea | undefined> {
+        return this.createQueryBuilder("pta")
+            .innerJoinAndSelect("pta.project", "p", "p.id = :projectId", { projectId })
+            .innerJoinAndSelect("pta.themeArea", "ta", "ta.id = :themeAreaId", { themeAreaId })
+            .getOne();
     }
 
     /**
@@ -52,7 +63,7 @@ export class ProjectThemeAreaRepository extends GenericRepository<ProjectThemeAr
         const projectThemeAreaIds: number[] = projectThemeAreas.map((pta) => pta.themeArea.id);
 
         // load saved project theme areas
-        const projectThemeAreasSaved: ProjectThemeArea[] = await this.findByProject(project.id);
+        const projectThemeAreasSaved: ProjectThemeArea[] = await this.findManyByProject(project.id);
         
         // filter project theme areas to be deleted
         const projectThemeAreasToDelete: ProjectThemeArea[] = projectThemeAreasSaved.filter((ptas) => !projectThemeAreaIds.includes(ptas.themeAreaId));
@@ -66,7 +77,7 @@ export class ProjectThemeAreaRepository extends GenericRepository<ProjectThemeAr
             await this.save(projectThemeAreasToInsert);
         }
 
-        return this.findByProject(project.id);
+        return this.findManyByProject(project.id);
     }
     
 }

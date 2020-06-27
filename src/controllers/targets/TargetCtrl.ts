@@ -3,7 +3,8 @@ import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals
 import { Authenticated } from "../../core/services";
 import { TargetRepository, ProjectRepository } from "../../repositories";
 import { Target, ResultContent, Page } from "../../entities";
-import { IContext, AgeRange } from "../../core/types";
+import { AgeRange } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/targets")
 export class TargetCtrl {
@@ -41,7 +42,7 @@ export class TargetCtrl {
     @Post("")
     @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("target") target: Target
     ): Promise<ResultContent<Target>> {
         // check if user is part of project.

@@ -1,3 +1,4 @@
+import { isBoolean } from "@tsed/core";
 import { EntityRepository } from "@tsed/typeorm";
 import { Like } from "typeorm";
 
@@ -38,6 +39,24 @@ export class ThemeAreaRepository extends GenericRepository<ThemeArea> {
             ];
         };
         return this.find(params);
+    }
+
+    public async findManyByProject(projectId: number, main?: boolean): Promise<ThemeArea[]> {
+        const query = this.createQueryBuilder("ta")
+            .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId });
+        
+        if (isBoolean(main)) {
+            query.where("pta.main = :main", { main: (main) ? 1 : 0 });
+        }
+
+        return query.getMany();
+    }
+
+    public async findByProject(id: number, projectId: number): Promise<ThemeArea | undefined> {
+        return this.createQueryBuilder("ta")
+            .innerJoin("ta.projectThemeAreas", "pta", "pta.project_id = :projectId", { projectId })
+            .where("ta.id = :id", { id })
+            .getOne();
     }
     
 }

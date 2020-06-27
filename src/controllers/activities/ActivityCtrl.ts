@@ -3,7 +3,7 @@ import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Pos
 import { Authenticated } from "../../core/services";
 import { ActivityRepository } from "../../repositories";
 import { Activity } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/activities")
 export class ActivityCtrl {
@@ -18,7 +18,7 @@ export class ActivityCtrl {
     @Get("")
     @Authenticated({})
     public async fetch(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @QueryParams("project") project: number | string
     ): Promise<Activity[]> {
         const query = this.activityRepository.createQueryBuilder("activity")
@@ -42,7 +42,7 @@ export class ActivityCtrl {
     @Post("")
     @Authenticated({})
     public async save(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @BodyParams("Activity") Activitys: Activity
     ): Promise<Activity> {
         return this.activityRepository.save(Activitys);

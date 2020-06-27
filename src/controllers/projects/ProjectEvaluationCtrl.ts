@@ -6,7 +6,7 @@ import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
 import { EvaluationRepository, ProjectRepository } from "../../repositories";
 import { Evaluation, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/evaluations")
@@ -26,7 +26,7 @@ export class ProjectEvaluationCtrl {
      */
     @Get("")
     @Authenticated({})
-    public async getEvaluation(@Locals("context") context: IContext,
+    public async getEvaluation(@Locals("context") context: Context,
         @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15
@@ -44,7 +44,7 @@ export class ProjectEvaluationCtrl {
     @Post("")
     @Authenticated({})
     public async postEvaluation(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("evaluations") evaluations: Evaluation[]
     ): Promise<any> {

@@ -3,7 +3,7 @@ import { NotFound } from "@tsed/exceptions";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Project } from "../entities";
-import { IContext } from "../core/types";
+import { Context } from "../core/models";
 
 const relations = [
     "disclosureMedias",
@@ -35,7 +35,7 @@ export class ProjectRepository extends GenericRepository<Project> {
      * @param context               -- user context.
      * @param id                    -- project id.
      */
-    public async findByContext(id: number, context: IContext, coodinator: boolean = false): Promise<Project> {
+    public async findByContext(id: number, context: Context, coodinator: boolean = false): Promise<Project> {
         const query = this.createQueryBuilder("p")
             .leftJoin("p.projectHumanResources", "phr")
             .where("p.id = :id", { id });

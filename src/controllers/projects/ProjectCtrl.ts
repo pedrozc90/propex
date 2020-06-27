@@ -4,7 +4,8 @@ import { Exception, Unauthorized, BadRequest } from "@tsed/exceptions";
 import { Authenticated } from "../../core/services";
 import * as Repo from "../../repositories";
 import { Page, Project, ProjectBasic, ProjectHumanResource, User, ResultContent } from "../../entities";
-import { IContext, Scope } from "../../core/types";
+import { Context } from "../../core/models";
+import { Scope } from "../../core/types";
 
 import { StringUtils } from "../../core/utils";
 
@@ -58,7 +59,7 @@ export class ProjectCtrl {
      */
     @Get("")
     @Authenticated({})
-    public async fetch(@Locals("context") context: IContext,
+    public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
@@ -163,7 +164,7 @@ export class ProjectCtrl {
      */
     @Get("/:id")
     @Authenticated({})
-    public async get(@Locals("context") context: IContext,
+    public async get(@Locals("context") context: Context,
         @Required() @PathParams("id") id: number
     ): Promise<Project | undefined> {
         // check if user belong to this project.

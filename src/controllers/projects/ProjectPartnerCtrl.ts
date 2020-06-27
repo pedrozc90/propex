@@ -4,7 +4,7 @@ import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
 import { PartnerRepository, ProjectRepository } from "../../repositories";
 import { Partner, Page } from "../../entities";
-import { IContext } from "../../core/types";
+import { Context } from "../../core/models";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/partners")
@@ -15,7 +15,7 @@ export class ProjectPartnerCtrl {
 
     @Get("")
     @Authenticated({})
-    public async getParterns(@Locals("context") context: IContext,
+    public async getParterns(@Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
@@ -29,7 +29,7 @@ export class ProjectPartnerCtrl {
     @Post("")
     @Authenticated({})
     public async postParterns(
-        @Locals("context") context: IContext,
+        @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
         @Required() @BodyParams("partners") partners: Partner[]
     ): Promise<Partner[]> {
