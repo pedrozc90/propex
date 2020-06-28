@@ -52,7 +52,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             password: process.env.DB_PASSWORD || "",
             logging: false,
             synchronize: true,
-            dropSchema: false,
+            dropSchema: true,
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
             migrationsRun: true,

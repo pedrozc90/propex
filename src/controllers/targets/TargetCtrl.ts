@@ -1,4 +1,5 @@
 import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams } from "@tsed/common";
+import { Exception } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
 import { TargetRepository, ProjectRepository } from "../../repositories";
@@ -9,7 +10,11 @@ import { Context } from "../../core/models";
 @Controller("/targets")
 export class TargetCtrl {
 
-    constructor(private targetRepository: TargetRepository, private projectRepository: ProjectRepository) {}
+    constructor(
+        private targetRepository: TargetRepository,
+        private projectRepository: ProjectRepository) {
+        // initialize your stuffs here
+    }
 
     /**
      * Return a list of targets.
@@ -40,11 +45,18 @@ export class TargetCtrl {
         // check if user is part of project.
         const project = await this.projectRepository.findByContext(target.project.id, context);
 
-        let t = await this.targetRepository.findOne({ ageRange: target.ageRange, project: { id: project.id } });
+        let t = await this.targetRepository.createQueryBuilder("t")
+            .innerJoin("t.project", "p", "p.id = :projectId", { projectId: project.id })
+            .where("t.id = :id OR t.age_range = :ageRange", { id: target.id, ageRange: target.ageRange.key })
+            .getOne();
+
         if (!t) {
             t = this.targetRepository.create(target);
             t.project = project;
         } else {
+            if (target.id && target.id !== t.id) {
+                throw new Exception(500, `A target with ${t.ageRange.key} already exists with the id ${t.id}`);
+            }
             t = this.targetRepository.merge(t, target);
         }
         t = await this.targetRepository.save(t);

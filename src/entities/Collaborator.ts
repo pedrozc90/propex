@@ -1,11 +1,11 @@
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, Index, Unique } from "typeorm";
 
 import { Audit } from "./generics/Audit";
 import { User } from "./User";
 
-@Index("idx_collaborators_user_id", [ "user" ])
+@Unique("uk_collaborators_profissional_registry", [ "profissionalRegistry" ])
 @Entity({ name: "collaborators" })
 export class Collaborator extends Audit {
 
@@ -32,6 +32,7 @@ export class Collaborator extends Audit {
     public affiliation: string;
 
     @Property({ name: "user" })
+    @Index("idx_collaborators_user_id")
     @OneToOne(() => User, (user) => user.collaborator)
     @JoinColumn({ name: "user_id", referencedColumnName: "id" })
     public user: User;

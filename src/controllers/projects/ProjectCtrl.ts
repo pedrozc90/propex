@@ -9,32 +9,30 @@ import { Scope } from "../../core/types";
 
 import { StringUtils } from "../../core/utils";
 
+import { ProjectActivityCtrl } from "./ProjectActivityCtrl";
+import { ProjectDemanCtrl } from "./ProjectDemanCtrl";
 import { ProjectDisclosureMediaCtrl } from "./ProjectDisclosureMediaCtrl";
 import { ProjectEvaluationCtrl } from "./ProjectEvaluationCtrl";
 import { ProjectExtensionLineCtrl } from "./ProjectExtensionLineCtrl";
+import { ProjectHumanResourcesCtrl } from "./ProjectHumanResourcesCtrl";
 import { ProjectKnowledgeAreaCtrl } from "./ProjectKnowledgeAreaCtrl";
 import { ProjectPartnerCtrl } from "./ProjectPartnerCtrl";
 import { ProjectPublicCtrl } from "./ProjectPublicCtrl";
-import { ProjectStudentCtrl } from "./ProjectStudentCtrl";
 import { ProjectTargetCtrl } from "./ProjectTargetCtrl";
 import { ProjectThemeAreaCtrl } from "./ProjectThemeAreaCtrl";
-import { ProjectActivityCtrl } from "./ProjectActivityCtrl";
-import { ProjectCollaboratorCtrl } from "./ProjectCollaboratorCtrl";
-import { ProjectDemanCtrl } from "./ProjectDemanCtrl";
 
 @Controller({
     path: "/projects",
     children: [
         ProjectActivityCtrl,
-        ProjectCollaboratorCtrl,
         ProjectDemanCtrl,
         ProjectDisclosureMediaCtrl,
         ProjectEvaluationCtrl,
         ProjectExtensionLineCtrl,
+        ProjectHumanResourcesCtrl,
         ProjectKnowledgeAreaCtrl,
         ProjectPartnerCtrl,
         ProjectPublicCtrl,
-        ProjectStudentCtrl,
         ProjectTargetCtrl,
         ProjectThemeAreaCtrl
     ]
@@ -103,7 +101,7 @@ export class ProjectCtrl {
             throw new BadRequest("Required coordinator was not send!");
         }
         
-        const user = await this.UserRepository.findByIdOrEmail({ id: coordinator.id, email: coordinator.email });
+        const user = await this.UserRepository.findUserInfo({ id: coordinator.id, email: coordinator.email });
         if (!user) {
             throw new Exception(404, "Please, coodinator user is not registed.");
         }

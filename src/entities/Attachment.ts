@@ -47,7 +47,7 @@ export class Attachment extends Audit {
 
     @Property({ name: "content" })
     @Column({ name: "content", type: "longblob" })
-    public content: Buffer;
+    public content: Promise<Buffer>;
 
     @Property({ name: "publications" })
     @OneToMany(() => Publication, (publication) => publication.attachment)

@@ -10,6 +10,8 @@ import { StringUtils } from "../core/utils";
 interface StudentOptions extends IOptions {
     id?: number;
     scholarship?: boolean;
+    coordinate?: boolean;
+    exclusive?: boolean;
     period?: string;
     project?: Project;
     projectId?: number;
@@ -33,6 +35,10 @@ export class StudentRepository extends GenericRepository<Student> {
         
         if (isBoolean(params.scholarship)) {
             query.where("std.scholarship = :scholarship", { scholarship: (params.scholarship) ? 1 : 0 });
+        }
+
+        if (isBoolean(params.exclusive)) {
+            query.where("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
         }
 
         // NÃO FUNCIONA (???)

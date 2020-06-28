@@ -6,7 +6,9 @@
         { "name": "mary" , "email": "mary@propex.com" , "password": "123456", "phone": "(48) 00000-0000" },
         { "name": "kevin", "email": "kevin@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
         { "name": "billy", "email": "billy@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000" }
+        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
+
+        { "name": "test", "email": "test@propex.com", "password": "123456", "phone": "(48) 00000-0000" }
     ],
     "collaborators": [
         { "academicFunction": "Professor", "profissionalRegistry": "x0000000a", "affiliation": "none", "userId": 2 },
@@ -17,7 +19,8 @@
         { "code": "000001", "course": "Course A", "period": "5 period", "scholarship": false, "userId": 3 },
         { "code": "000002", "course": "Course B", "period": "6 period", "scholarship": true , "userId": 6 },
         { "code": "000003", "course": "Course C", "period": "6 period", "scholarship": true , "userId": 7 },
-        { "code": "000004", "course": "Course D", "period": "7 period", "scholarship": false, "userId": 8 }
+        { "code": "000004", "course": "Course D", "period": "7 period", "scholarship": false, "userId": 8 },
+        { "code": "00000X", "course": "DEVELOPMENT", "period": "X", "scholarship": false, "userId": 9 }
     ],
     "projects": [
         { "title": "Project 1", "program": "Atividade Avaliativa" },

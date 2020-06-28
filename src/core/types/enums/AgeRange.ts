@@ -8,7 +8,7 @@ export class AgeRange {
     public static readonly FROM_26_TO_30 = new AgeRange("FROM_26_TO_30", "De 26 a 30 anos");
     public static readonly FROM_31_TO_50 = new AgeRange("FROM_31_TO_50", "De 31 a 50 anos");
     public static readonly FROM_51_TO_60 = new AgeRange("FROM_51_TO_60", "De 51 a 60 anos");
-    public static readonly FROM_61_TO_70 = new AgeRange("FROM_61_TO_70", "De 61a 70 anos");
+    public static readonly FROM_61_TO_70 = new AgeRange("FROM_61_TO_70", "De 61 a 70 anos");
     public static readonly OLDER_THAN_70 = new AgeRange("OLDER_THAN_70", "Acima de 70 anos");
 
     @Property({ name: "key" })

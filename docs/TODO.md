@@ -30,11 +30,9 @@
 | POST             | /api/projects/:projectId/activities                        |             | project_activities                              |
 | GET              | /api/projects/:projectId/attachments                       |             | project_attachments                             |
 | POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
-| GET              | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
-| POST             | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
-| POST             | /api/projects/:projectId/students                          |             | project_human_resources + user + students       |
-| GET              | /api/projects/:projectId/targets                           |             | targets                                         |
-| POST             | /api/projects/:projectId/targets                           |             | targets                                         |
+
+
+
 
 ### FINISHED
 
@@ -98,13 +96,19 @@
 | POST             | /api/projects/:projectId/knowledge-areas                   | DONE        | project_knowledge_areas                         |
 | PUT              | /api/projects/:projectId/knowledge-areas                   | DONE        | project_knowledge_areas                         |
 | DELETE           | /api/projects/:projectId/knowledge-areas/:knowledgeAreaId  | DONE        | project_knowledge_areas                         |
+| GET              | /api/projects/:projectId/human-resources                   | DONE        | project_human_resources + users                 |
+| POST             | /api/projects/:projectId/human-resources                   | DONE        | project_human_resources + users                 |
+| GET              | /api/projects/:projectId/human-resources/students          | DONE        | project_human_resources + users + students      |
+| GET              | /api/projects/:projectId/human-resources/collaborators     | DONE        | project_human_resources + users + collaborators |
+| DELETE           | /api/projects/:projectId/human-resources/:userId           | DONE        | project_human_resources + users                 |
 | GET              | /api/projects/:projectId/partners                          | DONE        | partners                                        |
 | POST             | /api/projects/:projectId/partners                          | DONE        | partners                                        |
 | GET              | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | POST             | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | PUT              | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | DELETE           | /api/projects/:projectId/publics/:publicId                 | DONE        | project_publics                                 |
-| GET              | /api/projects/:projectId/students                          | DONE        | project_human_resources + user + students       |
+| GET              | /api/projects/:projectId/targets                           | DONE        | targets                                         |
+| POST             | /api/projects/:projectId/targets                           | DONE        | targets                                         |
 | GET              | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | POST             | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | PUT              | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |

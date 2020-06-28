@@ -5,6 +5,7 @@ import { Authenticated } from "../../core/services";
 import { ProjectRepository, TargetRepository } from "../../repositories";
 import { Target, ResultContent } from "../../entities";
 import { Context } from "../../core/models";
+import { Exception } from "@tsed/exceptions";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/targets")
@@ -23,20 +24,24 @@ export class ProjectTargetCtrl {
      */
     @Get("")
     @Authenticated({})
-    public async getTargets(@PathParams("projectId") projectId: number): Promise<{ targets: Target[], total: number }> {
+    public async getTargets(@PathParams("projectId") projectId: number): Promise<{ targets: Target[], totalNumberOfMen: number, totalNumberOfWomen: number, total: number }> {
         const query = this.targetRepository.createQueryBuilder("pt")
             .innerJoin("pt.project", "p", "p.id = :projectId", { projectId });
         
         const targets = await query.getMany();
 
-        const { total } = await query.select("COALESCE(SUM(pt.men_number) + SUM(pt.women_number), 0)", "total")
+        let { totalNumberOfMen, totalNumberOfWomen } = await query.select("COALESCE(SUM(pt.men_number), 0)", "totalNumberOfMen")
+            .addSelect("COALESCE(SUM(pt.women_number), 0)", "totalNumberOfWomen")
             .getRawOne();
+        totalNumberOfMen = parseInt(totalNumberOfMen);
+        totalNumberOfWomen = parseInt(totalNumberOfWomen);
+        const total = totalNumberOfMen + totalNumberOfWomen;
 
-        return { targets, total: parseInt(total) };
+        return { targets, totalNumberOfMen, totalNumberOfWomen, total };
     }
 
     /**
-     * Returns
+     * Create/Update project targets.
      * @param id                            -- project id.
      * @param targets                       -- project targets.
      */
@@ -50,10 +55,27 @@ export class ProjectTargetCtrl {
         // select project if user is part of it.
         const project = await this.projectRepository.findByContext(projectId, context);
 
-        // update project target based on receiver array, and return the new array of targets.
-        const savedTargets = await this.targetRepository.overwrite(project, targets);
+        for (let target of targets) {
+            let t = await this.targetRepository.createQueryBuilder("t")
+                .innerJoin("t.project", "p", "p.id = :projectId", { projectId: project.id })
+                .where("t.id = :id OR t.age_range = :ageRange", { id: target.id, ageRange: target.ageRange.key })
+                .getOne();
+            
+            if (!t) {
+                t = this.targetRepository.create(target);
+                t.project = project;
+            } else {
+                if (target.id && target.id !== t.id) {
+                    throw new Exception(500, `A target with ${t.ageRange.key} already exists with the id ${t.id}`);
+                }
+                t = this.targetRepository.merge(t, target);
+            }
+            t = await this.targetRepository.save(t);
 
-        return ResultContent.of<Target[]>(savedTargets).withMessage("Target successfully saved.");
+            target = t;
+        }
+
+        return ResultContent.of<Target[]>(targets).withMessage("Target successfully saved.");
     }
 
 }

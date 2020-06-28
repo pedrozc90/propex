@@ -25,22 +25,11 @@ export class UserCtrl {
     public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
     ): Promise<Page<User>> {
-        const query = this.userRepository.createQueryBuilder("user")
-            .leftJoinAndSelect("user.student", "student")
-            .leftJoinAndSelect("user.collaborator", "collaborator");
-
-        if (q) {
-            query.where("user.email LIKE :email", { email: `%${q}%` })
-                .orWhere("user.name LIKE :name", { name: `%${q}%` });
-        }
-            
-        query.skip((page - 1) * rpp)
-            .take(rpp)
-            .getMany();
-
-        return Page.of(await query.getMany(), page, rpp);
+        const users = await this.userRepository.fetch({ page, rpp, q, projectId });
+        return Page.of(users, page, rpp);
     }
 
     /**
@@ -49,17 +38,17 @@ export class UserCtrl {
      */
     @Post("")
     @Authenticated({ role: "ADMIN" })
-    public async create(@Req() request: Req, @Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
-        if (data.id) {
-            throw new BadRequest(`Please, try PUT ${request.path} to update users information.`);
-        }
+    public async create(
+        @Req() request: Req,
+        @Required() @BodyParams("user") data: User
+    ): Promise<ResultContent<User>> {
         if (!data.collaborator && !data.student) {
-            throw new BadRequest("Missing student or collaborator information.");
+            throw new BadRequest("User requires student or collaborator information.");
         }
 
-        let user = await this.userRepository.findOne({ id: data.id, email: data.email });
+        let user = await this.userRepository.findUserInfo({ email: data.email });
         if (user) {
-            throw new Exception(404, "User already exists!");
+            throw new Exception(404, `Email ${user.email} already in use. Please, use PUT ${request.path} to update user information.`);
         }
 
         // generate a random password for a new user.
@@ -68,23 +57,40 @@ export class UserCtrl {
         }
 
         // save new user.
-        user = await this.userRepository.save(data);
-
+        user = this.userRepository.create(data);
+        user = await this.userRepository.save(user);
+        
         // save collaborator or student data.
         if (data.collaborator) {
-            let collaborator = this.collaboratorRepository.create(data.collaborator);
+            let collaborator = await this.collaboratorRepository.findOne({ profissionalRegistry: data.collaborator.profissionalRegistry });
+            if (collaborator) {
+                throw new Exception(404, `Registry ${collaborator.profissionalRegistry} already in registrered.`);
+            }
+
+            collaborator = this.collaboratorRepository.create(data.collaborator);
             collaborator.user = user;
             collaborator = await this.collaboratorRepository.save(collaborator);
-        } else if (data.student) {
-            let student = this.studentRepository.create(data.student);
+
+            user.collaborator = collaborator;
+        }
+        
+        if (data.student) {
+            let student = await this.studentRepository.findOne({ code: data.student.code });
+            if (student) {
+                throw new Exception(404, `Student registration ${student.code} already in use.`);
+            }
+
+            student = this.studentRepository.create(data.student);
             student.user = user;
             student = await this.studentRepository.save(student);
+
+            user.student = student;
         }
 
         // send email to user to informe the new password
-        $log.warn("EMAIL METHOD NOT IMPLEMENTED");
-
-        user = await this.userRepository.findUserInfo({ id: data.id, email: data.email });
+        $log.warn("--------------------------------------------------");
+        $log.warn("SEND EMAIL WITH PASSWORD TO THE NEW USER.");
+        $log.warn("--------------------------------------------------");
         
         return ResultContent.of<User>(user).withMessage("User was successfully created!");
     }
@@ -97,7 +103,7 @@ export class UserCtrl {
     @Authenticated({ role: "ADMIN" })
     public async save(@Required() @BodyParams("user") data: User): Promise<ResultContent<User>> {
         // check if user exists
-        let user = await this.userRepository.findUserInfo({ id: data.id, email: data.email });
+        let user = await this.userRepository.findUserInfo({ email: data.email });
         if (!user) {
             throw new Exception(404, "User not found.");
         }
@@ -110,13 +116,24 @@ export class UserCtrl {
 
         // update collaborator or student data.
         if (user.collaborator && data.collaborator) {
-            await this.collaboratorRepository.update(user.collaborator.id, { ...data.collaborator });
-        } else if (user.student && data.student) {
-            await this.collaboratorRepository.update(user.student.id, { ...data.student });
+            let collaborator = await this.collaboratorRepository.findOne({ profissionalRegistry: data.collaborator.profissionalRegistry, user: { id: user.id } });
+
+            collaborator = this.collaboratorRepository.merge(user.collaborator, data.collaborator);
+            collaborator = await this.collaboratorRepository.save(collaborator);
+
+            user.collaborator = collaborator;
+        }
+        
+        if (user.student && data.student) {
+            let student = this.studentRepository.merge(user.student, data.student);
+            student = await this.collaboratorRepository.save(student);
+
+            user.student = student;
         }
         
         // return updated data
-        user = await this.userRepository.findUserInfo({ id: data.id, email: data.email });
+        // user = await this.userRepository.findUserInfo({ id: data.id, email: data.email });
+        // user.student = stu
 
         return ResultContent.of<User>(user).withMessage("User changes successfully saved!");
     }
@@ -128,11 +145,7 @@ export class UserCtrl {
     @Get("/:id")
     @Authenticated({ scope: [ "ADMIN" ] })
     public async get(@PathParams("id") id: number): Promise<User | undefined> {
-        return this.userRepository.createQueryBuilder("user")
-            .leftJoinAndSelect("user.student", "student")
-            .leftJoinAndSelect("user.collaborator", "collaborator")
-            .where("user.id = :id", { id })
-            .getOne();
+        return this.userRepository.findUserInfo({ id });
     }
 
     /**
@@ -141,9 +154,12 @@ export class UserCtrl {
      */
     @Post("/:id/activate")
     @Authenticated({ role: "ADMIN" })
-    public async ativate(@Locals("context") context: Context, @Required() @PathParams("id") id: number): Promise<any> {
+    public async ativate(
+        @Locals("context") context: Context,
+        @Required() @PathParams("id") id: number
+    ): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
-            throw new Unauthorized("Invalid action fot admin users.");
+            throw new Unauthorized("Restricted access for administrators.");
         }
         await this.userRepository.update(id, { active: true });
         return { message: "User successfully ativated." };
@@ -157,7 +173,7 @@ export class UserCtrl {
     @Authenticated({ role: "ADMIN" })
     public async desativate(@Locals("context") context: Context, @Required() @PathParams("id") id: number): Promise<any> {
         if (context.user.id === id && context.scope.isAdmin) {
-            throw new Unauthorized("Invalid action fot admin users.");
+            throw new Unauthorized("Restricted access for administrators.");
         }
         await this.userRepository.update(id, { active: false });
         return { message: "User successfully desativated." };
