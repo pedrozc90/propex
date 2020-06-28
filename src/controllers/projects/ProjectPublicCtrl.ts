@@ -118,14 +118,16 @@ export class ProjectPublicCtrl {
         // find project_public to update
         const toUpdate = await this.projectPublicRepository.find({ projectId, publicId: In(ids) });
 
-        toUpdate.map(async (pb) => {
-            const index = projectPublics.findIndex((v) => ((v.public && v.public.id === pb.publicId) || v.publicId === pb.publicId));
-            if (index >= 0) {
-                pb = this.projectPublicRepository.merge(pb, projectPublics[index]);
-                pb = await this.projectPublicRepository.save(pb);
-                projectPublics.splice(index, 1);
+        if (toUpdate.length > 0) {
+            for (let pb of toUpdate) {
+                const index = projectPublics.findIndex((v) => ((v.public && v.public.id === pb.publicId) || v.publicId === pb.publicId));
+                if (index >= 0) {
+                    pb = this.projectPublicRepository.merge(pb, projectPublics[index]);
+                    pb = await this.projectPublicRepository.save(pb);
+                    projectPublics.splice(index, 1);
+                }
             }
-        });
+        }
 
         // create new ones
         let toInsert = projectPublics.map((pb) => {

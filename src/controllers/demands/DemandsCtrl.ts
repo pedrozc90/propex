@@ -22,26 +22,11 @@ export class DemandCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") project?: number | string
+        @QueryParams("project") projectId?: number
     ): Promise<Page<Demand>> {
-        const query = this.demandRepository.createQueryBuilder("demand");
+        const demands = await this.demandRepository.fetch({ page, rpp, q, projectId });
 
-        if (project) {
-            if (typeof project === "string") {
-                query.innerJoin("demand.project", "project", "project.title LIKE :title", { title: `%${project}%` });
-            } else if (typeof project === "number") {
-                query.innerJoin("demand.project", "project", "project.id = : id", { id: project });
-            }
-        }
-
-        if (q) {
-            query.where("demand.description LIKE :description", { description: `%${q}%` })
-                .orWhere("demand.justification LIKE :justification", { justification: `%${q}%` });
-        }
-
-        query.skip((page - 1) * rpp).take(rpp);
-
-        return Page.of<Demand>(await query.getMany(), page, rpp);
+        return Page.of<Demand>(demands, page, rpp);
     }
 
     /**
@@ -54,31 +39,22 @@ export class DemandCtrl {
     public async save(
         @Req() request: Req,
         @Locals("context") context: Context,
-        @Required() @BodyParams("demand") data: Demand
+        @Required() @BodyParams("demand") demand: Demand
     ): Promise<ResultContent<Demand>> {
         // check if user is part of project
-        const project = await this.projectRepository.findByContext(data.project.id, context);
+        const project = await this.projectRepository.findByContext(demand.project.id, context);
 
-        let demand = await this.demandRepository.findOne({
-            where: {
-                id: data.id,
-                project: { id: project.id }
-            },
-            join: {
-                alias: "d",
-                innerJoin: { project: "d.project" }
-            }
-        });
+        let dm = await this.demandRepository.findByProject(demand.id, project.id);
 
-        if (demand) {
+        if (dm) {
             throw new BadRequest(`Please use PUT ${request.path} to update a existing demand.`);
         }
 
-        demand = this.demandRepository.create(data);
-        demand.project = project;
-        demand = await this.demandRepository.save(demand);
+        dm = this.demandRepository.create(demand);
+        dm.project = project;
+        dm = await this.demandRepository.save(dm);
 
-        return ResultContent.of<Demand>(demand).withMessage("Demand sucessfully saved.");
+        return ResultContent.of<Demand>(dm).withMessage("Demand sucessfully saved.");
     }
 
     /**
@@ -90,33 +66,24 @@ export class DemandCtrl {
     @Authenticated({})
     public async update(
         @Locals("context") context: Context,
-        @Required() @BodyParams("demand") data: Demand
+        @Required() @BodyParams("demand") demand: Demand
     ): Promise<ResultContent<Demand>> {
         // check if user is part of project
-        const project = await this.projectRepository.findByContext(data.project.id, context);
+        const project = await this.projectRepository.findByContext(demand.project.id, context);
 
-        let demand = await this.demandRepository.findOne({
-            where: {
-                id: data.id,
-                project: { id: project.id }
-            },
-            join: {
-                alias: "d",
-                innerJoin: { project: "d.project" }
-            }
-        });
+        let dm = await this.demandRepository.findByProject(demand.id, project.id);
 
-        if (!demand) {
+        if (!dm) {
             throw new NotFound("Demand not found.");
         }
         
         // merge changes
-        demand = this.demandRepository.merge(demand, data);
+        dm = this.demandRepository.merge(dm, demand);
 
-        // update demand
-        demand = await this.demandRepository.save(demand);
+        // update dm
+        dm = await this.demandRepository.save(dm);
 
-        return ResultContent.of<Demand>(demand).withMessage("Demand sucessfully saved.");
+        return ResultContent.of<Demand>(dm).withMessage("Demand sucessfully saved.");
     }
 
     /**

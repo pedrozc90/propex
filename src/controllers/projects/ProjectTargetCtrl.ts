@@ -14,7 +14,7 @@ export class ProjectTargetCtrl {
     constructor(
         private projectRepository: ProjectRepository,
         private targetRepository: TargetRepository) {
-        // initialize stuff here
+        // initialize your stuffs here
     }
 
     /**

@@ -1,36 +1,33 @@
 import { Repository, ObjectLiteral, DeleteResult } from "typeorm";
 import { HTTPException } from "@tsed/exceptions";
 
-import { Page } from "../../entities";
-import { IOptions } from "../../core/types";
-
 export class GenericRepository<T extends ObjectLiteral> extends Repository<T> {
 
     constructor(protected relations: string []) {
         super();
     }
 
-    /**
-     * Fetch a list of documents from a collection.
-     * @param options   -- pagination and search options
-     */
-    public async fetch(...params: any): Promise<Page<T>> {
-        const page: number = params.page || 1;
-        const rpp: number = params.rpp || 0;
+    // /**
+    //  * Fetch a list of documents from a collection.
+    //  * @param options   -- pagination and search options
+    //  */
+    // public async fetch(...params: any): Promise<Page<T>> {
+    //     const page: number = params.page || 1;
+    //     const rpp: number = params.rpp || 0;
 
-        const query = this.createQueryBuilder()
-            .skip((page - 1) * rpp).take(rpp);
+    //     const query = this.createQueryBuilder()
+    //         .skip((page - 1) * rpp).take(rpp);
         
-        return Page.of(await query.getMany(), page, rpp);
-    }
+    //     return Page.of(await query.getMany(), page, rpp);
+    // }
 
-    /**
-     * Fetch a list of documents from a collection.
-     * @param options   -- pagination and search options
-     */
-    public async list(options: IOptions): Promise<T[]> {
-        return this.find({ ...(options as any) });
-    }
+    // /**
+    //  * Fetch a list of documents from a collection.
+    //  * @param options   -- pagination and search options
+    //  */
+    // public async list(options: IOptions): Promise<T[]> {
+    //     return this.find({ ...(options as any) });
+    // }
 
     /**
      * Find a document by its id.

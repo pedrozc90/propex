@@ -2,7 +2,7 @@ import { Controller, Get, PathParams, Delete, Required, BodyParams, Post, Locals
 import { NotFound, BadRequest } from "@tsed/exceptions";
 
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
-import { DisclosureMedia, Page } from "../../entities";
+import { DisclosureMedia, Page, ResultContent } from "../../entities";
 import { Authenticated } from "../../core/services";
 import { Context } from "../../core/models";
 
@@ -18,7 +18,7 @@ export class DisclosureMediaCtrl {
      */
     @Get("")
     @Authenticated({})
-    public async fetch(@Locals("context") context: Context,
+    public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
@@ -27,7 +27,8 @@ export class DisclosureMediaCtrl {
         @QueryParams("to") to?: string,
         @QueryParams("project_id") projectId?: number
     ): Promise<Page<DisclosureMedia>> {
-        return this.disclosureMediaRepository.fetch(page, rpp, q, date, from, to, projectId);
+        const dms = await this.disclosureMediaRepository.fetch({ page, rpp, q, date, from, to, projectId });
+        return Page.of<DisclosureMedia>(dms, page, rpp);
     }
 
     /**
@@ -41,7 +42,8 @@ export class DisclosureMediaCtrl {
         @Locals("context") context: Context,
         @Req() request: Req,
         @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
-    ): Promise<DisclosureMedia | undefined> {
+    ): Promise<ResultContent<DisclosureMedia>> {
+        // check if user is part of current project.
         const project = await this.projectRepository.findByContext(disclosureMedia.project.id, context);
 
         let dm = await this.disclosureMediaRepository.findOne({ id: disclosureMedia.id });
@@ -51,8 +53,10 @@ export class DisclosureMediaCtrl {
 
         dm = this.disclosureMediaRepository.create(disclosureMedia);
         dm.project = project;
+        dm = await this.disclosureMediaRepository.save(dm);
 
-        return this.disclosureMediaRepository.save(dm);
+        return ResultContent.of<DisclosureMedia>(dm)
+            .withMessage("DisclosureMedia successfully saved.");
     }
 
     /**
@@ -65,15 +69,19 @@ export class DisclosureMediaCtrl {
     public async update(
         @Locals("context") context: Context,
         @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
-    ): Promise<DisclosureMedia | undefined> {
+    ): Promise<ResultContent<DisclosureMedia>> {
+        // check if user is part of current project.
         await this.projectRepository.findByContext(disclosureMedia.project.id, context);
         
-        let dm = await this.disclosureMediaRepository.findOne({ id: disclosureMedia.id });
+        let dm = await this.disclosureMediaRepository.findById(disclosureMedia.id);
         if (!dm) {
-            throw new NotFound("Disclouse media not found.");
+            throw new NotFound("DisclouseMedia not found.");
         }
         dm = this.disclosureMediaRepository.merge(dm, disclosureMedia);
-        return this.disclosureMediaRepository.save(dm);
+        dm = await this.disclosureMediaRepository.save(dm);
+
+        return ResultContent.of<DisclosureMedia>(dm)
+            .withMessage("DisclosureMedia successfully updated.");
     }
 
     /**

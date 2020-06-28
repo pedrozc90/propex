@@ -1,13 +1,10 @@
 import { Controller, Locals, Get, Post, QueryParams, PathParams, BodyParams, Required, MergeParams, UseBeforeEach } from "@tsed/common";
-import { NotFound } from "@tsed/exceptions";
 
 import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
 import { DisclosureMediaRepository, ProjectRepository } from "../../repositories";
 import { DisclosureMedia, Page, ResultContent } from "../../entities";
 import { Context } from "../../core/models";
-
-import moment from "moment";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/disclosure-medias")
@@ -22,7 +19,8 @@ export class ProjectDisclosureMediaCtrl {
      */
     @Get("")
     @Authenticated({})
-    public async getDisclosureMedia(@Required() @PathParams("projectId") projectId: number,
+    public async get(@Locals("context") context: Context,
+        @Required() @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
@@ -30,7 +28,13 @@ export class ProjectDisclosureMediaCtrl {
         @QueryParams("from") from?: string,
         @QueryParams("to") to?: string
     ): Promise<Page<DisclosureMedia>> {
-        return this.disclosureMediaRepository.fetch(page, rpp, q, date, from, to, projectId);
+        // check if user is part of project.
+        const project = await this.projectRepository.findByContext(projectId, context);
+
+        // select a disclosure medias
+        const dms = await this.disclosureMediaRepository.fetch({ page, rpp, q, date, from, to, projectId: project.id });
+
+        return Page.of<DisclosureMedia>(dms, page, rpp);
     }
 
     /**
@@ -40,45 +44,99 @@ export class ProjectDisclosureMediaCtrl {
      */
     @Post("")
     @Authenticated({})
-    public async setDisclosureMedia(
+    public async save(
         @Locals("context") context: Context,
         @Required() @PathParams("projectId") projectId: number,
-        @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
+        @Required() @BodyParams("disclosureMedia") disclosureMedia: DisclosureMedia
     ): Promise<any> {
         // check if user is part of project.
         const project = await this.projectRepository.findByContext(projectId, context);
 
-        // update existing entities
-        let mediasToUpdate = await Promise.all(
-            disclosureMedias.filter((dm) => !!dm.id).map(async (dm) => {
-                const tmp = await this.disclosureMediaRepository.findOne({ id: dm.id });
-                if (!tmp) {
-                    throw new NotFound(`Disclosure media ${dm.id} do not exists.`);
-                }
-                return this.disclosureMediaRepository.merge(tmp, dm);
-            })
-        );
-        
-        if (mediasToUpdate.length > 0) {
-            mediasToUpdate = await this.disclosureMediaRepository.save(mediasToUpdate);
-        }
-
-        // save new entities
-        let mediasToInsert = disclosureMedias.filter((d) => !d.id).map((d) => {
-            d.project = project;
-            if (!d.date) d.date = moment().format("YYYY-MM-DD").toString();
-            return d;
+        let dm = await this.disclosureMediaRepository.findOne({
+            where: {
+                id: disclosureMedia.id,
+                project: { id: project.id }
+            },
+            join: {
+                alias: "dm",
+                innerJoin: { project: "dm.project" }
+            }
         });
-        if (mediasToInsert.length > 0) {
-            mediasToInsert = await this.disclosureMediaRepository.save(mediasToInsert);
+
+        if (!dm) {
+            dm = this.disclosureMediaRepository.create(disclosureMedia);
+            dm.project = project;
+        } else {
+            dm = this.disclosureMediaRepository.merge(dm, disclosureMedia);
         }
 
-        const result = {
-            updated: mediasToUpdate.length || 0,
-            inserted: mediasToInsert.length || 0
-        };
+        dm = await this.disclosureMediaRepository.save(dm);
 
-        return ResultContent.of<any>(result).withMessage("Disclosure Medias successfully updated!");
+        return ResultContent.of<any>(dm).withMessage("Disclosure Medias successfully updated!");
     }
+
+    // @Put("")
+    // @Authenticated({})
+    // public async update(
+    //     @Locals("context") context: Context,
+    //     @Required() @PathParams("projectId") projectId: number,
+    //     @Required() @BodyParams("disclosureMedias") disclosureMedias: DisclosureMedia[]
+    // ): Promise<any> {
+    //     // check if user is part of project.
+    //     const project = await this.projectRepository.findByContext(projectId, context);
+
+    //     const ids = disclosureMedias.map((dm) => dm.id).filter(ParseUtils.isEmpty);
+
+    //     // search for entities to delete (exists in the database but no in the received array)
+    //     const toDelete = await this.disclosureMediaRepository.find({
+    //         where: {
+    //             id: Not(In(ids)),
+    //             project: { id: project.id }
+    //         },
+    //         join: {
+    //             alias: "dm",
+    //             innerJoin: { project: "dm.project" }
+    //         }
+    //     });
+
+    //     if (toDelete.length > 0) {
+    //         await this.disclosureMediaRepository.remove(toDelete);
+    //     }
+
+    //     // search for entities to insert (exists on database and in the received array)
+    //     const toUpdate = await this.disclosureMediaRepository.find({
+    //         where: {
+    //             id: In(ids),
+    //             project: { id: project.id }
+    //         },
+    //         join: {
+    //             alias: "dm",
+    //             innerJoin: { project: "dm.project" }
+    //         }
+    //     });
+ 
+    //     if (toUpdate.length > 0) {
+    //         for (let dm of toUpdate) {
+    //             const index = disclosureMedias.findIndex((v) => v.id === dm.id);
+    //             if (index >= 0) {
+    //                 dm = this.disclosureMediaRepository.merge(dm, disclosureMedias[index]);
+    //                 dm = await this.disclosureMediaRepository.save(dm);
+    //                 disclosureMedias.splice(index, 1);
+    //             }
+    //         }
+    //     }
+
+    //     // insert the remaining entities in the array.
+    //     let toInsert = disclosureMedias.map((dm) => {
+    //         dm.project = project;
+    //         return this.disclosureMediaRepository.create(dm);
+    //     });
+
+    //     if (toInsert.length > 0) {
+    //         toInsert = await this.disclosureMediaRepository.save(toInsert);
+    //     }
+
+    //     return { inserted: toInsert, updated: toUpdate, deleted: toDelete };
+    // }
 
 }

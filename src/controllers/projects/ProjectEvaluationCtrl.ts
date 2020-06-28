@@ -1,6 +1,4 @@
-import { $log, BodyParams, Controller, Get, Locals, MergeParams, PathParams, Post, QueryParams, Required, UseBeforeEach } from "@tsed/common";
-
-import { NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, Locals, MergeParams, PathParams, QueryParams, UseBeforeEach } from "@tsed/common";
 
 import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
@@ -13,8 +11,10 @@ import { Context } from "../../core/models";
 @MergeParams(true)
 export class ProjectEvaluationCtrl {
 
-    constructor(private evaluationRepository: EvaluationRepository, private projectRepository: ProjectRepository) {
-        // initialize stuff here
+    constructor(
+        private evaluationRepository: EvaluationRepository,
+        private projectRepository: ProjectRepository) {
+        // initialize your stuffs here
     }
 
     /**
@@ -29,30 +29,15 @@ export class ProjectEvaluationCtrl {
     public async getEvaluation(@Locals("context") context: Context,
         @PathParams("projectId") projectId: number,
         @QueryParams("page") page: number = 1,
-        @QueryParams("rpp") rpp: number = 15
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string
     ): Promise<Page<Evaluation>> {
+        // check if user if part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
 
-        const query = this.evaluationRepository.createQueryBuilder("evaluation")
-            .innerJoin("evaluation.project", "p", "p.id = :projectId", { projectId: project.id });
+        const evaluations = await this.evaluationRepository.fetch({ page, rpp, q, projectId: project.id });
 
-        query.skip((page - 1) * rpp).take(rpp);
-
-        return Page.of<Evaluation>(await query.getMany(), page, rpp);
-    }
-
-    @Post("")
-    @Authenticated({})
-    public async postEvaluation(
-        @Locals("context") context: Context,
-        @Required() @PathParams("projectId") projectId: number,
-        @Required() @BodyParams("evaluations") evaluations: Evaluation[]
-    ): Promise<any> {
-        const project = await this.projectRepository.findByContext(projectId, context);
-        
-        $log.debug(project, evaluations);
-
-        throw new NotImplemented("Method Not Implmented.");
+        return Page.of<Evaluation>(evaluations, page, rpp);
     }
 
 }

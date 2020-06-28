@@ -2,6 +2,8 @@
 
 ## Routes
 
+### TODO
+
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
 | GET              | /api/activities                                            |             | ativities                                       |
@@ -9,6 +11,35 @@
 | PUT              | /api/activities                                            |             | ativities                                       |
 | GET              | /api/activities/:id                                        |             | ativities                                       |
 | DELETE           | /api/activities/:id                                        |             | ativities                                       |
+| GET              | /api/collaborators                                         |             | collaborators                                   |
+| POST             | /api/collaborators                                         |             | collaborators                                   |
+| GET              | /api/collaborators                                         |             | collaborators                                   |
+| DELETE           | /api/collaborators                                         |             | collaborators                                   |
+| GET              | /api/students                                              |             | students                                        |
+| POST             | /api/students                                              |             | students                                        |
+| GET              | /api/students/:id                                          |             | students                                        |
+| DELETE           | /api/students/:id                                          |             | students                                        |
+| PUT              | /api/evaluations                                           |             | evaluations                                     |
+| GET              | /api/publications                                          |             | publications + attachments                      |
+| POST             | /api/publications                                          |             | publications + attachments                      |
+| GET              | /api/publications/types                                    |             | publications                                    |
+| GET              | /api/publications/:id                                      |             | publications + attachments                      |
+| DELETE           | /api/publications/:id                                      |             | publications + attachments                      |
+| PUT              | /api/projects                                              |             | projects                                        |
+| GET              | /api/projects/:projectId/activities                        |             | project_activities                              |
+| POST             | /api/projects/:projectId/activities                        |             | project_activities                              |
+| GET              | /api/projects/:projectId/attachments                       |             | project_attachments                             |
+| POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
+| GET              | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
+| POST             | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
+| POST             | /api/projects/:projectId/students                          |             | project_human_resources + user + students       |
+| GET              | /api/projects/:projectId/targets                           |             | targets                                         |
+| POST             | /api/projects/:projectId/targets                           |             | targets                                         |
+
+### FINISHED
+
+| Method           | Endpoint                                                   | Progres     | Table                                           |
+|:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
 | POST             | /api/auth/login                                            | DONE        |                                                 |
 | POST             | /api/auth/logout                                           | DONE        |                                                 |
 | POST             | /api/auth/register                                         | DONE        |                                                 |
@@ -24,7 +55,6 @@
 | DELETE           | /api/disclosure-medias/:id                                 | DONE        | disclosure-medias                               |
 | GET              | /api/evaluations                                           | DONE        | evaluations                                     |
 | POST             | /api/evaluations                                           | DONE        | evaluations                                     |
-| PUT              | /api/evaluations                                           |             | evaluations                                     |
 | GET              | /api/evaluations/:id                                       | DONE        | evaluations                                     |
 | DELETE           | /api/evaluations/:id                                       | DONE        | evaluations                                     |
 | GET              | /api/events                                                | DONE        | events                                          |
@@ -54,47 +84,31 @@
 | DELETE           | /api/partners/:id                                          | DONE        | partners                                        |
 | GET              | /api/projects                                              | DONE        | projects                                        |
 | POST             | /api/projects                                              | DONE        | projects                                        |
-| PUT              | /api/projects                                              |             | projects                                        |
 | GET              | /api/projects/:id                                          | DONE        | projects                                        |
-| GET              | /api/projects/:projectId/activities                        |             | project_activities                              |
-| GET              | /api/projects/:projectId/attachments                       |             | project_attachments                             |
-| POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
-| GET              | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
-| POST             | /api/projects/:projectId/collaborators                     |             | project_human_resources + user + collaborators  |
 | GET              | /api/projects/:projectId/demands                           | DONE        | demands                                         |
-| GET              | /api/projects/:projectId/disclosure-medias                 |             | disclosure_medias                               |
-| POST             | /api/projects/:projectId/disclosure-medias                 |             | disclosure_medias                               |
-| GET              | /api/projects/:projectId/evaluations                       |             | evaluations                                     |
-| POST             | /api/projects/:projectId/evaluations                       |             | evaluations                                     |
-
+| POST             | /api/projects/:projectId/demands                           | DONE        | demands                                         |
+| GET              | /api/projects/:projectId/disclosure-medias                 | DONE        | disclosure_medias                               |
+| POST             | /api/projects/:projectId/disclosure-medias                 | DONE        | disclosure_medias                               |
+| GET              | /api/projects/:projectId/evaluations                       | DONE        | evaluations                                     |
 | GET              | /api/projects/:projectId/extension-lines                   | DONE        | project_extension_lines                         |
 | POST             | /api/projects/:projectId/extension-lines                   | DONE        | project_extension_lines                         |
 | PUT              | /api/projects/:projectId/extension-lines                   | DONE        | project_extension_lines                         |
 | DELETE           | /api/projects/:projectId/extension-lines/:extensionLineId  | DONE        | project_extension_lines                         |
-
 | GET              | /api/projects/:projectId/knowledge-areas                   | DONE        | project_knowledge_areas                         |
 | POST             | /api/projects/:projectId/knowledge-areas                   | DONE        | project_knowledge_areas                         |
 | PUT              | /api/projects/:projectId/knowledge-areas                   | DONE        | project_knowledge_areas                         |
 | DELETE           | /api/projects/:projectId/knowledge-areas/:knowledgeAreaId  | DONE        | project_knowledge_areas                         |
-| GET              | /api/projects/:projectId/partners                          |             | partners                                        |
-| POST             | /api/projects/:projectId/partners                          |             | partners                                        |
+| GET              | /api/projects/:projectId/partners                          | DONE        | partners                                        |
+| POST             | /api/projects/:projectId/partners                          | DONE        | partners                                        |
 | GET              | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | POST             | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | PUT              | /api/projects/:projectId/publics                           | DONE        | project_publics                                 |
 | DELETE           | /api/projects/:projectId/publics/:publicId                 | DONE        | project_publics                                 |
-| GET              | /api/projects/:projectId/students                          |             | project_human_resources + user + students       |
-| POST             | /api/projects/:projectId/students                          |             | project_human_resources + user + students       |
-| GET              | /api/projects/:projectId/targets                           |             | targets                                         |
-| POST             | /api/projects/:projectId/targets                           |             | targets                                         |
+| GET              | /api/projects/:projectId/students                          | DONE        | project_human_resources + user + students       |
 | GET              | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | POST             | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | PUT              | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | DELETE           | /api/projects/:projectId/theme-areas/:themeAreaId          | DONE        | project_theme_areas                             |
-| GET              | /api/publications                                          |             | publications + attachments                      |
-| POST             | /api/publications                                          |             | publications + attachments                      |
-| GET              | /api/publications/types                                    |             | publications                                    |
-| GET              | /api/publications/:id                                      |             | publications + attachments                      |
-| DELETE           | /api/publications/:id                                      |             | publications + attachments                      |
 | GET              | /api/publics                                               | DONE        | publics                                         |
 | POST             | /api/publics                                               | DONE        | publics                                         |
 | PUT              | /api/publics                                               | DONE        | publics                                         |

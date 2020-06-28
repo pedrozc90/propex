@@ -1,11 +1,21 @@
 import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { DisclosureMedia, Page } from "../entities";
+import { DisclosureMedia, Project } from "../entities";
 import { IOptions } from "../core/types";
 
 import { StringUtils } from "../core/utils";
-import { Context } from "../core/models";
+
+interface DisclosureMediaOptions extends IOptions {
+    id?: number;
+    name?: string;
+    link?: string;
+    project?: Project;
+    projectId?: number;
+    from?: string;
+    to?: string;
+    date?: string;
+}
 
 @EntityRepository(DisclosureMedia)
 export class DisclosureMediaRepository extends GenericRepository<DisclosureMedia> {
@@ -14,25 +24,33 @@ export class DisclosureMediaRepository extends GenericRepository<DisclosureMedia
      * Return a paginated list of diclosure medias.
      * @param options                       -- options
      */
-    public async fetch(page: number = 1, rpp: number = 15, q?: string, date?: string, from?: string, to?: string, projectId?: number, context?: Context): Promise<Page<DisclosureMedia>> {
-        const query = this.createQueryBuilder("dm")
-            .innerJoin("dm.project", "p");
+    public async fetch(params: DisclosureMediaOptions): Promise<DisclosureMedia[]> {
+        const page = params.page;
+        const rpp = params.rpp;
+
+        const query = this.createQueryBuilder("dm");
+
+        if (params.project || params.projectId) {
+            const projectId = params.projectId || params.project?.id;
+            query.innerJoin("dm.project", "p", "p.id = :projectId", { projectId });
+        }
         
-        if (StringUtils.isNotEmpty(q)) {
-            query.where("dm.name LIKE :name", { name: `%${q}%` })
-                .orWhere("dm.link LIKE :link", { link: `%${q}%` });
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.where("dm.name LIKE :name", { name: `%${params.q}%` })
+                .orWhere("dm.link LIKE :link", { link: `%${params.q}%` });
         }
 
-        if (date) query.where("dm.date = :date", { date });
-        if (from) query.where("dm.date >= :from", { from });
-        if (to) query.where("dm.date <= :to", { to });
-        if (projectId) query.where("p.id = :projectId", { projectId });
-
-        query.orderBy("dm.date", "DESC")
-            .skip((page - 1) * rpp)
-            .take(rpp);
+        if (params.date) query.where("dm.date = :date", { date: params.date });
+        if (params.from) query.where("dm.date >= :from", { from: params.from });
+        if (params.to) query.where("dm.date <= :to", { tp: params.to });
         
-        return Page.of<DisclosureMedia>(await query.getMany(), page, rpp);
+        query.orderBy("dm.date", "DESC");
+
+        if ((page && page > 0) && (rpp && rpp > 0)) {
+            query.skip((page - 1) * rpp).take(rpp);
+        }
+        
+        return await query.getMany();
     }
 
 }

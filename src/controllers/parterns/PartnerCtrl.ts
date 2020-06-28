@@ -24,9 +24,11 @@ export class PartnerCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") project?: string | number
+        @QueryParams("project") projectId?: number
     ): Promise<Page<Partner>> {
-        return this.partnerRepository.fetch({ page, rpp, q, project });
+        const partners = await this.partnerRepository.fetch({ page, rpp, q, projectId });
+
+        return Page.of<Partner>(partners, page, rpp);
     }
 
     /**
@@ -40,16 +42,16 @@ export class PartnerCtrl {
     public async create(
         @Locals("context") context: Context,
         @Req() request: Req,
-        @Required() @BodyParams("partner") data: Partner
+        @Required() @BodyParams("partner") partner: Partner
     ): Promise<Partner> {
-        const partner = await this.partnerRepository.findMatch(data, data.project);
-        if (partner) {
+        const pt = await this.partnerRepository.findMatch(partner, partner.project);
+        if (pt) {
             throw new BadRequest(`Please, use PUT ${request.path} to update a partner data.`);
         }
-        if (!data.project) {
+        if (!partner.project) {
             throw new BadRequest("Missing project data.");
         }
-        return this.partnerRepository.save(data);
+        return this.partnerRepository.save(partner);
     }
 
     /**

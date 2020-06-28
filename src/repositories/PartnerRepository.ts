@@ -2,39 +2,61 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 
-import { Partner, Project, Page } from "../entities";
+import { Partner, Project } from "../entities";
 import { IOptions } from "../core/types";
+
+import { StringUtils } from "../core/utils";
+
+interface PartnerOptions extends IOptions {
+    id?: number;
+    name?: string;
+    contact?: string;
+    email?: string;
+    phone?: string;
+    project?: Project;
+    projectId?: number;
+}
 
 @EntityRepository(Partner)
 export class PartnerRepository extends GenericRepository<Partner> {
 
-    public async fetch(options: IOptions): Promise<Page<Partner>> {
-        const page = options.page || 1;
-        const rpp = options.rpp || 15;
-        const q = options.q;
-        const project = options.project;
+    /**
+     * Return a list of partners.
+     */
+    public async fetch(params: PartnerOptions): Promise<Partner[]> {
+        const page = params.page;
+        const rpp = params.rpp;
 
-        const query = this.createQueryBuilder("partner");
+        const query = this.createQueryBuilder("pt");
 
-        if (project) {
-            if (typeof project === "string") {
-                query.innerJoin("partner.project", "project", "project.title LIKE :title", { title: `%${project}%` });
-            } else if (typeof project === "number") {
-                query.innerJoin("partner.project", "project", "project.id LIKE :projectId", { projectId: project });
-            }
+        if (params.project || params.projectId) {
+            const projectId = params.projectId || params.project?.id;
+            query.innerJoin("pt.project", "p", "p.id = :projectId", { projectId });
         }
 
-        if (q) {
-            query.where("partner.name LIKE :name", { name: `%${q}%` })
-                .orWhere("partner.email LIKE :email", { email: `%${q}%` })
-                .orWhere("partner.phone LIKE :phone", { phone: `%${q}%` });
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.where("pt.name LIKE :name", { name: `%${params.q}%` })
+                .orWhere("pt.email LIKE :email", { email: `%${params.q}%` })
+                .orWhere("pt.phone LIKE :phone", { phone: `%${params.q}%` });
         }
 
-        query.skip((page - 1) * rpp).take(rpp);
+        if ((page && page > 0) && (rpp && rpp > 0)) {
+            query.skip((page - 1) * rpp).take(rpp);
+        }
 
-        return Page.of<Partner>(await query.getMany(), page, rpp);
+        query.orderBy({
+            "pt.name": "ASC",
+            "pt.id": "ASC"
+        });
+
+        return await query.getMany();
     }
     
+    /**
+     * Find a partner by id or email.
+     * @param partner                       -- partner data.
+     * @param project                       -- project data.
+     */
     public async findMatch(partner: Partner, project?: Project): Promise<Partner | undefined> {
         return this.findOne({
             where: [
@@ -43,8 +65,8 @@ export class PartnerRepository extends GenericRepository<Partner> {
                 { project: { id: project?.id } }
             ],
             join: {
-                alias: "demand",
-                innerJoin: { project: "demand.project" }
+                alias: "pt",
+                innerJoin: { project: "pt.project" }
             }
         });
     }

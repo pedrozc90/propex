@@ -24,7 +24,8 @@ export class EvaluationCtrl {
         @QueryParams("q") q?: string,
         @QueryParams("project") projectId?: number
     ): Promise<Page<Evaluation>> {
-        return this.evaluationRepository.fetch(page, rpp, q, projectId);
+        const evaluations = await this.evaluationRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<Evaluation>(evaluations, page, rpp);
     }
 
     /**

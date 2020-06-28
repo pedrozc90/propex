@@ -19,19 +19,11 @@ export class TargetCtrl {
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("project") project?: string | number): Promise<Page<Target>> {
-        const query = this.targetRepository.createQueryBuilder("t");
-        
-        if (project) {
-            if (typeof project === "string") {
-                query.innerJoin("t.project", "p", "p.title LIKE :project", { project });
-            } else {
-                query.innerJoin("t.project", "p", "p.id = :projectId", { projectId: project });
-            }
-        }
-        query.skip((page - 1) * rpp).take(rpp);
-
-        return Page.of<Target>(await query.getMany(), page, rpp);
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
+    ): Promise<Page<Target>> {
+        const targets = await this.targetRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<Target>(targets, page, rpp);
     }
 
     /**
@@ -49,16 +41,15 @@ export class TargetCtrl {
         const project = await this.projectRepository.findByContext(target.project.id, context);
 
         let t = await this.targetRepository.findOne({ ageRange: target.ageRange, project: { id: project.id } });
-        if (t) {
-            t = this.targetRepository.merge(t, target);
-        } else {
-            t = target;
+        if (!t) {
+            t = this.targetRepository.create(target);
             t.project = project;
+        } else {
+            t = this.targetRepository.merge(t, target);
         }
         t = await this.targetRepository.save(t);
         
-        // return this.targetRepository.save(target);
-        return ResultContent.of<Target>(t).withMessage("Target added to project.");
+        return ResultContent.of<Target>(t).withMessage("Target successfully saved.");
     }
 
     /**

@@ -1,28 +1,47 @@
 import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { Evaluation, Page } from "../entities";
+import { Evaluation } from "../entities";
 
 import { StringUtils } from "../core/utils";
+import { IOptions } from "src/core/types";
+
+interface EvaluationOptions extends IOptions {
+    id?: number;
+    description?: string;
+    projectId?: number;
+}
 
 @EntityRepository(Evaluation)
 export class EvaluationRepository extends GenericRepository<Evaluation> {
 
-    public async fetch(page: number = 1, rpp: number = 15, q?: string, projectId?: number): Promise<Page<Evaluation>> {
-        const query = this.createQueryBuilder("ev")
-            .innerJoin("ev.project", "project");
+    /**
+     * Return a list of evaluations.
+     * @param params                        -- search params.
+     */
+    public async fetch(params: EvaluationOptions): Promise<Evaluation[]> {
+        const page = params.page;
+        const rpp = params.rpp;
 
-        if (StringUtils.isNotEmpty(q)) {
-            query.where("ev.description LIKE :description", { description: `%${q}%` });
+        const query = this.createQueryBuilder("ev");
+
+        if (params.projectId) {
+            query.innerJoin("ev.project", "p", "p.id = :projectId", { projectId: params.projectId });
         }
 
-        if (projectId) {
-            query.where("project.id = :projectId", { projectId });
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.where("ev.description LIKE :description", { description: `%${params.q}%` });
         }
 
-        query.skip((page - 1) * rpp).take(rpp);
+        if (StringUtils.isNotEmpty(params.description)) {
+            query.where("ev.description = :description", { description: params.description });
+        }
 
-        return Page.of<Evaluation>(await query.getMany(), page, rpp);
+        if ((page && page > 0) && (rpp && rpp > 0)) {
+            query.skip((page - 1) * rpp).take(rpp);
+        }
+
+        return await query.getMany();
     }
 
 }
