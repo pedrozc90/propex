@@ -43,9 +43,9 @@ export class ActivityCtrl {
     @Authenticated({})
     public async save(
         @Locals("context") context: Context,
-        @Required() @BodyParams("Activity") Activitys: Activity
+        @Required() @BodyParams("activity") activity: Activity
     ): Promise<Activity> {
-        return this.activityRepository.save(Activitys);
+        return this.activityRepository.save(activity);
     }
 
     /**

@@ -1,4 +1,5 @@
 import { GlobalAcceptMimesMiddleware, ServerLoader, ServerSettings } from "@tsed/common";
+import "@tsed/multipartfiles";
 import "@tsed/swagger";
 import "@tsed/typeorm";
 import { ConnectionOptions } from "typeorm";
@@ -12,12 +13,15 @@ import methodOverride from "method-override";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
-const rootDir = __dirname;
 dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
+
+const rootDir: string = __dirname;
+const uploadDir: string = process.env.TEMP_DIR || path.join(process.cwd(), ".temp");
 
 @ServerSettings({
     rootDir,
-    acceptMimes: [ "application/json" ],
+    uploadDir: uploadDir,
+    acceptMimes: [ "application/json", "multipart/form-data" ],
     port: process.env.PORT || 9000,
     httpsPort: false,
     mount: { "/api": `${rootDir}/controllers/**/*.ts` },
@@ -52,7 +56,7 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             password: process.env.DB_PASSWORD || "",
             logging: false,
             synchronize: true,
-            dropSchema: true,
+            dropSchema: false,
             entities: [ `${rootDir}/entities/*.ts` ],
             migrations: [ `${rootDir}/migrations/*.ts` ],
             migrationsRun: true,
@@ -64,7 +68,24 @@ dotenv.config({ path: path.join(__dirname, "../config/dev.env") });
             supportBigNumbers: false,
             bigNumberStrings: true
         } as ConnectionOptions
-    ]
+    ],
+    multer: {
+        dest: uploadDir,                    // the destination directory for the uploaded files.
+        storage: null,                      // the storage engine to use for uploaded files.
+        // an object specifying the size limits of the following optional properties.
+        // this object is passed to busboy directly, and the details of properties
+        // can be found on https://github.com/mscdex/busboy#busboy-methods.
+        limits: {
+            fieldNameSize: 255              // max field name size (Default: 100 bytes).
+            // fieldSize: 1,                   // max field value size (Default: 1MB).
+            // fields: 0,                      // max number of non- file fields (Default: Infinity).
+            // fileSize: 100,                  // for multipart forms, the max file size (in bytes)(Default: Infinity).
+            // files: 5,                       // for multipart forms, the max number of file fields (Default: Infinity).
+            // parts: 10,                      // for multipart forms, the max number of parts (fields + files)(Default: Infinity).
+            // headerPairs: 10,                // for multipart forms, the max number of header key => value pairs to parse Default: 2000(same as node's http).
+            // preservePath: true              // keep the full path of files instead of just the base name (Default: false).
+        }
+    }
 })
 export class Server extends ServerLoader {
 
@@ -79,7 +100,8 @@ export class Server extends ServerLoader {
             .use(compress({}))
             .use(methodOverride())
             .use(bodyParser.json())
-            .use(bodyParser.urlencoded({ extended: true }));
+            .use(bodyParser.urlencoded({ extended: true }))
+            .use(bodyParser.raw());
     }
 
     // public $onReady(): void {

@@ -1,8 +1,6 @@
 # TODO List
 
-## Routes
-
-### TODO
+## Routes In Progress:
 
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
@@ -31,10 +29,7 @@
 | GET              | /api/projects/:projectId/attachments                       |             | project_attachments                             |
 | POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
 
-
-
-
-### FINISHED
+## Routes Finished:
 
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|

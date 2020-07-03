@@ -1,4 +1,4 @@
-import { Property, Required, Allow } from "@tsed/common";
+import { Property, Required, Allow, IgnoreProperty } from "@tsed/common";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -14,51 +14,45 @@ export class Attachment extends Audit {
     public id: number;
     
     @Allow([ null, undefined ])
-    @Required()
     @Property({ name: "url" })
-    @Column({ name: "url", type: "varchar", length: 255 })
-    public url: string;
+    @Column({ name: "url", type: "varchar", length: 255, nullable: true })
+    public url?: string;
 
-    // @Required()
-    // @Enum(AttachmentType)
-    // @Default(AttachmentType.DOCUMENT)
-    // @Property({ name: "type" })
-    // // @Column({ name: "type", type: "enum", enum: AttachmentTypeEnum, nullable: false })
-    // @Column({ name: "type", type: "varchar", length: 255, transformer: AttachmentTypeEnumTransformer, default: "DOCUMENT", nullable: false })
-    // public type: AttachmentType = AttachmentType.DOCUMENT;
-
-    @Required()
     @Property({ name: "contentType" })
-    @Column({ name: "content_type", type: "varchar", length: 255, nullable: false })
-    public contentType: string;
+    @Column({ name: "content_type", type: "varchar", length: 255, nullable: true })
+    public contentType?: string;
 
     @Property({ name: "fileSize" })
-    @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: false })
-    public fileSize: number;
+    @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: true })
+    public fileSize?: number;
 
-    @Required()
     @Property({ name: "fileName" })
-    @Column({ name: "file_name", type: "varchar", length: 255, nullable: false })
-    public fileName: string;
+    @Column({ name: "file_name", type: "varchar", length: 255, nullable: true })
+    public fileName?: string;
 
     @Property({ name: "fileNameNormalized" })
-    @Column({ name: "file_name_normalized", type: "varchar", length: 255, nullable: false })
-    public fileNameNormalized: string;
+    @Column({ name: "file_name_normalized", type: "varchar", length: 255, nullable: true })
+    public fileNameNormalized?: string;
 
+    @Property({ name: "extension" })
+    @Column({ name: "extension", type: "varchar", length: 8, nullable: true })
+    public extension?: string;
+
+    @IgnoreProperty()
     @Property({ name: "content" })
-    @Column({ name: "content", type: "longblob" })
-    public content: Promise<Buffer>;
+    @Column({ name: "content", type: "longblob", nullable: true })
+    public content?: Buffer;
 
     @Property({ name: "publications" })
     @OneToMany(() => Publication, (publication) => publication.attachment)
-    public publications: Publication[];
+    public publications?: Publication[];
 
     @Property({ name: "activities" })
     @ManyToMany(() => Activity, (activity) => activity.attachments)
-    public activities: Activity[];
+    public activities?: Activity[];
 
     @Property({ name: "projects" })
     @ManyToMany(() => Project, (project) => project.activities)
-    public projects: Project[];
+    public projects?: Project[];
 
 }
