@@ -4,6 +4,7 @@
 # npm files
 node_modules
 dist
+.temp
 
 # configuration files
 config/dev.env
