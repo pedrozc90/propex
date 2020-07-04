@@ -46,7 +46,7 @@ export class DisclosureMediaRepository extends GenericRepository<DisclosureMedia
         
         query.orderBy("dm.date", "DESC");
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
         

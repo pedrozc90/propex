@@ -40,7 +40,7 @@ export class PartnerRepository extends GenericRepository<Partner> {
                 .orWhere("pt.phone LIKE :phone", { phone: `%${params.q}%` });
         }
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 

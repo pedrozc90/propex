@@ -46,7 +46,7 @@ export class CollaboratorRepository extends GenericRepository<Collaborator> {
                 .orWhere("usr.email LIKE :email", { email: `%${params.q}%` });
         }
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 

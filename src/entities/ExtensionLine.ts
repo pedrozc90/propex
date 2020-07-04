@@ -11,7 +11,6 @@ export class ExtensionLine extends Audit {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id: number;
     
-    // @Required()
     @Property({ name: "number" })
     @Column({ name: "number", type: "int", width: 11, nullable: false })
     public number: number;

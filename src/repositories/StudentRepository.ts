@@ -52,7 +52,7 @@ export class StudentRepository extends GenericRepository<Student> {
                 .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
         }
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 

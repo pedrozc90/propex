@@ -1,4 +1,4 @@
-import { Property, Required, Enum } from "@tsed/common";
+import { Property, Required, Enum, PropertyDeserialize } from "@tsed/common";
 import { Entity, Column, ManyToOne, JoinColumn, PrimaryGeneratedColumn, Index } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -16,10 +16,11 @@ export class Publication extends Audit {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id: number;
     
+    // @PropertySerialize((v) => AgeRangeEnumTransformer.to(v))
+    @PropertyDeserialize((v) => PublicationTypeEnumTransformer.from(v.key || v))
     @Required()
     @Enum(PublicationType)
     @Property({ name: "type" })
-    // @Column({ name: "type", type: "enum", enum: PublicationTypeEnum, nullable: false })
     @Column({ name: "type", type: "varchar", length: 255, transformer: PublicationTypeEnumTransformer, nullable: false })
     public type: PublicationType;
 

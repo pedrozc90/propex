@@ -40,13 +40,13 @@ export class Project extends Audit {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id!: number;
     
-    @Required()
+    // @Required()
     @Description("Título do Projeto")
     @Property({ name: "title" })
     @Column({ name: "title", type: "varchar", length: 255, nullable: false })
     public title: string;
 
-    @Required()
+    // @Required()
     @Description("Nome do programa institucional vinculado ao pejeto")
     @Property({ name: "program" })
     @Column({ name: "program", type: "varchar", length: 255, nullable: false })

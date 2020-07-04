@@ -4,11 +4,11 @@
 
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
-| GET              | /api/activities                                            |             | ativities                                       |
-| POST             | /api/activities                                            |             | ativities                                       |
-| PUT              | /api/activities                                            |             | ativities                                       |
-| GET              | /api/activities/:id                                        |             | ativities                                       |
-| DELETE           | /api/activities/:id                                        |             | ativities                                       |
+| GET              | /api/attachments                                           | DONE        | attachments                                     |
+| POST             | /api/attachments                                           |             | attachments                                     |   -- como salvar os anexos (attachments)
+| PUT              | /api/attachments                                           |             | attachments                                     |   -- como salvar os anexos (attachments)
+| GET              | /api/attachments/:id                                       | DONE        | attachments                                     |
+| DELETE           | /api/attachments/:id                                       | DONE        | attachments                                     |
 | GET              | /api/collaborators                                         |             | collaborators                                   |
 | POST             | /api/collaborators                                         |             | collaborators                                   |
 | GET              | /api/collaborators                                         |             | collaborators                                   |
@@ -18,11 +18,6 @@
 | GET              | /api/students/:id                                          |             | students                                        |
 | DELETE           | /api/students/:id                                          |             | students                                        |
 | PUT              | /api/evaluations                                           |             | evaluations                                     |
-| GET              | /api/publications                                          |             | publications + attachments                      |
-| POST             | /api/publications                                          |             | publications + attachments                      |
-| GET              | /api/publications/types                                    |             | publications                                    |
-| GET              | /api/publications/:id                                      |             | publications + attachments                      |
-| DELETE           | /api/publications/:id                                      |             | publications + attachments                      |
 | PUT              | /api/projects                                              |             | projects                                        |
 | GET              | /api/projects/:projectId/activities                        |             | project_activities                              |
 | POST             | /api/projects/:projectId/activities                        |             | project_activities                              |
@@ -36,6 +31,10 @@
 | POST             | /api/auth/login                                            | DONE        |                                                 |
 | POST             | /api/auth/logout                                           | DONE        |                                                 |
 | POST             | /api/auth/register                                         | DONE        |                                                 |
+| GET              | /api/activities                                            | DONE        | ativities                                       |
+| POST             | /api/activities                                            | DONE        | ativities                                       |
+| GET              | /api/activities/:id                                        | DONE        | ativities                                       |
+| DELETE           | /api/activities/:id                                        | DONE        | ativities                                       |
 | GET              | /api/demands                                               | DONE        | demands                                         |
 | POST             | /api/demands                                               | DONE        | demands                                         |
 | PUT              | /api/demands                                               | DONE        | demands                                         |
@@ -108,6 +107,11 @@
 | POST             | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | PUT              | /api/projects/:projectId/theme-areas                       | DONE        | project_theme_areas                             |
 | DELETE           | /api/projects/:projectId/theme-areas/:themeAreaId          | DONE        | project_theme_areas                             |
+| GET              | /api/publications                                          | DONE        | publications + attachments                      |
+| POST             | /api/publications                                          | DONE        | publications + attachments                      |
+| GET              | /api/publications/types                                    | DONE        | publications                                    |
+| GET              | /api/publications/:id                                      | DONE        | publications + attachments                      |
+| DELETE           | /api/publications/:id                                      | DONE        | publications + attachments                      |
 | GET              | /api/publics                                               | DONE        | publics                                         |
 | POST             | /api/publics                                               | DONE        | publics                                         |
 | PUT              | /api/publics                                               | DONE        | publics                                         |

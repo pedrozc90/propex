@@ -37,7 +37,7 @@ export class EvaluationRepository extends GenericRepository<Evaluation> {
             query.where("ev.description = :description", { description: params.description });
         }
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 

@@ -37,7 +37,7 @@ export class DemandRepository extends GenericRepository<Demand> {
                 .orWhere("d.justification LIKE :justification", { justification: `%${params.q}%` });
         }
 
-        if ((page && page > 0) && (rpp && rpp > 0)) {
+        if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 

@@ -23,11 +23,13 @@ export class AttachmentCtrl {
     @Get("")
     @Authenticated({})
     public async fetch(
-        @Locals("context") context: Context,
-        @QueryParams("project") projectId: number
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
     ): Promise<Page<Attachment>> {
-        console.log(context.user.email, projectId);
-        throw new NotImplemented("Method Not Implemented.");
+        const attachements = await this.attachmentRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<Attachment>(attachements, page, rpp);
     }
 
     /**
@@ -37,16 +39,15 @@ export class AttachmentCtrl {
      */
     @Post("")
     @Authenticated({})
-    // @MulterOptions({})
     public async save(
         @Locals("context") context: Context,
         @Required() @MultipartFile("file") file: Express.Multer.File
     ): Promise<Attachment> {
         // create a new attachment
         let attachment = new Attachment();
-        attachment.fileSize = file.size;
-        attachment.fileName = file.originalname;
-        attachment.fileNameNormalized = StringUtils.normalize(file.originalname);
+        attachment.size = file.size;
+        attachment.filename = file.originalname;
+        attachment.filenameNormalized = StringUtils.normalize(file.originalname);
         attachment.contentType = file.mimetype;
         attachment.content = fs.readFileSync(file.path);
         attachment.extension = ParseUtils.extractFileExtension(file.originalname);
@@ -87,8 +88,8 @@ export class AttachmentCtrl {
         // let content = Buffer.from(attachment.content, "base64");
         response.writeHead(200, {
             "Content-Type": attachment.contentType,
-            "Content-Disposition": `attachment; filename=${attachment.fileName}`,
-            "Content-Length": attachment.fileSize
+            "Content-Disposition": `attachment; filename=${attachment.filename}`,
+            "Content-Length": attachment.size
         });
         response.write(attachment.content);
     }

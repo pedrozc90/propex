@@ -1,4 +1,4 @@
-import { Property, Required, Allow, IgnoreProperty } from "@tsed/common";
+import { Property, IgnoreProperty } from "@tsed/common";
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 
 import { Audit } from "./generics/Audit";
@@ -13,7 +13,6 @@ export class Attachment extends Audit {
     @PrimaryGeneratedColumn({ name: "id", type: "bigint", unsigned: true })
     public id: number;
     
-    @Allow([ null, undefined ])
     @Property({ name: "url" })
     @Column({ name: "url", type: "varchar", length: 255, nullable: true })
     public url?: string;
@@ -22,17 +21,17 @@ export class Attachment extends Audit {
     @Column({ name: "content_type", type: "varchar", length: 255, nullable: true })
     public contentType?: string;
 
-    @Property({ name: "fileSize" })
-    @Column({ name: "file_size", type: "double", precision: 8, scale: 2, nullable: true })
-    public fileSize?: number;
+    @Property({ name: "size" })
+    @Column({ name: "size", type: "double", precision: 8, scale: 2, nullable: true })
+    public size?: number;
 
-    @Property({ name: "fileName" })
-    @Column({ name: "file_name", type: "varchar", length: 255, nullable: true })
-    public fileName?: string;
+    @Property({ name: "filename" })
+    @Column({ name: "filename", type: "varchar", length: 255, nullable: true })
+    public filename?: string;
 
-    @Property({ name: "fileNameNormalized" })
-    @Column({ name: "file_name_normalized", type: "varchar", length: 255, nullable: true })
-    public fileNameNormalized?: string;
+    @Property({ name: "filenameNormalized" })
+    @Column({ name: "filename_normalized", type: "varchar", length: 255, nullable: true })
+    public filenameNormalized?: string;
 
     @Property({ name: "extension" })
     @Column({ name: "extension", type: "varchar", length: 8, nullable: true })

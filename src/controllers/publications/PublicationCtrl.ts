@@ -1,24 +1,35 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, $log } from "@tsed/common";
-import { Exception, NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams } from "@tsed/common";
 
 import { Authenticated } from "../../core/services";
-import { PublicationRepository, ProjectRepository } from "../../repositories";
-import { Publication } from "../../entities";
+import { PublicationRepository, ProjectRepository, AttachmentRepository } from "../../repositories";
+import { Publication, Page, ResultContent } from "../../entities";
 import { PublicationType } from "../../core/types";
 import { Context } from "../../core/models";
+import { NotFound } from "@tsed/exceptions";
 
 @Controller("/publications")
 export class PublicationCtrl {
 
-    constructor(private publicationRepository: PublicationRepository, private projectRepository: ProjectRepository) {}
+    constructor(
+        private publicationRepository: PublicationRepository,
+        private projectRepository: ProjectRepository,
+        private attachmentREpository: AttachmentRepository) {
+        // initialize your stuffs here
+    }
 
     /**
      * Return a list of publications.
      */
     @Get("")
     @Authenticated({})
-    public async fetch(): Promise<any> {
-        throw new NotImplemented("Method Not Implemented!");
+    public async fetch(
+        @QueryParams("page") page: number = 1,
+        @QueryParams("rpp") rpp: number = 15,
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
+    ): Promise<any> {
+        const publications = await this.publicationRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<Publication>(publications, page, rpp);
     }
 
     /**
@@ -30,19 +41,29 @@ export class PublicationCtrl {
     @Authenticated({})
     public async save(
         @Locals("context") context: Context,
-        @Required() @BodyParams("publication") publication: Publication
+        @Required() @BodyParams("publication") data: Publication
     ): Promise<any> {
         // check if user is part of project.
-        const project = await this.projectRepository.findByContext(publication.project.id, context);
-        if (!project) {
-            throw new Exception(400, "Project not found.");
+        const project = await this.projectRepository.findByContext(data.project.id, context);
+        
+        let publication = await this.publicationRepository.findOne({ id: data.id, project: project });
+        if (!publication) {
+            publication = this.publicationRepository.create(data);
+            publication.project = project;
+            // create relation between attachment and project
+            if (publication.attachment) {
+                await this.projectRepository.createQueryBuilder("project").relation("attachments").of(project).add(publication.attachment);
+            }
+        } else {
+            publication = this.publicationRepository.merge(publication, data);
         }
-        $log.error("Method Not Implemented", context, publication);
-        throw new NotImplemented("Method Not Implemented!");
+        publication = await this.publicationRepository.save(publication);
+
+        return ResultContent.of<Publication>(publication).withMessage("Publication successfully saved.");
     }
 
     /**
-     * Return a list of publications.
+     * Return a list of publications types.
      */
     @Get("/types")
     @Authenticated({})
@@ -57,7 +78,7 @@ export class PublicationCtrl {
     @Get("/:id")
     @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Publication | undefined> {
-        return this.publicationRepository.findById(id);
+        return this.publicationRepository.findOne({ id }, { relations: [ "attachment" ] });
     }
 
     /**
@@ -67,7 +88,16 @@ export class PublicationCtrl {
     @Delete("/:id")
     @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        return this.publicationRepository.deleteById(id);
+        const publication = await this.publicationRepository.findOne({ id }, { relations: [ "attachment" ] });
+        if (!publication) {
+            throw new NotFound("Publication not found.");
+        }
+        // delete attachment linked to the publication
+        if (publication.attachment) {
+            await this.attachmentREpository.deleteById(publication.attachment.id);
+        }
+        // delete publication
+        return this.publicationRepository.deleteById(publication.id);
     }
 
 }
