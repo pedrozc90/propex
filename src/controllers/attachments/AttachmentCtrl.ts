@@ -3,7 +3,7 @@ import { NotFound, BadRequest } from "@tsed/exceptions";
 import { MultipartFile } from "@tsed/multipartfiles";
 
 import { Authenticated } from "../../core/services";
-import { AttachmentRepository, ProjectRepository, PublicationRepository, ActivityRepository } from "../../repositories";
+import { AttachmentRepository } from "../../repositories";
 import { Attachment, Page } from "../../entities";
 import { Context } from "../../core/models";
 import { ParseUtils, StringUtils } from "../../core/utils";
@@ -14,10 +14,7 @@ import fs from "fs";
 export class AttachmentCtrl {
 
     constructor(
-        private attachmentRepository: AttachmentRepository,
-        private projectRepository: ProjectRepository,
-        private publicationRepository: PublicationRepository,
-        private activityRepository: ActivityRepository) {
+        private attachmentRepository: AttachmentRepository) {
         // initialize your stuffs here.
     }
 
@@ -57,13 +54,7 @@ export class AttachmentCtrl {
             throw new BadRequest("Please, body do not contains an url or file.");
         }
 
-        let attachment = await this.attachmentRepository.createQueryBuilder("att")
-            .leftJoin("att.projects", "p")
-            .leftJoin("att.publications", "pb")
-            .leftJoin("att.activities", "act")
-            .where("att.id = :id", { id })
-            .getOne();
-        
+        let attachment = await this.attachmentRepository.findInfo(id);
         if (!attachment) {
             attachment = new Attachment();
         }
@@ -88,6 +79,13 @@ export class AttachmentCtrl {
             fs.unlinkSync(file.path);
         }
 
+        // ignore property is not working
+        delete attachment.content;
+        delete attachment.projects;
+        delete attachment.publications;
+        delete attachment.activities;
+
+        // return saved attachment
         return attachment;
     }
 
@@ -98,7 +96,19 @@ export class AttachmentCtrl {
     @Get("/:id")
     @Authenticated({})
     public async get(@PathParams("id") id: number): Promise<Attachment | undefined> {
-        return this.attachmentRepository.findById(id);
+        const attachment = await this.attachmentRepository.findById(id);
+        if (!attachment) {
+            throw new NotFound("Attachment not founc.");
+        }
+
+        // ignore property is not working
+        delete attachment.content;
+        delete attachment.projects;
+        delete attachment.publications;
+        delete attachment.activities;
+
+        // return saved attachment
+        return attachment;
     }
 
     /**
@@ -118,12 +128,15 @@ export class AttachmentCtrl {
         if (!attachment.content) {
             throw new NotFound("Attachment do not have content to download.");
         }
-        // let content = Buffer.from(attachment.content, "base64");
+        
+        // update response headers
         response.writeHead(200, {
             "Content-Type": attachment.contentType,
             "Content-Disposition": `attachment; filename=${attachment.filename}`,
             "Content-Length": attachment.size
         });
+
+        // send file
         response.write(attachment.content);
     }
 
@@ -134,24 +147,7 @@ export class AttachmentCtrl {
     @Delete("/:id")
     @Authenticated({})
     public async delete(@PathParams("id") id: number): Promise<any> {
-        const attachment = await this.attachmentRepository.findInfo(id);
-        if (!attachment) {
-            throw new NotFound("Attachment not found.");
-        }
-
-        if (attachment.projects) {
-            await this.projectRepository.createQueryBuilder("p").relation("attchments").of(attachment.projects).remove(attachment);
-        }
-
-        if (attachment.publications) {
-            await this.publicationRepository.createQueryBuilder("pb").relation("attchments").of(attachment.publications).remove(attachment);
-        }
-
-        if (attachment.activities) {
-            await this.activityRepository.createQueryBuilder("act").relation("attchments").of(attachment.activities).remove(attachment);
-        }
-
-        return this.attachmentRepository.deleteById(id);
+        return this.attachmentRepository.erase(id);
     }
 
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, QueryParams } from "@tsed/common";
+import { Controller, Get, PathParams, Required, Post, BodyParams, QueryParams } from "@tsed/common";
 import { NotFound } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
@@ -43,12 +43,11 @@ export class CollaboratorCtrl {
     public async save(@Required() @BodyParams("collaborator") collaborator: Collaborator): Promise<ResultContent<Collaborator>> {
         let clb = await this.collaboratorRepository.findById(collaborator.id);
         if (!clb) {
-            throw new NotFound("Collaborator not found.");
+            clb = this.collaboratorRepository.create(collaborator);
+        } else {
+            clb = this.collaboratorRepository.merge(clb, collaborator);
         }
-
-        clb = this.collaboratorRepository.merge(clb, collaborator);
         clb = await this.collaboratorRepository.save(clb);
-
         return ResultContent.of<Collaborator>(clb).withMessage("Collaborator successfully saved.");
     }
 
@@ -59,17 +58,11 @@ export class CollaboratorCtrl {
     @Get("/:id")
     @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Collaborator | undefined> {
-        return this.collaboratorRepository.findById(id);
-    }
-
-    /**
-     * Delete a collaborator information.
-     * @param id                            -- collaborator id.
-     */
-    @Delete("/:id")
-    @Authenticated({})
-    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        return this.collaboratorRepository.deleteById(id);
+        const collaborator = await this.collaboratorRepository.findById(id);
+        if (!collaborator) {
+            throw new NotFound("Collaborator not found.");
+        }
+        return collaborator;
     }
 
 }

@@ -45,7 +45,7 @@ export class ProjectExtensionLineCtrl {
         for (const el of extensionLines) {
             const els = await this.extensionLineRepository.findById(el.id);
             if (!els) {
-                throw new NotFound(`KnowledgeArea ${el.name || el.id} not found.`);
+                throw new NotFound(`ExtensionLine ${el.name || el.id} not found.`);
             }
 
             const pel = await this.extensionLineRepository.findByProject(el.id, projectId);

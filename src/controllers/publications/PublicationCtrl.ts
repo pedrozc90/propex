@@ -2,7 +2,7 @@ import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals
 
 import { Authenticated } from "../../core/services";
 import { PublicationRepository, ProjectRepository, AttachmentRepository } from "../../repositories";
-import { Publication, Page, ResultContent, Attachment } from "../../entities";
+import { Publication, Page, ResultContent } from "../../entities";
 import { PublicationType } from "../../core/types";
 import { Context } from "../../core/models";
 import { NotFound } from "@tsed/exceptions";
@@ -50,14 +50,18 @@ export class PublicationCtrl {
         if (!publication) {
             publication = this.publicationRepository.create(data);
             publication.project = project;
-            // create relation between attachment and project
-            if (publication.attachment) {
-                await this.projectRepository.createQueryBuilder("project").relation("attachments").of(project).add(publication.attachment);
-            }
         } else {
             publication = this.publicationRepository.merge(publication, data);
         }
+
         publication = await this.publicationRepository.save(publication);
+
+        if (publication.attachment) {
+            // populate project_attachments many-to-many relationship
+            await this.attachmentRepository.linkProject(publication.attachment.id, project.id);
+            // avoid saveing again
+            // delete publication.attachment;
+        }
 
         return ResultContent.of<Publication>(publication).withMessage("Publication successfully saved.");
     }
@@ -88,50 +92,22 @@ export class PublicationCtrl {
     @Delete("/:id")
     @Authenticated({})
     public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        const publication = await this.publicationRepository.findOne({ id }, { relations: [ "attachment" ] });
+        const publication = await this.publicationRepository.findOne({
+            where: { id },
+            join: {
+                alias: "pb",
+                leftJoinAndSelect: { attachment: "pb.attachment" }
+            }
+        });
         if (!publication) {
             throw new NotFound("Publication not found.");
         }
         // delete attachment linked to the publication
         if (publication.attachment) {
-            await this.attachmentRepository.deleteById(publication.attachment.id);
+            await this.attachmentRepository.erase(publication.attachment.id);
         }
         // delete publication
         return this.publicationRepository.deleteById(publication.id);
-    }
-
-    /**
-     * Delete a publication information.
-     * @param id                            -- publication id.
-     */
-    @Get("/:id/attachments")
-    @Authenticated({})
-    public async getAttachment(@Required() @PathParams("id") id: number): Promise<any> {
-        const attachments = await this.attachmentRepository.fetch({ publicationId: id });
-        return attachments;
-    }
-
-    /**
-     * Delete a publication information.
-     * @param id                            -- publication id.
-     */
-    @Post("/:id/attachments")
-    @Authenticated({})
-    public async setAttachment(
-        @Required() @PathParams("id") id: number,
-        @Required() @BodyParams("attchment") attachment: Attachment
-    ): Promise<ResultContent<Publication>> {
-        let publication = await this.publicationRepository.findOne({ id }, { relations: [ "attachment" ] });
-        if (!publication) {
-            throw new NotFound("Publication not found.");
-        }
-        
-        // update attachment value
-        publication.attachment = this.attachmentRepository.merge(publication.attachment, attachment);
-
-        publication = await this.publicationRepository.save(publication);
-
-        return ResultContent.of<Publication>(publication).withMessage("Publication attachment successfully updated.");
     }
 
 }

@@ -1,9 +1,9 @@
-import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required, Put, Req } from "@tsed/common";
-import { BadRequest, NotFound } from "@tsed/exceptions";
+import { Controller, Get, QueryParams, PathParams, Delete, Post, BodyParams, Required } from "@tsed/common";
+import { NotFound } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
 import { ExtensionLineRepository } from "../../repositories";
-import { ExtensionLine, Page } from "../../entities";
+import { ExtensionLine, Page, ResultContent } from "../../entities";
 
 @Controller("/extension-lines")
 export class ExtensionLineCtrl {
@@ -30,39 +30,26 @@ export class ExtensionLineCtrl {
     }
 
     /**
-     * Create a new extension lines.
+     * Create/Update a new extension lines.
      * @param request                       -- express request object.
      * @param extensionLine                 -- extension line data.
      */
     @Post("")
     @Authenticated({ role: "ADMIN" })
-    public async create(
-        @Req() request: Req,
-        @Required() @BodyParams("extensionLine") extensionLine: ExtensionLine
-    ): Promise<ExtensionLine | undefined> {
-        if (extensionLine.id) {
-            throw new BadRequest(`Please, use PUT ${request.baseUrl} to update extension lines.`);
-        }
-        if (!extensionLine.number) {
-            const max = await this.extensionLineRepository.lastNumber();
-            extensionLine.number = max + 1;
-        }
-        return this.extensionLineRepository.save(extensionLine);
-    }
-
-    /**
-     * Save extension line chagnes.
-     * @param extensionLine                 -- extension line data.
-     */
-    @Put("")
-    @Authenticated({ role: "ADMIN" })
-    public async update(@Required() @BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ExtensionLine | undefined> {
+    public async save(@Required() @BodyParams("extensionLine") extensionLine: ExtensionLine): Promise<ResultContent<ExtensionLine>> {
         let el = await this.extensionLineRepository.findOne({ id: extensionLine.id });
         if (!el) {
-            throw new NotFound("Extension line not found.");
+            el = this.extensionLineRepository.create(extensionLine);
+            if (!el.number) {
+                const max = await this.extensionLineRepository.lastNumber();
+                el.number = max + 1;
+            }
+        } else {
+            el = this.extensionLineRepository.merge(el, extensionLine);
         }
-        el = this.extensionLineRepository.merge(el, extensionLine);
-        return this.extensionLineRepository.save(extensionLine);
+        el = await this.extensionLineRepository.save(extensionLine);
+
+        return ResultContent.of<ExtensionLine>(el).withMessage("ExtensionLine sucessfully saved.");
     }
 
     /**
@@ -72,7 +59,11 @@ export class ExtensionLineCtrl {
     @Get("/:id")
     @Authenticated({})
     public async get(@PathParams("id") id: number): Promise<ExtensionLine | undefined> {
-        return this.extensionLineRepository.findById(id);
+        const el = await this.extensionLineRepository.findById(id);
+        if (!el) {
+            throw new NotFound("ExtensionLine not found.");
+        }
+        return el;
     }
 
     /**

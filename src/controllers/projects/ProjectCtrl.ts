@@ -40,6 +40,7 @@ import { ProjectThemeAreaCtrl } from "./ProjectThemeAreaCtrl";
 export class ProjectCtrl {
 
     constructor(
+        private ExtensionLineRepository: Repo.ExtensionLineRepository,
         private KnowledgeAreaRepository: Repo.KnowledgeAreaRepository,
         private ProjectRepository: Repo.ProjectRepository,
         private ProjectHumanResourceRepository: Repo.ProjectHumanResourceRepository,
@@ -141,14 +142,20 @@ export class ProjectCtrl {
         // check if project exists.
         let project = await this.ProjectRepository.findByContext(data.id, context);
 
-        // update knowledge areas changes.
-        // if (data.knowledgeAreas) {
-        //     await this.KnowledgeAreaRepository.overwrite(project, data.knowledgeAreas);
-        // }
-
+        // update project values
         project = this.ProjectRepository.merge(project, data);
 
+        // update database
         project = await this.ProjectRepository.save(project);
+
+        // update knowledge areas changes.
+        if (data.knowledgeAreas) {
+            await this.KnowledgeAreaRepository.overwrite(project, data.knowledgeAreas);
+        }
+
+        if (data.extensionLines) {
+            // await this.ExtensionLineRepository.overwrite(project, data.knowledgeAreas);
+        }
 
         return ResultContent.of<Project>(project).withMessage("Project successfully updated.");
     }

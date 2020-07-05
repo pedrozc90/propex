@@ -95,55 +95,55 @@ export class Project extends Audit {
     public accompanimentAndEvaluation: string;
 
     @Property({ name: "disclosureMedias" })
-    @OneToMany(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project)
+    @OneToMany(() => DisclosureMedia, (disclosureMedia) => disclosureMedia.project, { cascade: false, persistence: false })
     public disclosureMedias: DisclosureMedia[];
 
     @Property({ name: "events" })
-    @OneToMany(() => Event, (event) => event.project)
+    @OneToMany(() => Event, (event) => event.project, { cascade: false, persistence: false })
     public events: Event[];
 
     @Property({ name: "evaluations" })
-    @OneToMany(() => Evaluation, (evaluation) => evaluation.project)
+    @OneToMany(() => Evaluation, (evaluation) => evaluation.project, { cascade: false, persistence: false })
     public evaluations: Evaluation[];
 
     @Property({ name: "futureDevelopmentPlans" })
-    @OneToMany(() => FutureDevelopmentPlan, (futureDevelopmentPlan) => futureDevelopmentPlan.project)
+    @OneToMany(() => FutureDevelopmentPlan, (futureDevelopmentPlan) => futureDevelopmentPlan.project, { cascade: false, persistence: false })
     public futureDevelopmentPlans: FutureDevelopmentPlan[];
 
     @Property({ name: "partners" })
-    @OneToMany(() => Partner, (partner) => partner.project)
+    @OneToMany(() => Partner, (partner) => partner.project, { cascade: false, persistence: false })
     public partners: Partner[];
 
     @Property({ name: "demands" })
-    @OneToMany(() => Demand, (demand) => demand.project)
+    @OneToMany(() => Demand, (demand) => demand.project, { cascade: false, persistence: false })
     public demands: Demand[];
 
     @Property({ name: "publications" })
-    @OneToMany(() => Publication, (publication) => publication.project)
+    @OneToMany(() => Publication, (publication) => publication.project, { cascade: false, persistence: false })
     public publications: Publication[];
 
     @Property({ name: "projectHumanResources" })
-    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project)
+    @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.project, { cascade: false, persistence: false })
     public projectHumanResources: ProjectHumanResource[];
 
     @Property({ name: "projectPublics" })
-    @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.project)
+    @OneToMany(() => ProjectPublic, (projectPublic) => projectPublic.project, { cascade: false, persistence: false })
     public projectPublics: ProjectPublic[];
 
     @Property({ name: "targets" })
-    @OneToMany(() => Target, (target) => target.project)
+    @OneToMany(() => Target, (target) => target.project, { cascade: false, persistence: false })
     public targets: Target[];
 
     @Property({ name: "projectThemeAreas" })
-    @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project)
+    @OneToMany(() => ProjectThemeArea, (projectThemeArea) => projectThemeArea.project, { cascade: false, persistence: false })
     public projectThemeAreas: ProjectThemeArea[];
 
     @Property({ name: "activities" })
-    @OneToMany(() => Activity, (activity) => activity.project)
+    @OneToMany(() => Activity, (activity) => activity.project, { cascade: false, persistence: false })
     public activities: Activity[];
 
     @Property({ name: "extensionLines" })
-    @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects, { cascade: false })
+    @ManyToMany(() => ExtensionLine, (extensionLine) => extensionLine.projects, { cascade: false, persistence: false })
     @JoinTable({
         name: "project_extension_lines",
         joinColumn: { name: "project_id", referencedColumnName: "id" },
@@ -152,7 +152,7 @@ export class Project extends Audit {
     public extensionLines: ExtensionLine[];
 
     @Property({ name: "knowledgeAreas" })
-    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects, { cascade: false })
+    @ManyToMany(() => KnowledgeArea, (knowledgeArea) => knowledgeArea.projects, { cascade: false, persistence: false })
     @JoinTable({
         name: "project_knowledge_areas",
         joinColumn: { name: "project_id", referencedColumnName: "id" },
@@ -161,7 +161,7 @@ export class Project extends Audit {
     public knowledgeAreas: KnowledgeArea[];
 
     @Property({ name: "attachments" })
-    @ManyToMany(() => Attachment, (attachment) => attachment.projects)
+    @ManyToMany(() => Attachment, (attachment) => attachment.projects, { cascade: false, persistence: false })
     @JoinTable({
         name: "project_attachments",
         joinColumn: { name: "project_id", referencedColumnName: "id" },

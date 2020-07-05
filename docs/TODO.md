@@ -1,23 +1,9 @@
 # TODO List
 
-## Routes In Progress:
+1. Simplificar tabelas users/students/collaborators
+2. Atualizar authenticacao.
 
-| Method           | Endpoint                                                   | Progres     | Table                                           |
-|:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
-
-| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
-| POST             | /api/collaborators                                         | TESTING     | collaborators                                   |
-| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
-| GET              | /api/students                                              | DONE        | students                                        |
-| POST             | /api/students                                              | TESTING     | students                                        |
-| GET              | /api/students/:id                                          | DONE        | students                                        |
-| PUT              | /api/projects                                              | TESTING     | projects                                        |
-| GET              | /api/projects/:projectId/attachments                       | DONE        | project_attachments                             |
-| POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
-| GET              | /api/publications/:publicationId/attachments               | TESTING     | publications + attachments                      | -- busca os anexos de uma publicacao
-| POST             | /api/publications/:publicationId/attachments               | TESTING     | publications + attachments                      | -- adiciona um anexo a publicacao
-
-## Routes Finished:
+## Routes:
 
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
@@ -28,10 +14,15 @@
 | POST             | /api/activities                                            | DONE        | ativities                                       |
 | GET              | /api/activities/:id                                        | DONE        | ativities                                       |
 | DELETE           | /api/activities/:id                                        | DONE        | ativities                                       |
+| POST             | /api/activities/:activityId/attachments/:attachmentId      | DONE        | ativities + attachment                          |
+| DELETE           | /api/activities/:activityId/attachments/:attachmentId      | DONE        | ativities + attachment                          |
 | GET              | /api/attachments                                           | DONE        | attachments                                     |
 | POST             | /api/attachments                                           | DONE        | attachments                                     |
 | GET              | /api/attachments/:id                                       | DONE        | attachments                                     |   -- save files
-| DELETE           | /api/attachments/:id                                       | TESTING     | attachments                                     |
+| DELETE           | /api/attachments/:id                                       | DONE        | attachments                                     |
+| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
+| POST             | /api/collaborators                                         | DONE        | collaborators                                   |
+| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
 | GET              | /api/demands                                               | DONE        | demands                                         |
 | POST             | /api/demands                                               | DONE        | demands                                         |
 | PUT              | /api/demands                                               | DONE        | demands                                         |
@@ -53,7 +44,6 @@
 | DELETE           | /api/events/:id                                            | DONE        | events                                          |
 | GET              | /api/extension-lines                                       | DONE        | extension_lines                                 |
 | POST             | /api/extension-lines                                       | DONE        | extension_lines                                 |
-| PUT              | /api/extension-lines                                       | DONE        | extension_lines                                 |
 | GET              | /api/extension-lines/:id                                   | DONE        | extension_lines                                 |
 | DELETE           | /api/extension-lines/:id                                   | DONE        | extension_lines                                 |
 | GET              | /api/future-development-plans                              | DONE        | future_development_plans                        |
@@ -73,7 +63,10 @@
 | DELETE           | /api/partners/:id                                          | DONE        | partners                                        |
 | GET              | /api/projects                                              | DONE        | projects                                        |
 | POST             | /api/projects                                              | DONE        | projects                                        |
+| PUT              | /api/projects                                              | DONE        | projects                                        |
 | GET              | /api/projects/:id                                          | DONE        | projects                                        |
+| GET              | /api/projects/:projectId/attachments                       | DONE        | projects + attachments                          |
+| POST             | /api/projects/:projectId/attachments                       | DONE        | projects + attachments                          |
 | GET              | /api/projects/:projectId/demands                           | DONE        | demands                                         |
 | POST             | /api/projects/:projectId/demands                           | DONE        | demands                                         |
 | GET              | /api/projects/:projectId/disclosure-medias                 | DONE        | disclosure_medias                               |
@@ -114,6 +107,9 @@
 | PUT              | /api/publics                                               | DONE        | publics                                         |
 | GET              | /api/publics/:id                                           | DONE        | publics                                         |
 | DELETE           | /api/publics/:id                                           | DONE        | publics                                         |
+| GET              | /api/students                                              | DONE        | students                                        |
+| POST             | /api/students                                              | DONE        | students                                        |
+| GET              | /api/students/:id                                          | DONE        | students                                        |
 | GET              | /api/targets                                               | DONE        | targets                                         |
 | POST             | /api/targets                                               | DONE        | targets                                         |
 | GET              | /api/targets/age-ranges                                    | DONE        | targets                                         |

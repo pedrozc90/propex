@@ -4,6 +4,7 @@ import { GenericRepository } from "./generics/GenericRepository";
 import { Attachment, Project, Publication, Activity } from "../entities";
 import { IOptions } from "../core/types";
 import { StringUtils } from "../core/utils";
+import { NotFound } from "@tsed/exceptions";
 
 interface AttachmentOptions extends IOptions {
     id?: number;
@@ -67,13 +68,74 @@ export class AttachmentRepository extends GenericRepository<Attachment> {
      * Return a list of attachments.
      * @param options                       -- options
      */
-    public async findInfo(id: number): Promise<Attachment | undefined> {
+    public async findInfo(id?: number): Promise<Attachment | undefined> {
         return this.createQueryBuilder("att")
-            .leftJoin("att.projects", "p")
-            .leftJoin("att.publications", "pb")
-            .leftJoin("att.activities", "act")
+            .leftJoinAndSelect("att.projects", "p")
+            .leftJoinAndSelect("att.publications", "pb")
+            .leftJoinAndSelect("att.activities", "act")
             .where("att.id = :id", { id })
             .getOne();
+    }
+
+    /**
+     * Delete a attachment and its relationships.
+     * @param id                            -- attachment id.
+     */
+    public async erase(id?: number): Promise<any> {
+        const attachment = await this.findInfo(id);
+        if (!attachment) {
+            throw new NotFound("Attachment not found.");
+        }
+
+        if (attachment.projects) {
+            for (const p of attachment.projects) {
+                await this.createQueryBuilder("attachment").relation("projects").of(attachment).remove(p);
+            }
+        }
+
+        if (attachment.publications) {
+            for (const p of attachment.publications) {
+                await this.createQueryBuilder("attachment").relation("publications").of(attachment).remove(p);
+            }
+        }
+
+        if (attachment.activities) {
+            for (const p of attachment.activities) {
+                await this.createQueryBuilder("attachment").relation("activities").of(attachment).remove(p);
+            }
+        }
+
+        return this.deleteById(attachment.id);
+    }
+
+    public async linkProject(attachmentId: number, projectId: number): Promise<void> {
+        const attachment = await this.createQueryBuilder("attachment")
+            .innerJoin("attachment.projects", "project", "project.id = :projectId", { projectId })
+            .where("attachment.id = :attachmentId", { attachmentId })
+            .getOne();
+        if (!attachment) {
+            await this.createQueryBuilder("attachment").relation("projects").of({ id: attachmentId }).add({ id: projectId });
+        }
+    }
+
+    public async linkActivity(attachmentId: number, activityId: number): Promise<void> {
+        const attachment = await this.createQueryBuilder("attachment")
+            .innerJoin("attachment.activities", "activity", "activity.id = :activityId", { activityId })
+            .where("attachment.id = :attachmentId", { attachmentId })
+            .getOne();
+        if (!attachment) {
+            await this.createQueryBuilder("attachment").relation("activities").of({ id: attachmentId }).add({ id: activityId });
+        }
+    }
+
+    public async linkPublication(attachmentId: number, publicationId: number): Promise<void> {
+        const attachment = await this.createQueryBuilder("attachment")
+            .innerJoin("attachment.publications", "publication", "publication.id = :publicationId", { publicationId })
+            .where("attachment.id = :attachmentId", { attachmentId })
+            .getOne();
+        if (!attachment) {
+            await this.createQueryBuilder("attachment").relation("publications").of({ id: attachmentId }).add({ id: publicationId });
+        }
     }
 
 }

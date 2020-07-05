@@ -57,43 +57,25 @@ export class ActivityCtrl {
         } else {
             activity = this.activityRepository.merge(activity, data);
         }
-       
+
         activity = await this.activityRepository.save(activity);
 
-        // FIXME: NAO SEI SE VALE APENA
-        // if (activity.attachments) {
-        //     await this.projectRepository.createQueryBuilder("p").relation("attachments").of(project).add(activity.attachments.map((att) => att.id));
-        // }
+        if (activity.attachments) {
+            // populate activity_attachments many-to-many relationship
+            for (const attachment of activity.attachments) {
+                await this.attachmentRepository.linkActivity(attachment.id, activity.id);
+            }
+            // populate project_attachments many-to-many relationship
+            for (const attachment of activity.attachments) {
+                await this.attachmentRepository.linkProject(attachment.id, project.id);
+            }
+            // avoid saveing again
+            delete activity.attachments;
+        }
 
         return ResultContent.of<Activity>(activity)
             .withMessage("Activity successfully saved.");
     }
-
-    // /**
-    //  * Update an activity.
-    //  * @param context                       -- user context.
-    //  * @param activity                      -- activity data.
-    //  */
-    // @Put("")
-    // @Authenticated({})
-    // public async update(
-    //     @Locals("context") context: Context,
-    //     @Required() @BodyParams("activity") data: Activity
-    // ): Promise<ResultContent<Activity>> {
-    //     // check if user is part of current project.
-    //     await this.projectRepository.findByContext(data.project.id, context);
-
-    //     let activity = await this.activityRepository.findOne({ id: data.id });
-    //     if (!activity) {
-    //         throw new NotFound("Activity not found.");
-    //     }
-
-    //     activity = this.activityRepository.merge(activity, data);
-    //     activity = await this.activityRepository.save(activity);
-
-    //     return ResultContent.of<Activity>(activity)
-    //         .withMessage("Activity successfully updated.");
-    // }
 
     /**
      * Search an activity by id.
@@ -101,7 +83,17 @@ export class ActivityCtrl {
      */
     @Get("/:id")
     public async get(@PathParams("id") id: number): Promise<Activity | undefined> {
-        return this.activityRepository.findById(id);
+        const activity = await this.activityRepository.findById(id);
+        if (!activity) {
+            throw new NotFound("Activity not found.");
+        }
+
+        // avoid sending files
+        if (activity.attachments) {
+            delete activity.attachments;
+        }
+
+        return activity;
     }
 
     /**
@@ -121,9 +113,53 @@ export class ActivityCtrl {
             throw new NotFound("Activity not found.");
         }
         if (activity.attachments) {
-            await this.attachmentRepository.delete(activity.attachments.map((att) => att.id));
+            for (const attachment of activity.attachments) {
+                await this.attachmentRepository.erase(attachment.id);
+            }
         }
         return this.activityRepository.deleteById(activity.id);
+    }
+
+    /**
+     * Delete an activity.
+     * @param id                            -- activity id.
+     */
+    @Post("/:activityId/attachments/:attachmentId")
+    public async setAttachments(
+        @PathParams("activityId") activityId: number,
+        @PathParams("attachmentId") attachmentId: number
+    ): Promise<any> {
+        await this.activityRepository.createQueryBuilder("act").relation("attachments").of({ id: activityId }).add({ id: attachmentId });
+        return { message: "Attachment atached to activity." };
+    }
+
+    /**
+     * Delete an activity.
+     * @param id                            -- activity id.
+     */
+    @Delete("/:activityId/attachments/:attachmentId")
+    public async deleteAttachments(
+        @PathParams("activityId") activityId: number,
+        @PathParams("attachmentId") attachmentId: number
+    ): Promise<any> {
+        const activity = await this.activityRepository.createQueryBuilder("act")
+            .innerJoinAndSelect("act.attachments", "att", "att.id = :attachmentId", { attachmentId })
+            .where("act.id = :activityId", { activityId })
+            .getOne();
+        
+        if (!activity) {
+            throw new NotFound("Activity not found.");
+        }
+
+        if (!activity.attachments || activity.attachments.length === 0) {
+            throw new NotFound("Attachment is not part of the activity.");
+        }
+
+        if (activity.attachments) {
+            await this.activityRepository.createQueryBuilder("act").relation("attachments").of(activity).remove(activity.attachments);
+        }
+        
+        return { message: "Attachment detached from activity." };
     }
 
 }

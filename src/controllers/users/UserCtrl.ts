@@ -142,6 +142,15 @@ export class UserCtrl {
     }
 
     /**
+     * Return a list of scopes.
+     */
+    @Get("/scopes")
+    @Authenticated({})
+    public async getScopes(): Promise<Scope[]> {
+        return Scope.list;
+    }
+
+    /**
      * Search user data by its id.
      * @param id                            -- user id.
      */

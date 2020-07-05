@@ -52,7 +52,7 @@ export class Activity extends Audit {
     public results: string;
 
     @Property({ name: "attachments" })
-    @ManyToMany(() => Attachment, (attachment) => attachment.activities)
+    @ManyToMany(() => Attachment, (attachment) => attachment.activities, { cascade: false, persistence: false })
     @JoinTable({
         name: "activity_attachments",
         joinColumn: { name: "activity_id", referencedColumnName: "id" },

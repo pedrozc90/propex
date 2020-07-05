@@ -42,16 +42,19 @@ export class Attachment extends Audit {
     @Column({ name: "content", type: "longblob", nullable: true })
     public content?: Buffer;
 
+    @IgnoreProperty()
     @Property({ name: "publications" })
-    @OneToMany(() => Publication, (publication) => publication.attachment)
+    @OneToMany(() => Publication, (publication) => publication.attachment, { cascade: false, persistence: false })
     public publications: Publication[];
 
+    @IgnoreProperty()
     @Property({ name: "activities" })
-    @ManyToMany(() => Activity, (activity) => activity.attachments)
+    @ManyToMany(() => Activity, (activity) => activity.attachments, { cascade: false, persistence: false })
     public activities: Activity[];
 
+    @IgnoreProperty()
     @Property({ name: "projects" })
-    @ManyToMany(() => Project, (project) => project.attachments)
+    @ManyToMany(() => Project, (project) => project.attachments, { cascade: false, persistence: false })
     public projects: Project[];
 
 }

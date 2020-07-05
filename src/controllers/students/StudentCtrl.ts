@@ -1,4 +1,4 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, QueryParams } from "@tsed/common";
+import { Controller, Get, PathParams, Required, Post, BodyParams, QueryParams } from "@tsed/common";
 import { NotFound } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
@@ -42,10 +42,10 @@ export class StudentCtrl {
     public async save(@Required() @BodyParams("student") student: Student): Promise<ResultContent<Student>> {
         let std = await this.studentRepository.findById(student.id);
         if (!std) {
-            throw new NotFound("Student not found.");
+            std = this.studentRepository.create(student);
+        } else {
+            std = this.studentRepository.merge(std, student);
         }
-
-        std = this.studentRepository.merge(std, student);
         std = await this.studentRepository.save(std);
 
         return ResultContent.of<Student>(std).withMessage("Student successfully saved.");
@@ -58,17 +58,11 @@ export class StudentCtrl {
     @Get("/:id")
     @Authenticated({})
     public async get(@Required() @PathParams("id") id: number): Promise<Student | undefined> {
-        return this.studentRepository.findById(id);
-    }
-
-    /**
-     * Delete a student information.
-     * @param id                            -- student id.
-     */
-    @Delete("/:id")
-    @Authenticated({})
-    public async delete(@Required() @PathParams("id") id: number): Promise<any> {
-        return this.studentRepository.deleteById(id);
+        const student = await this.studentRepository.findById(id);
+        if (!student) {
+            throw new NotFound("Student not found.");
+        }
+        return student;
     }
 
 }
