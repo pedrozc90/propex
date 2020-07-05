@@ -1,17 +1,15 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams } from "@tsed/common";
-import { NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, QueryParams } from "@tsed/common";
+import { NotFound } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
-import { ProjectRepository, StudentRepository } from "../../repositories";
+import { StudentRepository } from "../../repositories";
 import { Student, ResultContent, Page } from "../../entities";
-import { Context } from "../../core/models";
 
 @Controller("/students")
 export class StudentCtrl {
 
     constructor(
-        private studentRepository: StudentRepository,
-        private projectRepository: ProjectRepository) {
+        private studentRepository: StudentRepository) {
         // initialize your stuffs here
     }
 
@@ -41,11 +39,16 @@ export class StudentCtrl {
      */
     @Post("")
     @Authenticated({})
-    public async save(
-        @Locals("context") context: Context,
-        @Required() @BodyParams("student") student: Student
-    ): Promise<ResultContent<Student>> {
-        throw new NotImplemented("Method Not Implemented.");
+    public async save(@Required() @BodyParams("student") student: Student): Promise<ResultContent<Student>> {
+        let std = await this.studentRepository.findById(student.id);
+        if (!std) {
+            throw new NotFound("Student not found.");
+        }
+
+        std = this.studentRepository.merge(std, student);
+        std = await this.studentRepository.save(std);
+
+        return ResultContent.of<Student>(std).withMessage("Student successfully saved.");
     }
 
     /**

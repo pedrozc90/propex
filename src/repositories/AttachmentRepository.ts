@@ -63,4 +63,17 @@ export class AttachmentRepository extends GenericRepository<Attachment> {
         return query.getMany();
     }
 
+    /**
+     * Return a list of attachments.
+     * @param options                       -- options
+     */
+    public async findInfo(id: number): Promise<Attachment | undefined> {
+        return this.createQueryBuilder("att")
+            .leftJoin("att.projects", "p")
+            .leftJoin("att.publications", "pb")
+            .leftJoin("att.activities", "act")
+            .where("att.id = :id", { id })
+            .getOne();
+    }
+
 }

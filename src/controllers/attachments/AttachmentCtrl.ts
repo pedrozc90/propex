@@ -3,7 +3,7 @@ import { NotFound, BadRequest } from "@tsed/exceptions";
 import { MultipartFile } from "@tsed/multipartfiles";
 
 import { Authenticated } from "../../core/services";
-import { AttachmentRepository } from "../../repositories";
+import { AttachmentRepository, ProjectRepository, PublicationRepository, ActivityRepository } from "../../repositories";
 import { Attachment, Page } from "../../entities";
 import { Context } from "../../core/models";
 import { ParseUtils, StringUtils } from "../../core/utils";
@@ -13,7 +13,13 @@ import fs from "fs";
 @Controller("/attachments")
 export class AttachmentCtrl {
 
-    constructor(private attachmentRepository: AttachmentRepository) {}
+    constructor(
+        private attachmentRepository: AttachmentRepository,
+        private projectRepository: ProjectRepository,
+        private publicationRepository: PublicationRepository,
+        private activityRepository: ActivityRepository) {
+        // initialize your stuffs here.
+    }
 
     /**
      * Return a list of attachments.
@@ -90,6 +96,7 @@ export class AttachmentCtrl {
      * @param id                            -- attachment id.
      */
     @Get("/:id")
+    @Authenticated({})
     public async get(@PathParams("id") id: number): Promise<Attachment | undefined> {
         return this.attachmentRepository.findById(id);
     }
@@ -99,6 +106,7 @@ export class AttachmentCtrl {
      * @param id                            -- attachment id.
      */
     @Get("/:id/download")
+    @Authenticated({})
     public async download(
         @PathParams("id") id: number,
         @Res() response: Res
@@ -124,7 +132,25 @@ export class AttachmentCtrl {
      * @param id                            -- attachment id.
      */
     @Delete("/:id")
+    @Authenticated({})
     public async delete(@PathParams("id") id: number): Promise<any> {
+        const attachment = await this.attachmentRepository.findInfo(id);
+        if (!attachment) {
+            throw new NotFound("Attachment not found.");
+        }
+
+        if (attachment.projects) {
+            await this.projectRepository.createQueryBuilder("p").relation("attchments").of(attachment.projects).remove(attachment);
+        }
+
+        if (attachment.publications) {
+            await this.publicationRepository.createQueryBuilder("pb").relation("attchments").of(attachment.publications).remove(attachment);
+        }
+
+        if (attachment.activities) {
+            await this.activityRepository.createQueryBuilder("act").relation("attchments").of(attachment.activities).remove(attachment);
+        }
+
         return this.attachmentRepository.deleteById(id);
     }
 

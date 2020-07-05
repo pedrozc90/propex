@@ -134,25 +134,23 @@ export class ProjectCtrl {
 
     @Put("")
     @Authenticated({})
-    public async update(@Required() @BodyParams("project") data: Project): Promise<ResultContent<Project>> {
+    public async update(
+        @Locals("context") context: Context,
+        @Required() @BodyParams("project") data: Project
+    ): Promise<ResultContent<Project>> {
         // check if project exists.
-        let project = await this.ProjectRepository.findById(data.id);
-        if (!project) {
-            throw new Exception(404, "Project not found!");
-        }
+        let project = await this.ProjectRepository.findByContext(data.id, context);
 
         // update knowledge areas changes.
-        if (data.knowledgeAreas) {
-            await this.KnowledgeAreaRepository.overwrite(project, data.knowledgeAreas);
-        }
-
-        $log.warn("WORKING");
+        // if (data.knowledgeAreas) {
+        //     await this.KnowledgeAreaRepository.overwrite(project, data.knowledgeAreas);
+        // }
 
         project = this.ProjectRepository.merge(project, data);
 
-        // await this.ProjectRepository.update({ id: project.id }, { ...data });
+        project = await this.ProjectRepository.save(project);
 
-        return ResultContent.of<Project>(project).withMessage("success");
+        return ResultContent.of<Project>(project).withMessage("Project successfully updated.");
     }
 
     /**
@@ -178,35 +176,35 @@ export class ProjectCtrl {
 
         // load project and all his relationships.
         const query = await this.ProjectRepository.createQueryBuilder("p")
-            .leftJoinAndSelect("p.demands", "demands")
-            .leftJoinAndSelect("p.disclosureMedias", "disclosureMedias")
-            .leftJoinAndSelect("p.evaluations", "evaluations")
-            .leftJoinAndSelect("p.events", "event")
-            .leftJoinAndSelect("p.extensionLines", "extensionLines")
-            .leftJoinAndSelect("p.futureDevelopmentPlans", "futureDevelopmentPlans")
-            .leftJoinAndSelect("p.knowledgeAreas", "knowledgeAreas")
-            .leftJoinAndSelect("p.partners", "partners")
-            .leftJoinAndSelect("p.targets", "targets")
+            .leftJoinAndSelect("p.demands", "d")
+            .leftJoinAndSelect("p.disclosureMedias", "dm")
+            .leftJoinAndSelect("p.evaluations", "ev")
+            .leftJoinAndSelect("p.events", "evt")
+            .leftJoinAndSelect("p.extensionLines", "el")
+            .leftJoinAndSelect("p.futureDevelopmentPlans", "fdp")
+            .leftJoinAndSelect("p.knowledgeAreas", "ka")
+            .leftJoinAndSelect("p.partners", "prt")
+            .leftJoinAndSelect("p.targets", "tgt")
 
             // load public
-            .leftJoinAndSelect("p.projectPublics", "projectPublics")
-            .leftJoinAndSelect("projectPublics.public", "public")
+            .leftJoinAndSelect("p.projectPublics", "ppb")
+            .leftJoinAndSelect("ppb.public", "pub")
 
             // load theme areas
-            .leftJoinAndSelect("p.projectThemeAreas", "projectThemeArea")
-            .leftJoinAndSelect("projectThemeArea.themeArea", "themeArea")
+            .leftJoinAndSelect("p.projectThemeAreas", "pta")
+            .leftJoinAndSelect("pta.themeArea", "ta")
 
-            .leftJoinAndSelect("p.activities", "activities")
-            .leftJoinAndSelect("p.attachments", "attachments")
+            .leftJoinAndSelect("p.activities", "act")
+            .leftJoinAndSelect("p.attachments", "att")
 
-            .leftJoinAndSelect("p.publications", "publications")
-            .leftJoinAndSelect("publications.attachment", "publicationsAttachments")
+            .leftJoinAndSelect("p.publications", "pb")
+            .leftJoinAndSelect("pb.attachment", "pba")
             
             // load human resouces (collaborators and students)
-            .leftJoinAndSelect("p.projectHumanResources", "projectHumanResource")
-            .leftJoinAndSelect("projectHumanResource.user", "user")
-            .leftJoinAndSelect("user.collaborator", "collaborator")
-            .leftJoinAndSelect("user.student", "student")
+            .leftJoinAndSelect("p.projectHumanResources", "phr")
+            .leftJoinAndSelect("phr.user", "usr")
+            .leftJoinAndSelect("usr.collaborator", "clb")
+            .leftJoinAndSelect("usr.student", "std")
             .where("p.id = :id", { id });
 
         return query.getOne();

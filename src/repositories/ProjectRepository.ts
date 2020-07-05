@@ -45,7 +45,7 @@ export class ProjectRepository extends GenericRepository<Project> {
         }
 
         if (coodinator) {
-            query.where("phr.coordinator = :coordinator", { coodinator: true });
+            query.andWhere("phr.coordinator = :coordinator", { coodinator: true });
         }
 
         const project = await query.getOne();

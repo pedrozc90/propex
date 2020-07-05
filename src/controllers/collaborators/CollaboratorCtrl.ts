@@ -1,10 +1,9 @@
-import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals, QueryParams } from "@tsed/common";
-import { NotImplemented } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, QueryParams } from "@tsed/common";
+import { NotFound } from "@tsed/exceptions";
 
 import { Authenticated } from "../../core/services";
 import { ProjectRepository, CollaboratorRepository } from "../../repositories";
 import { Collaborator, ResultContent, Page } from "../../entities";
-import { Context } from "../../core/models";
 
 @Controller("/collaborators")
 export class CollaboratorCtrl {
@@ -41,11 +40,16 @@ export class CollaboratorCtrl {
      */
     @Post("")
     @Authenticated({})
-    public async save(
-        @Locals("context") context: Context,
-        @Required() @BodyParams("collaborator") collaborator: Collaborator
-    ): Promise<ResultContent<Collaborator>> {
-        throw new NotImplemented("Method Not Implemented.");
+    public async save(@Required() @BodyParams("collaborator") collaborator: Collaborator): Promise<ResultContent<Collaborator>> {
+        let clb = await this.collaboratorRepository.findById(collaborator.id);
+        if (!clb) {
+            throw new NotFound("Collaborator not found.");
+        }
+
+        clb = this.collaboratorRepository.merge(clb, collaborator);
+        clb = await this.collaboratorRepository.save(clb);
+
+        return ResultContent.of<Collaborator>(clb).withMessage("Collaborator successfully saved.");
     }
 
     /**

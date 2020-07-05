@@ -2,7 +2,7 @@ import { Controller, Get, PathParams, Delete, Required, QueryParams, Post, BodyP
 
 import { Authenticated } from "../../core/services";
 import { EvaluationRepository } from "../../repositories";
-import { Evaluation, Page } from "../../entities";
+import { Evaluation, Page, ResultContent } from "../../entities";
 
 @Controller("/evaluations")
 export class EvaluationCtrl {
@@ -35,14 +35,15 @@ export class EvaluationCtrl {
      */
     @Post("")
     @Authenticated({})
-    public async save(@Required() @BodyParams("evaluation") evaluation: Evaluation): Promise<Evaluation> {
+    public async save(@Required() @BodyParams("evaluation") evaluation: Evaluation): Promise<ResultContent<Evaluation>> {
         let e = await this.evaluationRepository.findOne({ id: evaluation.id });
         if (!e) {
             e = this.evaluationRepository.create(evaluation);
         } else {
             e = this.evaluationRepository.merge(e, evaluation);
         }
-        return this.evaluationRepository.save(e);
+        e = await this.evaluationRepository.save(e);
+        return ResultContent.of<Evaluation>(evaluation).withMessage("Evaluation successfully saved.");
     }
 
     /**

@@ -6,19 +6,16 @@
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
 
 | GET              | /api/collaborators                                         | DONE        | collaborators                                   |
-| POST             | /api/collaborators                                         |             | collaborators                                   |
+| POST             | /api/collaborators                                         | TESTING     | collaborators                                   |
 | GET              | /api/collaborators                                         | DONE        | collaborators                                   |
-| DELETE           | /api/collaborators                                         |             | collaborators                                   |
 | GET              | /api/students                                              | DONE        | students                                        |
-| POST             | /api/students                                              |             | students                                        |
+| POST             | /api/students                                              | TESTING     | students                                        |
 | GET              | /api/students/:id                                          | DONE        | students                                        |
-| DELETE           | /api/students/:id                                          |             | students                                        |
-| PUT              | /api/evaluations                                           |             | evaluations                                     |
-| PUT              | /api/projects                                              |             | projects                                        |
+| PUT              | /api/projects                                              | TESTING     | projects                                        |
 | GET              | /api/projects/:projectId/attachments                       | DONE        | project_attachments                             |
 | POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
-| GET              | /api/publications/:publicationId/attachments               |             | publications + attachments                      |
-| POST             | /api/publications/:publicationId/attachments               |             | publications + attachments                      |
+| GET              | /api/publications/:publicationId/attachments               | TESTING     | publications + attachments                      | -- busca os anexos de uma publicacao
+| POST             | /api/publications/:publicationId/attachments               | TESTING     | publications + attachments                      | -- adiciona um anexo a publicacao
 
 ## Routes Finished:
 
@@ -34,7 +31,7 @@
 | GET              | /api/attachments                                           | DONE        | attachments                                     |
 | POST             | /api/attachments                                           | DONE        | attachments                                     |
 | GET              | /api/attachments/:id                                       | DONE        | attachments                                     |   -- save files
-| DELETE           | /api/attachments/:id                                       | DONE        | attachments                                     |
+| DELETE           | /api/attachments/:id                                       | TESTING     | attachments                                     |
 | GET              | /api/demands                                               | DONE        | demands                                         |
 | POST             | /api/demands                                               | DONE        | demands                                         |
 | PUT              | /api/demands                                               | DONE        | demands                                         |

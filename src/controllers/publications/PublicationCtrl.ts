@@ -2,7 +2,7 @@ import { Controller, Get, PathParams, Delete, Required, Post, BodyParams, Locals
 
 import { Authenticated } from "../../core/services";
 import { PublicationRepository, ProjectRepository, AttachmentRepository } from "../../repositories";
-import { Publication, Page, ResultContent } from "../../entities";
+import { Publication, Page, ResultContent, Attachment } from "../../entities";
 import { PublicationType } from "../../core/types";
 import { Context } from "../../core/models";
 import { NotFound } from "@tsed/exceptions";
@@ -13,7 +13,7 @@ export class PublicationCtrl {
     constructor(
         private publicationRepository: PublicationRepository,
         private projectRepository: ProjectRepository,
-        private attachmentREpository: AttachmentRepository) {
+        private attachmentRepository: AttachmentRepository) {
         // initialize your stuffs here
     }
 
@@ -94,10 +94,44 @@ export class PublicationCtrl {
         }
         // delete attachment linked to the publication
         if (publication.attachment) {
-            await this.attachmentREpository.deleteById(publication.attachment.id);
+            await this.attachmentRepository.deleteById(publication.attachment.id);
         }
         // delete publication
         return this.publicationRepository.deleteById(publication.id);
+    }
+
+    /**
+     * Delete a publication information.
+     * @param id                            -- publication id.
+     */
+    @Get("/:id/attachments")
+    @Authenticated({})
+    public async getAttachment(@Required() @PathParams("id") id: number): Promise<any> {
+        const attachments = await this.attachmentRepository.fetch({ publicationId: id });
+        return attachments;
+    }
+
+    /**
+     * Delete a publication information.
+     * @param id                            -- publication id.
+     */
+    @Post("/:id/attachments")
+    @Authenticated({})
+    public async setAttachment(
+        @Required() @PathParams("id") id: number,
+        @Required() @BodyParams("attchment") attachment: Attachment
+    ): Promise<ResultContent<Publication>> {
+        let publication = await this.publicationRepository.findOne({ id }, { relations: [ "attachment" ] });
+        if (!publication) {
+            throw new NotFound("Publication not found.");
+        }
+        
+        // update attachment value
+        publication.attachment = this.attachmentRepository.merge(publication.attachment, attachment);
+
+        publication = await this.publicationRepository.save(publication);
+
+        return ResultContent.of<Publication>(publication).withMessage("Publication attachment successfully updated.");
     }
 
 }
