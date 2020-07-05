@@ -9,7 +9,7 @@ import { Scope } from "../../core/types";
 
 import { StringUtils } from "../../core/utils";
 
-import { ProjectActivityCtrl } from "./ProjectActivityCtrl";
+import { ProjectAttachmentCtrl } from "./ProjectAttachmentCtrl";
 import { ProjectDemanCtrl } from "./ProjectDemanCtrl";
 import { ProjectDisclosureMediaCtrl } from "./ProjectDisclosureMediaCtrl";
 import { ProjectEvaluationCtrl } from "./ProjectEvaluationCtrl";
@@ -24,7 +24,7 @@ import { ProjectThemeAreaCtrl } from "./ProjectThemeAreaCtrl";
 @Controller({
     path: "/projects",
     children: [
-        ProjectActivityCtrl,
+        ProjectAttachmentCtrl,
         ProjectDemanCtrl,
         ProjectDisclosureMediaCtrl,
         ProjectEvaluationCtrl,

@@ -16,15 +16,18 @@ export class ThemeAreaCtrl {
      * @param page                          -- page number.
      * @param rpp                           -- number of entities per page.
      * @param q                             -- search query string.
+     * @param projectId                     -- filter project by id.
      */
     @Get("")
     @Authenticated({})
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
     ): Promise<Page<ThemeArea>> {
-        return this.themeAreaRepository.fetch({ page, rpp, q });
+        const themeAreas = await this.themeAreaRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<ThemeArea>(themeAreas, page, rpp);
     }
 
     /**

@@ -4,25 +4,21 @@
 
 | Method           | Endpoint                                                   | Progres     | Table                                           |
 |:-----------------|:-----------------------------------------------------------|:-----------:|:-----------------------------------------------:|
-| GET              | /api/attachments                                           | DONE        | attachments                                     |
-| POST             | /api/attachments                                           |             | attachments                                     |   -- como salvar os anexos (attachments)
-| PUT              | /api/attachments                                           |             | attachments                                     |   -- como salvar os anexos (attachments)
-| GET              | /api/attachments/:id                                       | DONE        | attachments                                     |
-| DELETE           | /api/attachments/:id                                       | DONE        | attachments                                     |
-| GET              | /api/collaborators                                         |             | collaborators                                   |
+
+| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
 | POST             | /api/collaborators                                         |             | collaborators                                   |
-| GET              | /api/collaborators                                         |             | collaborators                                   |
+| GET              | /api/collaborators                                         | DONE        | collaborators                                   |
 | DELETE           | /api/collaborators                                         |             | collaborators                                   |
-| GET              | /api/students                                              |             | students                                        |
+| GET              | /api/students                                              | DONE        | students                                        |
 | POST             | /api/students                                              |             | students                                        |
-| GET              | /api/students/:id                                          |             | students                                        |
+| GET              | /api/students/:id                                          | DONE        | students                                        |
 | DELETE           | /api/students/:id                                          |             | students                                        |
 | PUT              | /api/evaluations                                           |             | evaluations                                     |
 | PUT              | /api/projects                                              |             | projects                                        |
-| GET              | /api/projects/:projectId/activities                        |             | project_activities                              |
-| POST             | /api/projects/:projectId/activities                        |             | project_activities                              |
-| GET              | /api/projects/:projectId/attachments                       |             | project_attachments                             |
+| GET              | /api/projects/:projectId/attachments                       | DONE        | project_attachments                             |
 | POST             | /api/projects/:projectId/attachments                       |             | project_attachments                             |
+| GET              | /api/publications/:publicationId/attachments               |             | publications + attachments                      |
+| POST             | /api/publications/:publicationId/attachments               |             | publications + attachments                      |
 
 ## Routes Finished:
 
@@ -35,6 +31,10 @@
 | POST             | /api/activities                                            | DONE        | ativities                                       |
 | GET              | /api/activities/:id                                        | DONE        | ativities                                       |
 | DELETE           | /api/activities/:id                                        | DONE        | ativities                                       |
+| GET              | /api/attachments                                           | DONE        | attachments                                     |
+| POST             | /api/attachments                                           | DONE        | attachments                                     |
+| GET              | /api/attachments/:id                                       | DONE        | attachments                                     |   -- save files
+| DELETE           | /api/attachments/:id                                       | DONE        | attachments                                     |
 | GET              | /api/demands                                               | DONE        | demands                                         |
 | POST             | /api/demands                                               | DONE        | demands                                         |
 | PUT              | /api/demands                                               | DONE        | demands                                         |

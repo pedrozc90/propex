@@ -19,6 +19,8 @@ interface ActivityOptions extends IOptions {
     executionWeekday?: string;
     executionHour?: string;
     results?: string;
+    from?: string;
+    to?: string;
 }
 
 @EntityRepository(Activity)
@@ -47,6 +49,9 @@ export class ActivityRepository extends GenericRepository<Activity> {
         if (isBoolean(params.external)) {
             query.where("a.external = :external", { external: params.external });
         }
+
+        if (params.from) query.where("a.date >= :from", { from: params.from });
+        if (params.to) query.where("a.date <= :to", { to: params.to });
         
         query.orderBy("a.date", "ASC");
 

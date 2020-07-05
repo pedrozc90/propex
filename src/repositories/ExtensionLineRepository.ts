@@ -1,9 +1,17 @@
 import { EntityRepository } from "@tsed/typeorm";
-import { Like } from "typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { ExtensionLine, Page } from "../entities";
+import { ExtensionLine, Project } from "../entities";
 import { StringUtils } from "../core/utils";
+import { IOptions } from "../core/types";
+
+interface ExtensionLineOptions extends IOptions {
+    id?: number;
+    project?: Project;
+    projectId?: number;
+    name?: string;
+    operation?: string;
+}
 
 @EntityRepository(ExtensionLine)
 export class ExtensionLineRepository extends GenericRepository<ExtensionLine> {
@@ -12,32 +20,31 @@ export class ExtensionLineRepository extends GenericRepository<ExtensionLine> {
         super([ "project" ]);
     }
 
-    public async fetch(page: number = 1, rpp: number = 15, q?: string, projectId?: number): Promise<Page<ExtensionLine>> {
-        const params: any = {
-            skip: (page - 1) * rpp,
-            take: rpp
-        };
+    /**
+     * Return a list of extension lines.
+     * @param options                       -- options
+     */
+    public async fetch(params: ExtensionLineOptions): Promise<ExtensionLine[]> {
+        const page = params.page;
+        const rpp = params.rpp;
 
-        if (StringUtils.isNotEmpty(q)) {
-            params.where = [
-                { name: Like(`%${q}%`) },
-                { operation: Like(`%${q}%`) }
-            ];
-        };
-        if (projectId) {
-            params.where.project = { id: projectId };
-            params.join = {
-                alias: "el",
-                innerJoin: { projects: "el.projects" }
-            };
+        const query = this.createQueryBuilder("el");
+
+        if (params.project || params.projectId) {
+            const projectId = params.projectId || params.project?.id;
+            query.innerJoin("el.projects", "p", "p.id = :projectId", { projectId });
         }
-        return Page.of(await this.find(params), page, rpp);
-    }
 
-    public async findManyByProject(projectId: number): Promise<ExtensionLine[]> {
-        return this.createQueryBuilder("el")
-            .innerJoin("el.projects", "p", "p.id = :projectId", { projectId })
-            .getMany();
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.where("el.name LIKE :name", { name: `%${params.q}%` })
+                .orWhere("el.operation LIKE :operation", { operation: `%${params.q}%` });
+        }
+
+        if (page && rpp) {
+            query.skip((page - 1) * rpp).take(rpp);
+        }
+        
+        return query.getMany();
     }
 
     public async findByProject(id: number, projectId: number): Promise<ExtensionLine | undefined> {

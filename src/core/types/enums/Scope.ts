@@ -1,4 +1,4 @@
-import { Property } from "@tsed/common";
+import { Property, IgnoreProperty } from "@tsed/common";
 
 export class Scope {
 
@@ -16,6 +16,7 @@ export class Scope {
     @Property({ name: "description" })
     public readonly description: string;
 
+    @IgnoreProperty()
     @Property({ name: "access" })
     public readonly access: number;
 

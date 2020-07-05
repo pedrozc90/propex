@@ -30,13 +30,13 @@ export class AuthenticationService {
             throw new Unauthorized("Invalid token!");
         }
 
-        const user = await this.userRepository.createQueryBuilder("user")
-            .leftJoinAndSelect("user.collaborator", "collaborator")
-            .leftJoinAndSelect("user.student", "student")
-            .where("user.id = :id", { id: jwt.id })
-            .andWhere("user.active = :active", { active: 1 })
-            .getOne();
-        
+        // const user = await this.userRepository.createQueryBuilder("user")
+        //     .leftJoinAndSelect("user.collaborator", "collaborator")
+        //     .leftJoinAndSelect("user.student", "student")
+        //     .where("user.id = :id", { id: jwt.id })
+        //     .andWhere("user.active = :active", { active: 1 })
+        //     .getOne();
+        const user = await this.userRepository.findUserInfo({ id: jwt.id, active: true });
         if (!user) {
             throw new NotFound("User not found.");
         }
@@ -50,22 +50,22 @@ export class AuthenticationService {
 
         const context = new Context();
         context.user = user;
-        context.scope = this.defineScope(user);
+        context.scope = user.role || Scope.UNKNOWN; // this.defineScope(user);
         context.projectIds = projectIds;
 
         return context;
     }
 
-    private defineScope(user: User): Scope {
-        if (user.id === 1) {
-            return Scope.ADMIN;
-        } else if (user.collaborator) {
-            return Scope.COLLABORATOR;
-        } else if (user.student) {
-            return Scope.STUDENT;
-        }
-        return Scope.UNKNOWN;
-    }
+    // private defineScope(user: User): Scope {
+    //     if (user.id === 1) {
+    //         return Scope.ADMIN;
+    //     } else if (user.collaborator) {
+    //         return Scope.COLLABORATOR;
+    //     } else if (user.student) {
+    //         return Scope.STUDENT;
+    //     }
+    //     return Scope.UNKNOWN;
+    // }
 
     /**
      * Register a new user.

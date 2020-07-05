@@ -1,10 +1,17 @@
 import { EntityRepository } from "@tsed/typeorm";
-import { Like } from "typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
-import { KnowledgeArea, Project, Page } from "../entities";
+import { KnowledgeArea, Project } from "../entities";
 
 import { StringUtils } from "../core/utils";
+import { IOptions } from "../core/types";
+
+interface KnowledgeAreaOptions extends IOptions {
+    id?: number;
+    project?: Project;
+    projectId?: number;
+    name?: string;
+}
 
 @EntityRepository(KnowledgeArea)
 export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
@@ -17,38 +24,30 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
      * Return a paged list of all kowndledge areas saved in the database.
      * @param options                       -- query options.
      */
-    public async fetch(page: number = 1, rpp: number = 15, q?: string): Promise<Page<KnowledgeArea>> {
-        const params: any = {
-            skip: (page - 1) * rpp,
-            take: rpp
+    public async fetch(params: KnowledgeAreaOptions): Promise<KnowledgeArea[]> {
+        const page = params.page;
+        const rpp = params.rpp;
+
+        const query = this.createQueryBuilder("ka");
+
+        if (params.project || params.projectId) {
+            const projectId = params.projectId || params.project?.id;
+            query.innerJoin("ka.projects", "p", "p.id = :projectId", { projectId });
+        }
+
+        if (StringUtils.isNotEmpty(params.name)) {
+            query.andWhere("ka.name = :name", { name: params.name });
         };
         
-        if (StringUtils.isNotEmpty(q)) {
-            params.where = [
-                { name: Like(`%${q}%`) }
-            ];
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.andWhere("ka.name LIKE :name", { name: `%${params.q}%` });
         };
-        return Page.of(await this.find(params), page, rpp);
-    }
 
-    /**
-     * Return a list of all knowledge areas saved in the database.
-     * @param options                       -- query options
-     */
-    public async list(options: any): Promise<KnowledgeArea[]> {
-        const params: any = {};
-        if (options.q) {
-            params.where = [
-                { name: Like(`%${options.q}%`) }
-            ];
-        };
-        return this.find(params);
-    }
+        if (page && rpp) {
+            query.skip((page - 1) * rpp).take(rpp);
+        }
 
-    public async findManyByProject(projectId: number): Promise<KnowledgeArea[]> {
-        return this.createQueryBuilder("ka")
-            .innerJoin("ka.projects", "p", "p.id = :projectId", { projectId })
-            .getMany();
+        return query.getMany();
     }
 
     public async findByProject(id: number, projectId: number): Promise<KnowledgeArea | undefined> {
@@ -65,7 +64,7 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
      */
     public async overwrite(project: Project, knowledgeAreas: KnowledgeArea[]): Promise<KnowledgeArea[]> {
         // load extension lines which the project has connection.
-        const savedKnowledgeAreas = await this.findManyByProject(project.id);
+        const savedKnowledgeAreas = await this.fetch({ projectId: project.id });
         
         // find kownledge areas the to deleted (elements that are saved on database but not in the received array)
         const knowledgeAreasToDelete = savedKnowledgeAreas.filter((a) => knowledgeAreas.findIndex((b) => b.id === a.id) < 0);
@@ -79,7 +78,7 @@ export class KnowledgeAreaRepository extends GenericRepository<KnowledgeArea> {
             await this.createQueryBuilder("knowledgeAreas").relation("projects").of(knowledgeAreasToInsert).add(project);
         }
 
-        return this.findManyByProject(project.id);
+        return this.fetch({ projectId: project.id });
     }
     
 }

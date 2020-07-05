@@ -25,7 +25,7 @@ export class ProjectExtensionLineCtrl {
     @Get("")
     @Authenticated({})
     public async get(@Required() @PathParams("projectId") projectId: number): Promise<ExtensionLine[]> {
-        return this.extensionLineRepository.findManyByProject(projectId);
+        return this.extensionLineRepository.fetch({ projectId });
     }
 
     /**
@@ -54,7 +54,7 @@ export class ProjectExtensionLineCtrl {
             }
         }
 
-        const saved = await this.extensionLineRepository.findManyByProject(projectId);
+        const saved = await this.extensionLineRepository.fetch({ projectId });
 
         return ResultContent.of<ExtensionLine[]>(saved)
             .withMessage("ProjectExtensionLines sucessfully saved!");
@@ -75,7 +75,7 @@ export class ProjectExtensionLineCtrl {
         const project = await this.projectRepository.findByContext(projectId, context);
         
         // load extension lines which the project has connection.
-        const projectExtensionLines = await this.extensionLineRepository.findManyByProject(projectId);
+        const projectExtensionLines = await this.extensionLineRepository.fetch({ projectId });
         
         // extension lines not send in the request should be removed
         const projectExtensionLinesToDelete = projectExtensionLines.filter((a) => extensionLines.findIndex((b) => b.id === a.id) < 0);
@@ -88,7 +88,7 @@ export class ProjectExtensionLineCtrl {
             await this.projectRepository.createQueryBuilder("project").relation("extensionLines").of(project).add(projectExtensitonLinesToInsert);
         }
 
-        const els = await this.extensionLineRepository.findManyByProject(projectId);
+        const els = await this.extensionLineRepository.fetch({ projectId });
 
         return ResultContent.of<ExtensionLine[]>(els).withMessage("ProjectExtensionLines successfully updated!");
     }

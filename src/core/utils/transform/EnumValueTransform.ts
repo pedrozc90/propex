@@ -1,6 +1,6 @@
 import { ValueTransformer } from "typeorm";
 
-import { findEnumKey } from "../../types";
+import * as EnumUtils from "../EnumUtils";
 
 export class EnumValueTransformer<T, K> implements ValueTransformer {
 
@@ -11,7 +11,7 @@ export class EnumValueTransformer<T, K> implements ValueTransformer {
      * @param value                         -- value to be transformed.
      */
     public to(value: T): string {
-        return findEnumKey(this.e, value);
+        return EnumUtils.findEnumKey(this.e, value);
     }
 
     /**

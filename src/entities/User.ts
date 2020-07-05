@@ -1,10 +1,12 @@
-import { Default, Format, Property, Required, IgnoreProperty, Allow, All } from "@tsed/common";
+import { Default, Format, Property, Required, IgnoreProperty, Allow, PropertyDeserialize } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn, OneToMany } from "typeorm";
 
 import { Collaborator } from "./Collaborator";
 import { Student } from "./Student";
 import { ProjectHumanResource } from "./ProjectHumanResource";
+import { ScopeEnumTransformer } from "../core/utils";
+import { Scope } from "../core/types";
 
 export class UserCredentials {
 
@@ -68,6 +70,12 @@ export class User extends UserBasic {
     @Property({ name: "active" })
     @Column({ name: "active", type: "boolean", nullable: false, default: true })
     public active: boolean = true;
+
+    // @PropertySerialize((v) => AgeRangeEnumTransformer.to(v))
+    @PropertyDeserialize((v) => ScopeEnumTransformer.from(v.key || v))
+    @Property({ name: "role" })
+    @Column({ name: "role", type: "varchar", length: 255, transformer: ScopeEnumTransformer, nullable: false })
+    public role: Scope = Scope.UNKNOWN;
 
     @Format("date-time")
     @Default(Date.now)

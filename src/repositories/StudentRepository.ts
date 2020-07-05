@@ -20,6 +20,10 @@ interface StudentOptions extends IOptions {
 @EntityRepository(Student)
 export class StudentRepository extends GenericRepository<Student> {
 
+    /**
+     * Return a list of students.
+     * @param options                       -- query options.
+     */
     public async fetch(params: StudentOptions): Promise<Student[]> {
         const page = params.page;
         const rpp = params.rpp;
@@ -34,20 +38,20 @@ export class StudentRepository extends GenericRepository<Student> {
         }
         
         if (isBoolean(params.scholarship)) {
-            query.where("std.scholarship = :scholarship", { scholarship: (params.scholarship) ? 1 : 0 });
+            query.andWhere("std.scholarship = :scholarship", { scholarship: (params.scholarship) ? 1 : 0 });
         }
 
         if (isBoolean(params.exclusive)) {
-            query.where("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
+            query.andWhere("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
         }
 
         // NÃO FUNCIONA (???)
         if (params.period) {
-            query.where("std.period = :period", { period: params.period });
+            query.andWhere("std.period = :period", { period: params.period });
         }
 
         if (StringUtils.isNotEmpty(params.q)) {
-            query.where("std.code LIKE :code", { code: `%${params.q}%` })
+            query.orWhere("std.code LIKE :code", { code: `%${params.q}%` })
                 .orWhere("std.course LIKE :course", { course: `%${params.q}%` })
                 .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
         }

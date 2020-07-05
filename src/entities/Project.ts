@@ -161,7 +161,7 @@ export class Project extends Audit {
     public knowledgeAreas: KnowledgeArea[];
 
     @Property({ name: "attachments" })
-    @ManyToMany(() => Attachment, (attachment) => attachment.activities)
+    @ManyToMany(() => Attachment, (attachment) => attachment.projects)
     @JoinTable({
         name: "project_attachments",
         joinColumn: { name: "project_id", referencedColumnName: "id" },

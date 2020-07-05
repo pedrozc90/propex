@@ -2,6 +2,17 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { ProjectThemeArea, Project, ThemeArea } from "../entities";
+import { IOptions } from "../core/types";
+
+interface ProjectThemeAreaOptions extends IOptions {
+    id?: number;
+    project?: Project;
+    projectId?: number;
+    themeArea?: ThemeArea;
+    themeAreaId?: number;
+    name?: string;
+    main?: boolean;
+}
 
 @EntityRepository(ProjectThemeArea)
 export class ProjectThemeAreaRepository extends GenericRepository<ProjectThemeArea> {

@@ -37,13 +37,13 @@ export class DevelopmentService {
     }
 
     public async $onReady(): Promise<any> {
-        const users = await this.UserRepository.find({ where: { id: MoreThan(1) } });
+        // const users = await this.UserRepository.find({ where: { id: MoreThan(1) } });
 
-        const collaborators = await this.CollaboratorRepository.find({});
-        const students = await this.StudentRepository.find({});
+        // const collaborators = await this.CollaboratorRepository.find({});
+        // const students = await this.StudentRepository.find({});
 
-        const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
-        const extensionLines = await this.ExtensionLineRepository.find({});
+        // const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
+        // const extensionLines = await this.ExtensionLineRepository.find({});
 
         // testing transactions
         // await this.connection.manager.transaction("SERIALIZABLE", async (em: EntityManager) => {

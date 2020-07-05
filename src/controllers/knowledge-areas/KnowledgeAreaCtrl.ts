@@ -16,9 +16,11 @@ export class KnowledgeAreaCtrl {
     public async fetch(
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("project") projectId?: number
     ): Promise<Page<KnowledgeArea>> {
-        return this.knowledgeAreaRepository.fetch(page, rpp, q);
+        const knowledgeAreas = await this.knowledgeAreaRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<KnowledgeArea>(knowledgeAreas, page, rpp);
     }
 
     @Post("")

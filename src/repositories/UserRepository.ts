@@ -60,19 +60,6 @@ export class UserRepository extends GenericRepository<User> {
      * @param options                       -- query options.
      */
     public async findUserInfo(params: UserOptions): Promise<User | undefined> {
-        // return this.findOne({
-        //     where: {
-        //         id: options.id,
-        //         email: options.email
-        //     },
-        //     join: {
-        //         alias: "user",
-        //         leftJoinAndSelect: {
-        //             collaborator: "user.collaborator",
-        //             student: "user.student"
-        //         }
-        //     }
-        // });
         const query = this.createQueryBuilder("usr")
             .leftJoinAndSelect("usr.collaborator", "clb")
             .leftJoinAndSelect("usr.student", "std");
@@ -81,20 +68,20 @@ export class UserRepository extends GenericRepository<User> {
             query.where("usr.id = :id", { id: params.id });
         }
 
-        if (params.email) {
-            query.where("usr.email = :email", { email: params.email });
+        if (StringUtils.isNotEmpty(params.email)) {
+            query.andWhere("usr.email = :email", { email: params.email });
         }
 
         if (isBoolean(params.active)) {
-            query.where("usr.active = :active", { active: (params.active) ? 1 : 0 });
+            query.andWhere("usr.active = :active", { active: (params.active) ? 1 : 0 });
         }
 
-        if (params.code) {
-            query.where("std.code = :code", { code: params.code });
+        if (StringUtils.isNotEmpty(params.code)) {
+            query.andWhere("std.code = :code", { code: params.code });
         }
 
-        if (params.registry) {
-            query.where("clb.professional_registry = :registry", { registry: params.registry });
+        if (StringUtils.isNotEmpty(params.registry)) {
+            query.andWhere("clb.professional_registry = :registry", { registry: params.registry });
         }
             
         return query.getOne();

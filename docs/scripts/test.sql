@@ -1,17 +1,11 @@
-SELECT `pb`.`created_at` AS `pb_created_at`,
- `pb`.`updated_at` AS `pb_updated_at`,
- `pb`.`project_id` AS `pb_project_id`,
- `pb`.`public_id` AS `pb_public_id`,
- `pb`.`directly` AS `pb_directly`,
- `pb`.`others_title` AS `pb_others_title`,
- `pb`.`others_cras` AS `pb_others_cras`,
- `public`.`created_at` AS `public_created_at`,
- `public`.`updated_at` AS `public_updated_at`,
- `public`.`id` AS `public_id`,
- `public`.`name` AS `public_name`,
- `public`.`customizable` AS `public_customizable`,
- `public`.`cras` AS `public_cras`,
- `public`.`deleted_at` AS `public_deleted_at`
-  FROM `project_publics` `pb`
-  INNER JOIN `publics` `public` ON `public`.`id`=`pb`.`public_id`
-  WHERE pb.project_id = 1
+-- SELECT att.*, p.title FROM attachments att
+-- INNER JOIN project_attachments pa ON pa.attachment_id = att.id
+-- INNER JOIN projects p ON p.id = pa.project_id
+-- WHERE p.id = 1;
+
+
+-- SELECT att.*, p.title
+-- FROM attachments att
+-- LEFT JOIN project_attachments p_att ON LEFT JOIN projects p ON  AND (p.id = 1);
+
+SELECT ta.* FROM theme_areas ta LEFT JOIN project_theme_areas pta ON pta.theme_area_id=ta.id WHERE pta.project_id = 1 AND pta.main = 1;

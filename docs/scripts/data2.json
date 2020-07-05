@@ -1,14 +1,14 @@
 {
     "users": [
-        { "name": "kenny", "email": "kenny@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "john" , "email": "john@propex.com" , "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "josh" , "email": "josh@propex.com" , "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "mary" , "email": "mary@propex.com" , "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "kevin", "email": "kevin@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "billy", "email": "billy@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
-        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000" },
+        { "name": "kenny", "email": "kenny@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
+        { "name": "john" , "email": "john@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
+        { "name": "josh" , "email": "josh@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
+        { "name": "mary" , "email": "mary@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
+        { "name": "kevin", "email": "kevin@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
+        { "name": "billy", "email": "billy@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
+        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
 
-        { "name": "test", "email": "test@propex.com", "password": "123456", "phone": "(48) 00000-0000" }
+        { "name": "test", "email": "test@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "UNKNOWN" }
     ],
     "collaborators": [
         { "academicFunction": "Professor", "profissionalRegistry": "x0000000a", "affiliation": "none", "userId": 2 },

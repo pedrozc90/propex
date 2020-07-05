@@ -17,6 +17,10 @@ interface CollaboratorOptions extends IOptions {
 @EntityRepository(Collaborator)
 export class CollaboratorRepository extends GenericRepository<Collaborator> {
 
+    /**
+     * Return a list of collaborators.
+     * @param options                       -- options
+     */
     public async fetch(params: CollaboratorOptions): Promise<Collaborator[]> {
         const page = params.page;
         const rpp = params.rpp;
@@ -31,15 +35,15 @@ export class CollaboratorRepository extends GenericRepository<Collaborator> {
         }
         
         if (isBoolean(params.coordinate)) {
-            query.where("phr.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
+            query.andWhere("phr.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
         }
         
         if (isBoolean(params.exclusive)) {
-            query.where("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
+            query.andWhere("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
         }
 
         if (StringUtils.isNotEmpty(params.q)) {
-            query.where("std.academic_function LIKE :function", { function: `%${params.q}%` })
+            query.orWhere("std.academic_function LIKE :function", { function: `%${params.q}%` })
                 .orWhere("std.profissional_registry LIKE :registry", { registry: `%${params.q}%` })
                 .orWhere("std.affiliation LIKE :affiliation", { affiliation: `%${params.q}%` })
                 .orWhere("usr.name LIKE :name", { name: `%${params.q}%` })

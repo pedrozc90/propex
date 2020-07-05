@@ -2,8 +2,8 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { Attachment, Project, Publication, Activity } from "../entities";
-import { IOptions } from "src/core/types";
-import { StringUtils } from "src/core/utils";
+import { IOptions } from "../core/types";
+import { StringUtils } from "../core/utils";
 
 interface AttachmentOptions extends IOptions {
     id?: number;
@@ -26,7 +26,7 @@ interface AttachmentOptions extends IOptions {
 export class AttachmentRepository extends GenericRepository<Attachment> {
 
     /**
-     * Return a list of activities.
+     * Return a list of attachments.
      * @param options                       -- options
      */
     public async fetch(params: AttachmentOptions): Promise<Attachment[]> {
@@ -37,7 +37,7 @@ export class AttachmentRepository extends GenericRepository<Attachment> {
 
         if (params.project || params.projectId) {
             const projectId = params.projectId || params.project?.id;
-            query.innerJoin("att.project", "p", "p.id = :projectId", { projectId });
+            query.innerJoin("att.projects", "p", "p.id = :projectId", { projectId });
         }
 
         if (params.publication || params.publicationId) {
@@ -60,7 +60,7 @@ export class AttachmentRepository extends GenericRepository<Attachment> {
             query.skip((page - 1) * rpp).take(rpp);
         }
         
-        return await query.getMany();
+        return query.getMany();
     }
 
 }

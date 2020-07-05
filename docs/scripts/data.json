@@ -1,6 +1,6 @@
 {
     "users": [
-        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000" }
+        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000", "role": "ADMIN" }
     ],
 
     "knowledgeAreas": [

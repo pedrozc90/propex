@@ -25,7 +25,7 @@ export class ProjectKnowledgeAreaCtrl {
     @Get("")
     @Authenticated({})
     public async get(@PathParams("projectId") projectId: number): Promise<KnowledgeArea[]> {
-        return this.knowledgeAreaRepository.findManyByProject(projectId);
+        return this.knowledgeAreaRepository.fetch({ projectId });
     }
 
     /**
@@ -50,17 +50,14 @@ export class ProjectKnowledgeAreaCtrl {
                 throw new NotFound(`KnowledgeArea ${ka.name || ka.id} not found.`);
             }
 
-            const pka = await this.knowledgeAreaRepository.createQueryBuilder("ka")
-                .innerJoin("ka.projects", "project", "project.id = :projectId", { projectId })
-                .where("ka.id = :id", { id: ka.id })
-                .getOne();
+            const pka = await this.knowledgeAreaRepository.findByProject(ka.id, projectId);
 
             if (!pka) {
                 await this.knowledgeAreaRepository.createQueryBuilder("ka").relation("projects").of(ka).add(project);
             }
         }
 
-        const saved = await this.knowledgeAreaRepository.findManyByProject(projectId);
+        const saved = await this.knowledgeAreaRepository.fetch({ projectId });
 
         return ResultContent.of<KnowledgeArea[]>(saved)
             .withMessage("ProjectKnowledgeAreas sucessfully saved!");

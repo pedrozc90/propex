@@ -27,9 +27,11 @@ export class ActivityCtrl {
         @QueryParams("project") projectId: number,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 1,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("from") from?: string,
+        @QueryParams("to") to?: string
     ): Promise<Page<Activity>> {
-        const activities = await this.activityRepository.fetch({ page, rpp, q, projectId });
+        const activities = await this.activityRepository.fetch({ page, rpp, q, projectId, from, to });
         return Page.of<Activity>(activities, page, rpp);
     }
 

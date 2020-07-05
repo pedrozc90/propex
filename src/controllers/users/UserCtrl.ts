@@ -6,6 +6,7 @@ import { Authenticated } from "../../core/services";
 import { UserRepository, CollaboratorRepository, StudentRepository } from "../../repositories";
 import { User, Page, ResultContent } from "../../entities";
 import { Context } from "../../core/models";
+import { Scope } from "../../core/types";
 
 @Controller("/users")
 export class UserCtrl {
@@ -72,6 +73,7 @@ export class UserCtrl {
             collaborator = await this.collaboratorRepository.save(collaborator);
 
             user.collaborator = collaborator;
+            user.role = Scope.COLLABORATOR;
         }
         
         if (data.student) {
@@ -85,6 +87,7 @@ export class UserCtrl {
             student = await this.studentRepository.save(student);
 
             user.student = student;
+            user.role = Scope.STUDENT;
         }
 
         // send email to user to informe the new password

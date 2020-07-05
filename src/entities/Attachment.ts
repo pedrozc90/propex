@@ -44,14 +44,14 @@ export class Attachment extends Audit {
 
     @Property({ name: "publications" })
     @OneToMany(() => Publication, (publication) => publication.attachment)
-    public publications?: Publication[];
+    public publications: Publication[];
 
     @Property({ name: "activities" })
     @ManyToMany(() => Activity, (activity) => activity.attachments)
-    public activities?: Activity[];
+    public activities: Activity[];
 
     @Property({ name: "projects" })
-    @ManyToMany(() => Project, (project) => project.activities)
-    public projects?: Project[];
+    @ManyToMany(() => Project, (project) => project.attachments)
+    public projects: Project[];
 
 }

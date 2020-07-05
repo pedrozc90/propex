@@ -1,5 +1,5 @@
-import { Controller, Get, PathParams, Delete, Required, Locals, QueryParams, Post, Res } from "@tsed/common";
-import { NotImplemented, NotFound } from "@tsed/exceptions";
+import { Controller, Get, PathParams, Delete, Locals, QueryParams, Post, Res, BodyParams } from "@tsed/common";
+import { NotFound, BadRequest } from "@tsed/exceptions";
 import { MultipartFile } from "@tsed/multipartfiles";
 
 import { Authenticated } from "../../core/services";
@@ -26,9 +26,11 @@ export class AttachmentCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string,
-        @QueryParams("project") projectId?: number
+        @QueryParams("project") projectId?: number,
+        @QueryParams("publication") publicationId?: number,
+        @QueryParams("activity") activityId?: number
     ): Promise<Page<Attachment>> {
-        const attachements = await this.attachmentRepository.fetch({ page, rpp, q, projectId });
+        const attachements = await this.attachmentRepository.fetch({ page, rpp, q, projectId, publicationId, activityId });
         return Page.of<Attachment>(attachements, page, rpp);
     }
 
@@ -41,21 +43,44 @@ export class AttachmentCtrl {
     @Authenticated({})
     public async save(
         @Locals("context") context: Context,
-        @Required() @MultipartFile("file") file: Express.Multer.File
-    ): Promise<Attachment> {
-        // create a new attachment
-        let attachment = new Attachment();
-        attachment.size = file.size;
-        attachment.filename = file.originalname;
-        attachment.filenameNormalized = StringUtils.normalize(file.originalname);
-        attachment.contentType = file.mimetype;
-        attachment.content = fs.readFileSync(file.path);
-        attachment.extension = ParseUtils.extractFileExtension(file.originalname);
+        @BodyParams("id") id?: number,
+        @BodyParams("url") url?: string,
+        @MultipartFile("file") file?: Express.Multer.File
+    ): Promise<any> {
+        if (!url && !file) {
+            throw new BadRequest("Please, body do not contains an url or file.");
+        }
+
+        let attachment = await this.attachmentRepository.createQueryBuilder("att")
+            .leftJoin("att.projects", "p")
+            .leftJoin("att.publications", "pb")
+            .leftJoin("att.activities", "act")
+            .where("att.id = :id", { id })
+            .getOne();
+        
+        if (!attachment) {
+            attachment = new Attachment();
+        }
+
+        if (url) {
+            attachment.url = url;
+        }
+
+        if (file) {
+            attachment.size = file.size;
+            attachment.filename = file.originalname;
+            attachment.filenameNormalized = StringUtils.normalize(file.originalname);
+            attachment.contentType = file.mimetype;
+            attachment.content = fs.readFileSync(file.path);
+            attachment.extension = ParseUtils.extractFileExtension(file.originalname);
+        }
 
         attachment = await this.attachmentRepository.save(attachment);
 
-        // delete file from .temp file
-        fs.unlinkSync(file.path);
+        if (file && file.path) {
+            // delete file from .temp file
+            fs.unlinkSync(file.path);
+        }
 
         return attachment;
     }

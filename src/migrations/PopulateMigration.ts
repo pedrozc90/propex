@@ -7,7 +7,7 @@ export class PopulateMigrationl1589005000000 implements MigrationInterface {
     async up(queryRunner: QueryRunner): Promise<void> {
         // populate tables
         for (const u of users) {
-            await queryRunner.query(`INSERT INTO users (name, email, password, phone) VALUES ('${u.name}', '${u.email}', '${u.password}', '${u.phone}')`);
+            await queryRunner.query(`INSERT INTO users (name, email, password, phone, role) VALUES ('${u.name}', '${u.email}', '${u.password}', '${u.phone}', '${u.role}')`);
         };
 
         for (const ka of knowledgeAreas) {

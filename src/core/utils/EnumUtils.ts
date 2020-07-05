@@ -14,3 +14,7 @@ export function findEnumKey(e: any, v: any): any | null {
 export function getEnumKeys(e: any): any[] {
     return Object.keys(e);
 }
+
+// export function enumList(e: any): any[] {
+//     return Object.keys(e).map((key: string) => EnumValueTransformer.of(e).from(key));
+// }

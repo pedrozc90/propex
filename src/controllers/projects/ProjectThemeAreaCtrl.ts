@@ -27,10 +27,10 @@ export class ProjectThemeAreaCtrl {
     @Authenticated({})
     public async get(@PathParams("projectId") projectId: number): Promise<{ main: ThemeArea[], secondary: ThemeArea[] }> {
         // load project's main theme areas
-        const main = await this.themeAreaRepository.findManyByProject(projectId, true);
+        const main = await this.themeAreaRepository.fetch({ projectId, main: true });
 
         // load project's secondary theme areas
-        const secondary = await this.themeAreaRepository.findManyByProject(projectId, false);
+        const secondary = await this.themeAreaRepository.fetch({ projectId, main: false });
 
         return { main, secondary };
     }
@@ -65,12 +65,12 @@ export class ProjectThemeAreaCtrl {
 
             let tmp = await this.projectThemeAreaRepository.findByProject(themeAreaId, projectId);
             if (!tmp) {
-                tmp = this.projectThemeAreaRepository.create(ta);
+                tmp = this.projectThemeAreaRepository.create(pta);
                 tmp.project = project;
+                tmp.themeArea = ta;
             } else {
-                tmp = this.projectThemeAreaRepository.merge(tmp, ta);
+                tmp = this.projectThemeAreaRepository.merge(tmp, pta);
             }
-            tmp.themeArea = ta;
 
             toInsert.push(tmp);
         }

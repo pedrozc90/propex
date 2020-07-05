@@ -25,7 +25,8 @@ export class ExtensionLineCtrl {
         @QueryParams("q") q?: string,
         @QueryParams("project") projectId?: number
     ): Promise<Page<ExtensionLine>> {
-        return this.extensionLineRepository.fetch(page, rpp, q, projectId);
+        const extensionLines = await this.extensionLineRepository.fetch({ page, rpp, q, projectId });
+        return Page.of<ExtensionLine>(extensionLines, page, rpp);
     }
 
     /**
