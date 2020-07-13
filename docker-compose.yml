@@ -10,8 +10,8 @@ services:
     #     build:
     #         context: .
     #         dockerfile: Dockerfile
-    #     name: tsed_typeorm_image
-    #     container_name: tsed
+    #     name: propex:1.0.0
+    #     container_name: propex
     #     restart: always
     #     expose:
     #         - 9000
@@ -27,7 +27,6 @@ services:
     #         - "9000:9000"
     #     # volumes:
     #     #     - .:/app
-    #     #     - web-logs:/var/log/web
     #     networks:
     #         - backend
     #     depends_on:
@@ -55,6 +54,9 @@ services:
 volumes:
     mysql-volume:
         name: mysql-volume
+        driver: local
+    propex-volume:
+        name: propex-volume
         driver: local
 
 networks:
