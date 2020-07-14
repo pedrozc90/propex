@@ -2,7 +2,7 @@ import { GetterTree } from "vuex";
 
 import { RootState } from "../index";
 import { AuthState } from "./state";
-import { Role } from "../../core/types";
+import { Role, RoleEnum } from "../../core/types";
 
 const getters: GetterTree<AuthState, RootState> = {
     
@@ -35,7 +35,7 @@ const getters: GetterTree<AuthState, RootState> = {
      * @param state                         -- store state
      */
     isAdmin(state: AuthState): boolean {
-        return (state.scope === Role.ADMIN);
+        return (state.user?.role?.key === RoleEnum.ADMIN);
     },
 
     /**
@@ -43,7 +43,7 @@ const getters: GetterTree<AuthState, RootState> = {
      * @param state                         -- store state
      */
     isMember(state: AuthState): boolean {
-        return (state.scope === Role.MEMBER);
+        return (state.user?.role?.key === RoleEnum.MEMBER);
     },
 
     /**
@@ -51,7 +51,7 @@ const getters: GetterTree<AuthState, RootState> = {
      * @param state                         -- store state
      */
     isNoob(state: AuthState): boolean {
-        return (state.scope === Role.UNKOWN);
+        return (state.user?.role?.key === RoleEnum.UNKOWN);
     }
 
 };

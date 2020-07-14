@@ -3,7 +3,7 @@ import { MutationTree } from "vuex";
 import { AuthState } from "./state";
 import { User, Role } from "../../core/types";
 
-const mutation: MutationTree<AuthState> = {
+const mutations: MutationTree<AuthState> = {
     
     /**
      * Mutate authentication state by uploading token and scope.
@@ -36,4 +36,4 @@ const mutation: MutationTree<AuthState> = {
 
 };
 
-export default mutation;
+export default mutations;
