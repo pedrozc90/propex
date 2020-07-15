@@ -1,8 +1,8 @@
 <template>
-    <q-layout>
+    <q-layout id="login">
         <q-page-container>
-            <q-page class="row justify-center items-center bg-primary" style="height: 100%">
-                <q-card class="full-width" :bordered="true" style="max-width: 500px" flat square>
+            <q-page class="row justify-center items-center bg-primary">
+                <q-card class="full-width" :bordered="true" flat square>
                     <q-form ref="form" @submit="login">
                         <q-card-section class="logo">
                             <!-- <img src="~assets/quasar-logo-full.svg" alt="Logo"> -->
@@ -10,7 +10,8 @@
                         </q-card-section>
 
                         <q-card-section class="q-gutter-y-md" style="margin-left: 0;">
-                            <q-input v-model="credentials.email" label="Username"
+                            <q-input  label="Email"
+                            v-model="credentials.email"
                             lazy-rules :rules="[ requiredInput ]"
                             autofocus dense filled square>
                                 <template v-slot:prepend>
@@ -18,8 +19,12 @@
                                 </template>
                             </q-input>
 
-                            <q-input v-model="credentials.password" label="Password" :type="isPassword ? 'password' : 'text'"
-                            lazy-rules :rules="[ requiredInput ]" @keyup.enter="login()" dense filled square>
+                            <q-input  label="Password"
+                            v-model="credentials.password"
+                            :type="isPassword ? 'password' : 'text'"
+                            lazy-rules :rules="[ requiredInput ]"
+                            @keyup.enter="login()"
+                            dense filled square>
                                 <template v-slot:prepend>
                                     <q-icon name="lock"/>
                                 </template>
@@ -46,19 +51,22 @@ import Login from "./LoginCtrl";
 export default Login;
 </script>
 
-<style scoped>
-    .box {
-        min-width: 150px;
-        max-width: 350px;
-        margin: 0px auto;
-        margin-top: 30px;
+<style lang="scss" scoped>
+    .q-page {
+        height: 100%;
+
+        .q-card {
+            max-width: 500px;
+        }
     }
+
     .logo {
         margin: 0;
         width: 100%;
         text-align: center;
-    }
-    .logo img {
-        height: 100px;
+        
+        img {
+            height: 100px;
+        }
     }
 </style>

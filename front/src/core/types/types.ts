@@ -20,7 +20,7 @@ export interface UserCredentials {
     password?: string;
 }
 
-export interface User extends UserCredentials {
+export interface User extends Audit {
     id?: number;
     name?: string;
     email?: string;
@@ -28,8 +28,8 @@ export interface User extends UserCredentials {
     phone?: string;
     role?: Role;
     active?: boolean;
-    createAt?: Date;
-    updatedAt?: Date;
+    student?: Student;
+    collaborator?: Collaborator;
 }
 
 export interface Project extends Audit {
@@ -58,4 +58,21 @@ export interface Project extends Audit {
     // extensionLines?: ExtensionLine[];
     // knowledgeAreas?: KnowledgeArea[];
     // attachments?: Attachment[];
+}
+
+export interface Student extends Audit {
+    id?: number;
+    code?: string;
+    course?: string;
+    period?: string;
+    scholarship?: boolean;
+    user?: User;
+}
+
+export interface Collaborator extends Audit {
+    id?: number;
+    academicFunction?: string;
+    profissionalRegistry?: string;
+    affiliation?: string;
+    user?: User;
 }

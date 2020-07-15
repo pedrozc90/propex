@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component } from "vue-property-decorator";
 import { UserCredentials } from "../../core/types";
 import { requiredInput } from "../../core/utils";
