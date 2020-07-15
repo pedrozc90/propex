@@ -1,9 +1,10 @@
-import { BodyParams, Controller, Post, Required, Res } from "@tsed/common";
+import { BodyParams, Controller, Post, Required, Res, Locals, Get } from "@tsed/common";
 import { InternalServerError, Unauthorized } from "@tsed/exceptions";
 
 import { AuthenticationService, Authenticated } from "../../core/services";
 import { User, UserBasic, UserCredentials } from "../../entities";
 import { IToken } from "../../core/types";
+import { Context } from "../../core/models";
 
 @Controller("/auth")
 export class AuthenticationCtrl {
@@ -65,6 +66,16 @@ export class AuthenticationCtrl {
             throw new InternalServerError("Sorry, but a error occured during registration.");
         }
         return tmp;
+    }
+
+    /**
+     * Create a new user.
+     * @param user                          -- user instance
+     */
+    @Get("/context")
+    @Authenticated({})
+    public async context(@Locals("context") context: Context): Promise<User> {
+        return context.user;
     }
 
 }
