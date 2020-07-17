@@ -3,51 +3,55 @@
         <q-page-container>
             <q-page class="row justify-center items-center">
                 <q-card class="full-width" :bordered="true" flat square>
-                    <q-form ref="form" @submit="register">
-                        <q-card-section class="header">
-                            <q-header class="bg-primary text-h4">User</q-header>
-                        </q-card-section>
+                    <q-card-section class="header text-white" color="primary">
+                        <h3 class="bg-primary text-h4">User</h3>
+                    </q-card-section>
 
-                        <q-card-section class="q-gutter-y-md" style="margin-left: 0;">
+                    <q-card-section class="content">
+                        <q-form ref="form1">
                             <!-- USER -->
-                            <q-input  label="Name" v-model="user.name" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Name" v-model="user.name" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Email" v-model="user.email" type="email" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Email" v-model="user.email" type="email" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Phone" v-model="user.phone" type="tel" lazy-rules :rules="[ requiredInput ]" mask="(##) #####-####" autofocus dense filled square />
+                            <q-input label="Phone" v-model="user.phone" type="tel" lazy-rules :rules="[ requiredInput ]" mask="(##) #####-####" autofocus dense filled square />
 
-                            <q-input  label="Password" v-model="user.password" :type="isPassword ? 'password' : 'text'" lazy-rules :rules="[ requiredInput ]" dense filled square>
+                            <q-input label="Password" v-model="user.password" :type="isPassword ? 'password' : 'text'" lazy-rules :rules="[ requiredInput ]" dense filled square>
                                 <template v-slot:append>
                                     <q-icon :name="isPassword ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPassword = !isPassword"/>
                                 </template>
                             </q-input>
+                        </q-form>
 
+                        <q-separator dense />
+
+                        <q-form ref="form2">
                             <!-- STUDENT -->
-                            <q-separator dense />
+                            <q-input label="Code" v-model="user.student.code" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Code" v-model="user.student.code" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Course" v-model="user.student.course" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Course" v-model="user.student.course" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
-
-                            <q-input  label="Period" v-model="user.student.period" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Period" v-model="user.student.period" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
                             <q-checkbox v-model="user.student.scholarship" label="Scholarship" dense />
+                        </q-form>
 
+                        <q-separator dense />
+
+                        <q-form ref="form3">
                             <!-- COLLABORATOR -->
-                            <q-separator dense/>
+                            <q-input label="Academic Function" v-model="user.collaborator.academicFunction" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Academic Function" v-model="user.collaborator.academicFunction" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Profissional Registry" v-model="user.collaborator.profissionalRegistry" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
 
-                            <q-input  label="Profissional Registry" v-model="user.collaborator.profissionalRegistry" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                            <q-input label="Affiliation" v-model="user.collaborator.affiliation" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                        </q-form>
+                    </q-card-section>
 
-                            <q-input  label="Affiliation" v-model="user.collaborator.affiliation" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
-                        </q-card-section>
-
-                        <q-card-actions class="wrapper">
-                            <q-btn class="box" color="grey-4" label="Cancel" type="cancel" unelevated/>
-                            <q-btn class="box" color="primary" label="Save" type="submit" unelevated/>
-                        </q-card-actions>
-                    </q-form>
+                    <q-card-actions class="wrapper">
+                        <q-btn class="box" color="grey-4" label="Reset" @click="reset" unelevated/>
+                        <q-btn class="box" color="primary" label="Save" @click="submit" :disable="!ready" unelevated/>
+                    </q-card-actions>
                 </q-card>
             </q-page>
         </q-page-container>
@@ -65,6 +69,23 @@ export default UserRegistration;
 
         .q-card {
             max-width: 500px;
+
+            .content {
+                .q-form {
+                    & > * {
+                        margin-top: 16px;
+                    }
+                    &:last-child {
+                        margin-top: 0;
+                    }
+                }
+
+                .q-separator {
+                    &:nth-of-type(2) {
+                        margin-top: 16px;
+                    }
+                }
+            }
         }
 
         .wrapper {
@@ -84,8 +105,13 @@ export default UserRegistration;
 
     .header {
         margin: 0;
+        padding: 0;
         width: 100%;
         text-align: center;
         font-weight: bold;
+
+        h3 {
+            margin: 0;
+        }
     }
 </style>

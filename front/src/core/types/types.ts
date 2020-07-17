@@ -1,10 +1,22 @@
 import { RoleEnum } from "./enum";
 
+// --------------------------------------------------
+// GENERIC
+// --------------------------------------------------
 export interface IAuth {
     token?: string;
     user?: User;
 }
 
+export interface IOptions {
+    page?: number;
+    rpp?: number;
+    q?: string;
+}
+
+// --------------------------------------------------
+// ENTITY
+// --------------------------------------------------
 export interface Audit {
     createdAt?: Date | null;
     updatedAt?: Date | null;

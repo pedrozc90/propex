@@ -18,9 +18,9 @@
             <q-separator />
             <q-list>
                 <q-item-label header>Essential Links</q-item-label>
-                <app-link name="index" label="Index" caption="/index" icon="public" />
-                <app-link name="login" label="Login" caption="/login" icon="public" />
-                <app-link name="user-registration" label="User Regitratiin" caption="/user-registration" icon="public" />
+                <app-link name="index" label="Index" caption="/index" icon="public" v-if="$route.name !== 'index'" />
+                <app-link name="login" label="Login" caption="/login" icon="public" v-if="$route.name !== 'login'" />
+                <app-link name="registration" label="User Regitratiin" caption="/user/registration" icon="public" v-if="$route.name !== 'registration'" />
             </q-list>
         </q-drawer>
 
