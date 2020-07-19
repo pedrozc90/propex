@@ -16,7 +16,9 @@ const routes: RouteConfig[] = [
         component: () => import("layouts/Layout.vue"),
         children: [
             { path: "", name: "index", component: () => import("pages/index/Index.vue") },
-            { path: "/user/registration", name: "registration", component: () => import("pages/users/UserRegistration.vue") }
+            { path: "/user/registration", name: "user_registration", component: () => import("pages/users/registration/UserRegistration.vue") },
+            { path: "/project/registration", name: "project_registration", component: () => import("pages/projects/registration/ProjectRegistration.vue") },
+            { path: "/project/:id", name: "project", component: () => import("pages/projects/Project.vue") }
         ]
     },
 

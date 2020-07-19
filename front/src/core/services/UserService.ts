@@ -1,7 +1,13 @@
 import { axiosInstance } from "../../boot/axios";
+import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { User } from "../types";
+import { User, IOptions, RoleEnum } from "../types";
+import { Page } from "../models";
+
+export interface UserOptions extends IOptions {
+    role?: RoleEnum;
+}
 
 export class UserService extends BasicService<User> {
 
@@ -18,10 +24,19 @@ export class UserService extends BasicService<User> {
         return UserService.instance;
     }
 
+    public async fetch(params: UserOptions): Promise<Page<User>> {
+        return await axiosInstance.get<User>(this.url, { params: params })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async fetchCollaborators(): Promise<Page<User>> {
+        return this.fetch({ page: 1, rpp: 15, role: RoleEnum.COLLABORATOR });
+    }
+
     public async save(user: User): Promise<unknown> {
         return axiosInstance.post(this.url, { user });
     }
-
+    
 }
 
 export const userService = UserService.create();

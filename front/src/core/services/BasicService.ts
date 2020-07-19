@@ -12,8 +12,16 @@ export default class BasicService<T> {
             .then((response: AxiosResponse) => (response) ? response.data : null);
     }
 
-    public async fetch(params: IOptions): Promise<Page<T> | null> {
-        return await axiosInstance.get<T>(this.url, { params: params })
+    // public async fetch(params: IOptions): Promise<Page<T> | null> {
+    //     return await axiosInstance.get<T>(this.url, { params: params })
+    //         .then((response: AxiosResponse) => (response) ? response.data.content : null);
+    // }
+
+    public async get(id: number): Promise<T> {
+        if (!id) {
+            throw new Error("Invalid id");
+        }
+        return await axiosInstance.get(`${this.url}/${id}`)
             .then((response: AxiosResponse) => (response) ? response.data.content : null);
     }
 

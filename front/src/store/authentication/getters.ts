@@ -42,8 +42,16 @@ const getters: GetterTree<AuthState, RootState> = {
      * Check if scope is member.
      * @param state                         -- store state
      */
-    isMember(state: AuthState): boolean {
-        return (state.user?.role?.key === RoleEnum.MEMBER);
+    isStudent(state: AuthState): boolean {
+        return (state.user?.role?.key === RoleEnum.STUDENT);
+    },
+
+    /**
+     * Check if scope is member.
+     * @param state                         -- store state
+     */
+    isCollaborator(state: AuthState): boolean {
+        return (state.user?.role?.key === RoleEnum.COLLABORATOR);
     },
 
     /**

@@ -37,11 +37,17 @@ export interface User extends Audit {
     name?: string;
     email?: string;
     password?: string;
-    phone?: string;
+    code?: string;
     role?: Role;
+    phone?: string;
     active?: boolean;
-    student?: Student;
-    collaborator?: Collaborator;
+    // student
+    course?: string;
+    period?: string;
+    scholarship?: boolean;
+    // coolaborator
+    academicFunction?: string;
+    affiliation?: string;
 }
 
 export interface Project extends Audit {
@@ -70,21 +76,4 @@ export interface Project extends Audit {
     // extensionLines?: ExtensionLine[];
     // knowledgeAreas?: KnowledgeArea[];
     // attachments?: Attachment[];
-}
-
-export interface Student extends Audit {
-    id?: number;
-    code?: string;
-    course?: string;
-    period?: string;
-    scholarship?: boolean;
-    user?: User;
-}
-
-export interface Collaborator extends Audit {
-    id?: number;
-    academicFunction?: string;
-    profissionalRegistry?: string;
-    affiliation?: string;
-    user?: User;
 }

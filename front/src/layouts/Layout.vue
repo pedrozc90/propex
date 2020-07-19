@@ -20,7 +20,8 @@
                 <q-item-label header>Essential Links</q-item-label>
                 <app-link name="index" label="Index" caption="/index" icon="public" v-if="$route.name !== 'index'" />
                 <app-link name="login" label="Login" caption="/login" icon="public" v-if="$route.name !== 'login'" />
-                <app-link name="registration" label="User Regitratiin" caption="/user/registration" icon="public" v-if="$route.name !== 'registration'" />
+                <app-link name="user_registration" :label="$t('user.new')" caption="/user/registration" icon="public" v-if="$route.name !== 'user_registration'" />
+                <app-link name="project_registration" :label="$t('project.new')" caption="/project/registration" icon="public" v-if="$route.name !== 'project_registration'" />
             </q-list>
         </q-drawer>
 

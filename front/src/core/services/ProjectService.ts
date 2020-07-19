@@ -1,7 +1,13 @@
 import { axiosInstance } from "../../boot/axios";
+import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { Project } from "../types";
+import { Project, IOptions, User } from "../types";
+import { Page } from "../models";
+
+export interface ProjectOptions extends IOptions {
+    program?: string;
+}
 
 export class ProjectService extends BasicService<Project> {
 
@@ -18,8 +24,13 @@ export class ProjectService extends BasicService<Project> {
         return ProjectService.instance;
     }
 
-    public async save(user: Project): Promise<unknown> {
-        return axiosInstance.post(this.url, { user });
+    public async fetch(params: ProjectOptions): Promise<Page<Project>> {
+        return await axiosInstance.get<Project>(this.url, { params: params })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async create(project: Project, coordinator: User): Promise<unknown> {
+        return axiosInstance.post(this.url, { project, coordinator });
     }
 
 }

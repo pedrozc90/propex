@@ -12,11 +12,17 @@ export default class IndexCtrl extends Vue {
 
     public projects: Project[] = [];
 
+    public async edit(projectId: string): Promise<void> {
+        await this.$router.push({ name: "project", params: { id: projectId } });
+    }
+
     public async mounted() {
+        console.log("i18n", this.$t("project"));
         const projects = await projectService.fetch({ page: this.page, rpp: this.rpp, q: this.q });
         if (projects) {
-            this.projects.concat(...projects.list);
+            this.projects.push(...projects.list);
         }
+        console.log(this.projects);
     }
 
 }
