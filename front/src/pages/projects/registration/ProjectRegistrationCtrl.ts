@@ -1,24 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component } from "vue-property-decorator";
 
 import { projectService, userService } from "../../../core/services";
-
-import { StringUtils } from "../../../core/utils/";
-
 import { Page } from "../../../core/models";
 import { Project, User } from "../../../core/types";
-import { requiredInput } from "../../../core/utils";
+import { StringUtils, requiredInput } from "../../../core/utils";
 
 @Component({ name: "ProjectRegistration" })
 export default class ProjectRegistration extends Vue {
     
-    public id: number | undefined;
     public project: Project = {};
     public coordinator: User | null = null;
-    public coordinatorOptions: User[] = [
-        { id: 1, name: "USER-01", email: "user-01@propex.com" },
-        { id: 2, name: "USER-02", email: "user-02@propex.com" },
-        { id: 3, name: "USER-03", email: "user-03@propex.com" }
-    ];
+    public coordinatorOptions: User[] = [];
 
     public requiredInput = requiredInput;
 
@@ -26,11 +19,15 @@ export default class ProjectRegistration extends Vue {
         // do nothing
         setTimeout(() => {
             update(async () => {
+                // debugger;
                 if (StringUtils.isNotEmpty(value)) {
                     await this.loadOptions(value);
+                } else {
+                    await this.loadOptions();
+                    abort();
                 }
             });
-        }, 1500);
+        }, 1000);
     }
 
     public async filterAbortFn(): Promise<void> {
@@ -49,21 +46,22 @@ export default class ProjectRegistration extends Vue {
         if (!this.coordinator) return;
         
         const project = await projectService.create(this.project, this.coordinator);
-        console.log(project);
-        // if (project) {
-        //     await this.$router.replace({ name: "index" });
-        // }
+        if (project) {
+            await this.$router.replace({ name: "index" });
+        }
+    }
+
+    public async goToUserRegistration(): Promise<void> {
+        await this.$router.push({ name: "user-registration" });
+    }
+
+    public async loadOptions(q?: string) {
+        this.coordinatorOptions = await userService.fetchCollaborators({ q }).then((res: Page<User>) => res.list);
     }
 
     public async mounted() {
         await this.loadOptions();
         (this.$refs.form as any).resetValidation();
-        console.log("COORDINATOR:", this.coordinatorOptions);
-    }
-
-    public async loadOptions(q?: string) {
-        this.coordinatorOptions = await userService.fetchCollaborators().then((res: Page<User>) => res.list);
-        console.log("COORDINATOR:", this.coordinatorOptions);
     }
 
 }

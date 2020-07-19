@@ -6,9 +6,12 @@ export default {
     success: "Action was successful",
     buttons: {
         save: "Salvar",
-        reset: "Resetar"
+        reset: "Resetar",
+        clear: "Limpar",
+        return: "Retornar"
     },
     // LABELS
+    labels: { search: "Pesquisa" },
     project: {
         laber: "Projeto",
         new: "Novo Projeto",
@@ -20,7 +23,9 @@ export default {
         new: "Novo Usuário",
         registration: "Cadastro de Usuário",
         name: "Nome",
-        registry: "Registro Profissional",
+        collaborator_code: "Registro Profissional",
+        code: "Código",
+        role: "Tipo",
         period: "Fase",
         email: "Email",
         phone: "Telefone",
@@ -28,12 +33,13 @@ export default {
         academic_function: "Formação/Função Acadêmica",
         affiliation: "Vínculo (CLT, Pres. Serviço, etc.)",
         password: "Senha",
-        code: "Código de Matrícula",
+        student_code: "Código de Matrícula",
         scholarship: "Bolsista"
     },
     // ROLE
     admin: "Administrador",
     student: "Estudante",
     collaborator: "Colaborador",
-    coordenator: "Coordenador"
+    coordenator: "Coordenador",
+    unknown: "Desconhecido"
 };

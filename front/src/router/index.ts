@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { route } from "quasar/wrappers";
 import VueRouter from "vue-router";
 import { RootState } from "../store";
@@ -9,7 +10,6 @@ import { Role } from "../core/types";
  * If not building with SSR mode, you can
  * directly export the Router instantiation
  */
-
 export default route<RootState>(({ Vue, store }: any) => {
     Vue.use(VueRouter);
 

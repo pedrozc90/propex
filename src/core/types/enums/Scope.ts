@@ -2,12 +2,11 @@ import { Property, IgnoreProperty } from "@tsed/common";
 
 export class Scope {
 
+    public static readonly ADMIN = new Scope("ADMIN", "admin", 100);
+    public static readonly COORDENATOR = new Scope("COORDENATOR", "coordenator", 75);
+    public static readonly COLLABORATOR = new Scope("COLLABORATOR", "collaborator", 50);
+    public static readonly STUDENT = new Scope("STUDENT", "student", 25);
     public static readonly UNKNOWN = new Scope("UNKNOWN", "unknown", 0);
-    public static readonly ADMIN = new Scope("ADMIN", "administrador", 100);
-
-    public static readonly COORDENATOR = new Scope("COORDENATOR", "coordenador", 75);
-    public static readonly STUDENT = new Scope("STUDENT", "estudante", 25);
-    public static readonly COLLABORATOR = new Scope("COLLABORATOR", "colaborador", 25);
 
     @Property({ name: "key" })
     public readonly key: string;

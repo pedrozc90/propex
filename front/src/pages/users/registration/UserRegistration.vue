@@ -2,7 +2,7 @@
     <q-layout id="user-registration" color="grey-2">
         <q-page-container>
             <q-page class="row justify-center items-center">
-                <q-card class="full-width" :bordered="true" flat square>
+                <q-card :bordered="true" flat square>
                     <q-card-section class="header text-white" color="primary">
                         <h3 class="bg-primary text-h4">{{ $t('user.registration')}}</h3>
                     </q-card-section>
@@ -32,7 +32,7 @@
 
                         <q-form ref="form2" v-show="role === student">
                             <!-- STUDENT -->
-                            <q-input :label="$t('user.code')" v-model="user.code" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
+                            <q-input :label="$t('user.student_code')" v-model="user.code" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
                             <q-input :label="$t('user.course')" v-model="user.course" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
@@ -43,7 +43,7 @@
 
                         <q-form ref="form3" v-show="role === collaborator">
                             <!-- COLLABORATOR -->
-                            <q-input :label="$t('user.registry')" v-model="user.code" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
+                            <q-input :label="$t('user.collaborator_code')" v-model="user.code" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
                             <q-input :label="$t('user.academic_function')" v-model="user.academicFunction" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
@@ -71,7 +71,8 @@ export default UserRegistration;
         height: 100%;
 
         .q-card {
-            max-width: 500px;
+            max-width: 1280px;
+            width: 80%;
             border: 1px solid $primary;
 
             .content {

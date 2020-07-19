@@ -1,18 +1,53 @@
 <template>
     <q-layout id="user-registration" color="grey-2">
         <q-page-container>
-            <q-page class="row justify-center items-center">
-                <q-card class="full-width" :bordered="true" flat square>
-                    <q-card-section class="header text-white" color="primary">
-                        <h3 class="bg-primary text-h4">$t('users')</h3>
-                    </q-card-section>
-
-                    <q-card-section class="content">
-                        <div v-for="user of users" :key="user.id">
-                            {{ user.name }} - {{ user.email }} - {{ user.code }}
-                        </div>
-                    </q-card-section>
-                </q-card>
+            <q-page>
+                <q-table
+                    :title="$t('user.label')" :data="users" :columns="columns" row-key="id"
+                    hide-selected-banner
+                    :pagination="pagination"
+                    @update:pagination = "onUpdatePagination"
+                    bordered dense flat square>
+                    <template v-slot:top>
+                        <!-- <q-btn color="primary" :disable="loading" label="Add row" @click="addRow" />
+                        <q-btn class="q-ml-sm" color="primary" :disable="loading" label="Remove row" @click="removeRow" />
+                        <q-space />
+                        <q-input borderless dense debounce="300" color="primary" v-model="filter">
+                        <template v-slot:append>
+                            <q-icon name="search" />
+                        </template>
+                        </q-input> -->
+                        <q-space />
+                        <q-input borderless dense debounce="300" v-model="q" type="text" :placeholder="$t('labels.search')" style="width: 250px;">
+                        <template v-slot:append>
+                            <q-icon name="search" />
+                        </template>
+                        </q-input>
+                    </template>
+                    <!-- <template v-slot:top-right>
+                        <q-input borderless dense debounce="300" v-model="q" type="text" :placeholder="$t('labels.search')" style="width: 250px;">
+                        <template v-slot:append>
+                            <q-icon name="search" />
+                        </template>
+                        </q-input>
+                    </template> -->
+                    <template v-slot:header="props">
+                        <q-tr :props="props">
+                            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                                {{ $t(`user.${col.label}`) }}
+                            </q-th>
+                        </q-tr>
+                    </template>
+                    <template v-slot:body="props">
+                        <q-tr :props="props" @dblclick="open($event, props.row)">
+                            <q-td key="name" :props="props">{{ props.row.name }}</q-td>
+                            <q-td key="email" :props="props">{{ props.row.email }}</q-td>
+                            <q-td key="role" :props="props">{{ $t(props.row.role.description) }}</q-td>
+                            <q-td key="code" :props="props">{{ props.row.code }}</q-td>
+                            <q-td key="phone" :props="props">{{ props.row.phone }}</q-td>
+                        </q-tr>
+                    </template>
+                </q-table>
             </q-page>
         </q-page-container>
     </q-layout>
@@ -24,54 +59,15 @@ export default UsersPage;
 </script>
 
 <style lang="scss" scoped>
-    .q-page {
-        height: 100%;
+.q-page {
+    max-width: 1280px;
+    width: 80%;
+    margin: 100px auto;
 
-        .q-card {
-            max-width: 500px;
-
-            .content {
-                .q-form {
-                    & > * {
-                        margin-top: 16px;
-                    }
-                    &:last-child {
-                        margin-top: 0;
-                    }
-                }
-
-                .q-separator {
-                    &:nth-of-type(2) {
-                        margin-top: 16px;
-                    }
-                }
-            }
-        }
-
-        .wrapper {
-            display: grid;
-            gap: 16px;
-            grid-template-columns: 1fr 1fr;
-            width: 100%;
-            padding: 0 16px 16px 16px;
-
-            .box {
-                &:last-of-type {
-                    margin: 0;
-                }
-            }
+    .q-table {
+        .q-table__top {
+            background-color: $primary !important;
         }
     }
-
-    .header {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        text-align: center;
-        font-weight: bold;
-
-        h3 {
-            margin: 0;
-        }
-    }
+}
 </style>

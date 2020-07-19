@@ -71,7 +71,7 @@ export class User extends UserBasic {
     public code: string;
 
     @Allow([ null, undefined ])
-    @PropertySerialize((v) => v.key)
+    @PropertySerialize((v) => v)
     @PropertyDeserialize((v) => ScopeEnumTransformer.from((typeof v === "string") ? v : v.key))
     @Property({ name: "role" })
     @Column({ name: "role", type: "varchar", length: 255, transformer: ScopeEnumTransformer, nullable: false })

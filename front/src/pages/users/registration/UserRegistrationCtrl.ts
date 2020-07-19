@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Vue, Component, Watch } from "vue-property-decorator";
+import { Vue, Component, Watch, Prop } from "vue-property-decorator";
 
-import { requiredInput } from "../../../core/utils";
+import { requiredInput, StringUtils } from "../../../core/utils";
 import { userService } from "../../../core/services";
 import { User, RoleEnum } from "../../../core/types";
 
@@ -10,6 +10,8 @@ export default class UserRegistration extends Vue {
 
     private readonly student: RoleEnum = RoleEnum.STUDENT;
     private readonly collaborator: RoleEnum = RoleEnum.COLLABORATOR;
+
+    public id: number | undefined;
 
     public user: User = {};
 
@@ -80,7 +82,7 @@ export default class UserRegistration extends Vue {
         }
     }
 
-    public async reset(): Promise<void> {
+    public reset(): void {
         console.log("USER:", this.user);
         if (!this.user.id) {
             this.user = {
@@ -90,10 +92,13 @@ export default class UserRegistration extends Vue {
         // } else {
         //     // this.user = null;
         }
-        await this.$router.replace({ name: "index" });
     }
 
-    public mounted() {
+    public async mounted(): Promise<void> {
+        if (StringUtils.isNotEmpty(this.$route.params.id)) {
+            this.id = parseInt(this.$route.params.id);
+            this.user = await userService.get(this.id);
+        }
         // this.reset();
         // avoid inputs to display error message on page load
         (this.$refs.form1 as any).resetValidation();

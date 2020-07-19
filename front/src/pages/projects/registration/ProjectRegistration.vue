@@ -2,7 +2,7 @@
     <q-layout id="user-registration" color="grey-2">
         <q-page-container>
             <q-page class="row justify-center items-center">
-                <q-card class="full-width" :bordered="true" flat square>
+                <q-card :bordered="true" flat square>
                     <q-card-section class="header text-white" color="primary">
                         <h3 class="bg-primary text-h4">{{ $t('project.new') }}</h3>
                     </q-card-section>
@@ -21,7 +21,7 @@
                                 fill-input
                                 input-debounce="0"
                                 :options="coordinatorOptions"
-                                :option-label="opt => `${opt.name} (${opt.email})`"
+                                :option-label="opt => `${opt.academicFunction} ${opt.name} (${opt.code})`"
                                 map-options
                                 @filter="filterFn"
                                 @filter-abort="filterAbortFn"
@@ -40,6 +40,10 @@
                         <q-btn class="box" color="grey-4" :label="$t('buttons.reset')" @click="reset" unelevated/>
                         <q-btn class="box" color="primary" :label="$t('buttons.save')" @click="submit" unelevated/>
                     </q-card-actions>
+
+                    <q-card-actions class="wrapper2">
+                        <q-btn color="primary" :label="$t('user.new')" @click="goToUserRegistration()" unelevated />
+                    </q-card-actions>
                 </q-card>
             </q-page>
         </q-page-container>
@@ -56,21 +60,30 @@ export default ProjectRegistration;
         height: 100%;
 
         .q-card {
-            max-width: 500px;
+            max-width: 1280px;
+            width: 80%;
+
+            .header {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                text-align: center;
+                font-weight: bold;
+
+                h3 {
+                    margin: 0;
+                }
+            }
 
             .content {
                 .q-form {
-                    & > * {
+                    .q-input,
+                    .q-select {
                         margin-top: 16px;
                     }
-                    &:last-child {
-                        margin-top: 0;
-                    }
-                }
 
-                .q-separator {
-                    &:nth-of-type(2) {
-                        margin-top: 16px;
+                    .q-input:first-of-type {
+                        margin-top: 0;
                     }
                 }
             }
@@ -89,17 +102,14 @@ export default ProjectRegistration;
                 }
             }
         }
-    }
 
-    .header {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        text-align: center;
-        font-weight: bold;
+        .wrapper2 {
+            width: 100%;
+            padding: 0 16px 16px 16px;
 
-        h3 {
-            margin: 0;
+            .q-btn {
+                width: 100%;
+            }
         }
     }
 </style>

@@ -41,9 +41,7 @@ export class UserRepository extends GenericRepository<User> {
         }
 
         if (StringUtils.isNotEmpty(params.q)) {
-            query.where("usr.email LIKE :email", { email: `%${params.q}%` })
-                .orWhere("usr.name LIKE :name", { name: `%${params.q}%` })
-                .orWhere("user.code LIKE :code", { code: `%${params.q}%` });
+            query.andWhere("(usr.email LIKE :email OR usr.name LIKE :name OR usr.code LIKE :code)", { email: `%${params.q}%`, name: `%${params.q}%`, code: `%${params.q}%` });
         }
         
         if (page && rpp) {
