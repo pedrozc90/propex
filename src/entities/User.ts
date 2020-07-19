@@ -1,9 +1,7 @@
-import { Default, Format, Property, Required, IgnoreProperty, Allow, PropertyDeserialize } from "@tsed/common";
+import { Default, Format, Property, Required, IgnoreProperty, Allow, PropertyDeserialize, PropertySerialize } from "@tsed/common";
 import { Description, Example } from "@tsed/swagger";
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, OneToOne, UpdateDateColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Unique, UpdateDateColumn, OneToMany } from "typeorm";
 
-import { Collaborator } from "./Collaborator";
-import { Student } from "./Student";
 import { ProjectHumanResource } from "./ProjectHumanResource";
 import { ScopeEnumTransformer } from "../core/utils";
 import { Scope } from "../core/types";
@@ -48,6 +46,7 @@ export class UserBasic extends UserCredentials {
     
 }
 
+@Unique("uk_users_code", [ "code" ])
 @Unique("uk_users_email", [ "email" ])
 @Entity({ name: "users" })
 export class User extends UserBasic {
@@ -59,23 +58,30 @@ export class User extends UserBasic {
     @Allow([ null, undefined ])
     public name: string;
 
-    @IgnoreProperty()
+    @PropertySerialize(() => undefined)
+    @PropertyDeserialize((v) => v)
     public password: string;
 
     @Allow([ null, undefined ])
     public phone: string;
+
+    @Description("Código de Matricula / Registro Profissional")
+    @Property({ name: "code" })
+    @Column({ name: "code", type: "varchar", length: 32, nullable: false })
+    public code: string;
+
+    @Allow([ null, undefined ])
+    @PropertySerialize((v) => v.key)
+    @PropertyDeserialize((v) => ScopeEnumTransformer.from((typeof v === "string") ? v : v.key))
+    @Property({ name: "role" })
+    @Column({ name: "role", type: "varchar", length: 255, transformer: ScopeEnumTransformer, nullable: false })
+    public role: Scope;
 
     @IgnoreProperty()
     @Description("Mark if user is active")
     @Property({ name: "active" })
     @Column({ name: "active", type: "boolean", nullable: false, default: true })
     public active: boolean = true;
-
-    // @PropertySerialize((v) => AgeRangeEnumTransformer.to(v))
-    @PropertyDeserialize((v) => ScopeEnumTransformer.from(v.key || v))
-    @Property({ name: "role" })
-    @Column({ name: "role", type: "varchar", length: 255, transformer: ScopeEnumTransformer, nullable: false })
-    public role: Scope = Scope.UNKNOWN;
 
     @Format("date-time")
     @Default(Date.now)
@@ -88,13 +94,34 @@ export class User extends UserBasic {
     @UpdateDateColumn({ name: "updated_at", type: "timestamp", nullable: true, update: true })
     public updatedAt: Date;
 
-    @Property({ name: "collaborator" })
-    @OneToOne(() => Collaborator, (collaborator) => collaborator.user)
-    public collaborator: Collaborator;
+    // --------------------------------------------------
+    // STUDENT
+    // --------------------------------------------------
+    @Property({ name: "course" })
+    @Column({ name: "course", type: "varchar", length: 255, nullable: true })
+    public course: string | null;
 
-    @Property({ name: "student" })
-    @OneToOne(() => Student, (student) => student.user)
-    public student: Student;
+    @Property({ name: "period" })
+    @Column({ name: "period", type: "varchar", length: 16, nullable: true })
+    public period: string | null;
+
+    @Default(false)
+    @Property({ name: "scholarship" })
+    @Column({ name: "scholarship", type: "boolean", default: false, nullable: false })
+    public scholarship: boolean = false;
+
+    // --------------------------------------------------
+    // COLLABORATOR
+    // --------------------------------------------------
+    @Description("Formação Acadêmica / Função")
+    @Property({ name: "academicFunction" })
+    @Column({ name: "academic_function", type: "varchar", length: 255, nullable: true })
+    public academicFunction: string | null;
+
+    @Description("Forma de Vínculo (CLT, Prestação de Serviço, etc.)")
+    @Property({ name: "affiliation" })
+    @Column({ name: "affiliation", type: "varchar", length: 255, nullable: true })
+    public affiliation: string | null;
 
     @Property({ name: "projectHumanResources" })
     @OneToMany(() => ProjectHumanResource, (projectHumanResource) => projectHumanResource.user)

@@ -3,9 +3,10 @@ import { BadRequest, NotFound } from "@tsed/exceptions";
 
 import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
-import { ProjectRepository, StudentRepository, ProjectHumanResourceRepository, UserRepository, CollaboratorRepository } from "../../repositories";
-import { Student, Page, Collaborator, ProjectHumanResource, ResultContent } from "../../entities";
+import { ProjectRepository, ProjectHumanResourceRepository, UserRepository } from "../../repositories";
+import { Page, ProjectHumanResource, ResultContent, User } from "../../entities";
 import { Context } from "../../core/models";
+import { Scope } from "../../core/types";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/human-resources")
@@ -15,9 +16,7 @@ export class ProjectHumanResourcesCtrl {
     constructor(
         private projectHumanResourcesRepository: ProjectHumanResourceRepository,
         private projectRepository: ProjectRepository,
-        private userRepository: UserRepository,
-        private studentRepository: StudentRepository,
-        private collaboratorRepository: CollaboratorRepository) {
+        private userRepository: UserRepository) {
         // initialize your stuffs here
     }
 
@@ -40,7 +39,6 @@ export class ProjectHumanResourcesCtrl {
     ): Promise<Page<ProjectHumanResource>> {
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-
         const phrs = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive });
         return Page.of<ProjectHumanResource>(phrs, page, rpp);
     }
@@ -68,10 +66,8 @@ export class ProjectHumanResourcesCtrl {
             phr.project = project;
 
             const userData = projectHumanReosurce.user;
-            const studentData = userData?.student;
-            const collaboratorData = userData?.collaborator;
 
-            if (studentData && projectHumanReosurce.coordinate === true) {
+            if (userData.role === Scope.STUDENT && projectHumanReosurce.coordinate === true) {
                 throw new BadRequest("Students cannot be a project coordinator.");
             }
 
@@ -79,42 +75,17 @@ export class ProjectHumanResourcesCtrl {
             let user = await this.userRepository.findOne({
                 where: [
                     { id: userData.id },
-                    { email: userData.email }
+                    { email: userData.email },
+                    { code: userData.code }
                 ]
             });
 
             // create a new user
             if (!user) {
-                user = this.userRepository.create(userData);
-                user.password = this.userRepository.generateRandomPassword(8);
-
-                user = await this.userRepository.save(user);
-
-                // save student information
-                if (studentData) {
-                    let student = await this.studentRepository.findOne({ code: studentData.code });
-                    if (!student) {
-                        student = this.studentRepository.create(studentData);
-                        student.user = user;
-
-                        student = await this.studentRepository.save(student);
-                    }
-                    user.student = student;
-                }
-
-                // save collaborator information
-                if (collaboratorData) {
-                    let collaborator = await this.collaboratorRepository.findOne({ profissionalRegistry: collaboratorData.profissionalRegistry });
-                    if (!collaborator) {
-                        collaborator = this.collaboratorRepository.create(collaboratorData);
-                        collaborator.user = user;
-
-                        collaborator = await this.collaboratorRepository.save(collaborator);
-                    }
-                    user.collaborator = collaborator;
-                }
+                user = await this.userRepository.register(userData);
             }
 
+            // make user part of the project
             phr.user = user;
         } else {
             phr = this.projectHumanResourcesRepository.merge(phr, projectHumanReosurce);
@@ -142,12 +113,11 @@ export class ProjectHumanResourcesCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
-    ): Promise<Page<Student>> {
+    ): Promise<Page<User>> {
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-
-        const students = await this.studentRepository.fetch({ page, rpp, q, projectId: project.id, exclusive, period, scholarship });
-        return Page.of<Student>(students, page, rpp);
+        const users = await this.userRepository.fetch({ page, rpp, q, projectId: project.id, exclusive, period, scholarship, role: Scope.STUDENT });
+        return Page.of<User>(users, page, rpp);
     }
 
     /**
@@ -166,12 +136,11 @@ export class ProjectHumanResourcesCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
-    ): Promise<Page<Collaborator>> {
+    ): Promise<Page<User>> {
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-
-        const collaborators = await this.collaboratorRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive });
-        return Page.of<Collaborator>(collaborators, page, rpp);
+        const users = await this.userRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role: Scope.COLLABORATOR });
+        return Page.of<User>(users, page, rpp);
     }
 
     /**

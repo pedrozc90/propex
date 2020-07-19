@@ -4,7 +4,6 @@ export * from "./generics/ResultContent";
 
 export * from "./Activity";
 export * from "./Attachment";
-export * from "./Collaborator";
 export * from "./Demand";
 export * from "./DisclosureMedia";
 export * from "./Evaluation";
@@ -19,7 +18,6 @@ export * from "./ProjectPublic";
 export * from "./ProjectThemeArea";
 export * from "./Public";
 export * from "./Publication";
-export * from "./Student";
 export * from "./Target";
 export * from "./ThemeArea";
 export * from "./User";

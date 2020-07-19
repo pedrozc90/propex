@@ -9,3 +9,4 @@ export * as EnumUtils from "./EnumUtils";
 export * as DateUtils from "./DateTimeUtils";
 export * as ParseUtils from "./ParserUtils";
 export * as StringUtils from "./StringUtils";
+export * as MigrationUtils from "./MigrationUtils";

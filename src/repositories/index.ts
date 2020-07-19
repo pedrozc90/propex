@@ -2,7 +2,6 @@ export * from "./generics/GenericRepository";
 
 export * from "./ActivityRepository";
 export * from "./AttachmentRepository";
-export * from "./CollaboratorRepository";
 export * from "./DemandRepository";
 export * from "./DisclosureMediaRepository";
 export * from "./EvaluationRepository";
@@ -17,7 +16,6 @@ export * from "./ProjectRepository";
 export * from "./ProjectThemeAreaRepository";
 export * from "./PublicationRepository";
 export * from "./PublicRepository";
-export * from "./StudentRepository";
 export * from "./TargetRepository";
 export * from "./ThemeAreaRepository";
 export * from "./UserRepository";

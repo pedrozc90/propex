@@ -1,9 +1,9 @@
 {
     "users": [
-        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000", "role": "ADMIN" }
+        { "name": "admin", "email": "admin@domain.com", "password": "123456", "phone": "(48) 00000-0000", "role": "ADMIN", "code": "admin" }
     ],
 
-    "knowledgeAreas": [
+    "knowledge_areas": [
         { "name": "Ciências Exatas e da Terra" },
         { "name": "Ciências Biológicas" },
         { "name": "Engenharia / Tecnologia" },
@@ -14,7 +14,7 @@
         { "name": "Lingüística, Letras e Artes" }
     ],
 
-    "themeAreas": [
+    "theme_areas": [
         { "name": "Comunicação" },
         { "name": "Cultura" },
         { "name": "Direitos Humanos e Justiça" },
@@ -25,7 +25,7 @@
         { "name": "Trabalho" }
     ],
 
-    "extensionLines": [
+    "extension_lines": [
         { "number":  1, "name": "2006 – Alfabetização, leitura e escrita"                                  , "operation": "Alfabetização e letramento de crianças, jovens e adultos; formação do leitor e do produtor de textos; incentivo à leitura; literatura; desenvolvimento de metodologias de ensino da leitura e da escrita e sua inclusão nos projetos político-pedagógicos das escolas." },
         { "number":  2, "name": "2006 – Artes cênicas"                                                     , "operation": "Dança, teatro, técnicas circenses, performance; formação, capacitação e qualificação de pessoas que atuam na área; memória, produção e difusão cultural e artística." },
         { "number":  3, "name": "2006 – Artes integradas"                                                  , "operation": "Ações multiculturais, envolvendo as diversas áreas da produção e da prática artística em um único programa integrado; memória, produção e difusão cultural e artística." },

@@ -51,7 +51,7 @@ export function normalize(s: string): string {
  * @param replacement                       -- replacement string.
  */
 export function sanitize(s: string, replacement: string = "-"): string {
-    var sanitized = s.replace(illegalRe, replacement)
+    const sanitized = s.replace(illegalRe, replacement)
         .replace(controlRe, replacement)
         .replace(reservedRe, replacement)
         .replace(windowsReservedRe, replacement);

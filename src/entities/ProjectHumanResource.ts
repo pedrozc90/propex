@@ -30,21 +30,21 @@ export class ProjectHumanResource extends Audit {
     public user: User;
     
     @Required()
-    @Description("Marca o coordenador do projecto")
+    @Description("Identifica o coordenador do projecto")
     @Default(false)
     @Property({ name: "coordinate" })
     @Column({ name: "coordinate", type: "boolean", default: false, nullable: false })
     public coordinate: boolean = false;
 
     @Required()
-    @Description("Dedicação exclusiva")
+    @Description("Dedicação Exclusiva")
     @Default(false)
     @Property({ name: "exclusive" })
     @Column({ name: "exclusive", type: "boolean", default: false, nullable: false })
     public exclusive: boolean = false;
 
     @Required()
-    @Description("Carga horária")
+    @Description("Carga Horária")
     @Property({ name: "workload" })
     @Column({ name: "workload", type: "int", width: 11, nullable: false })
     public workload: number;

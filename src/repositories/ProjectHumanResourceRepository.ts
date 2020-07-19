@@ -24,9 +24,7 @@ export class ProjectHumanResourceRepository extends GenericRepository<ProjectHum
         const rpp = params.rpp;
 
         const query = this.createQueryBuilder("phr")
-            .innerJoinAndSelect("phr.user", "usr")
-            .leftJoinAndSelect("usr.student", "std")
-            .leftJoinAndSelect("usr.collaborator", "clb");
+            .innerJoinAndSelect("phr.user", "usr");
             
         if (params.project || params.projectId) {
             const projectId = params.projectId || params.project?.id;
@@ -39,7 +37,7 @@ export class ProjectHumanResourceRepository extends GenericRepository<ProjectHum
         }
         
         if (isBoolean(params.coordinate)) {
-            query.where("std.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
+            query.where("phr.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
         }
 
         if (isBoolean(params.exclusive)) {
@@ -47,9 +45,9 @@ export class ProjectHumanResourceRepository extends GenericRepository<ProjectHum
         }
 
         if (StringUtils.isNotEmpty(params.q)) {
-            // query.where("std.code LIKE :code", { code: `%${params.q}%` })
-            //     .orWhere("std.course LIKE :course", { course: `%${params.q}%` })
-            //     .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
+            query.where("usr.code LIKE :code", { code: `%${params.q}%` })
+                .orWhere("user.email LIKE :email", { email: `%${params.q}%` })
+                .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
         }
 
         if (page && rpp) {

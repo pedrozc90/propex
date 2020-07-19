@@ -12,7 +12,6 @@ export class DevelopmentService {
         // repositories
         private ActivityRepository: Repo.ActivityRepository,
         private AttachmentRepository: Repo.AttachmentRepository,
-        private CollaboratorRepository: Repo.CollaboratorRepository,
         private DemandRepository: Repo.DemandRepository,
         private DisclosureMediaRepository: Repo.DisclosureMediaRepository,
         private EvaluationRepository: Repo.EvaluationRepository,
@@ -28,7 +27,6 @@ export class DevelopmentService {
         private ProjectThemeAreaRepository: Repo.ProjectThemeAreaRepository,
         private PublicRepository: Repo.PublicRepository,
         private PublicationRepository: Repo.PublicationRepository,
-        private StudentRepository: Repo.StudentRepository,
         private ThemeAreaRepository: Repo.ThemeAreaRepository,
         private UserRepository: Repo.UserRepository,
         // connection
@@ -38,9 +36,6 @@ export class DevelopmentService {
 
     public async $onReady(): Promise<any> {
         // const users = await this.UserRepository.find({ where: { id: MoreThan(1) } });
-
-        // const collaborators = await this.CollaboratorRepository.find({});
-        // const students = await this.StudentRepository.find({});
 
         // const knowledgeAreas = await this.KnowledgeAreaRepository.find({});
         // const extensionLines = await this.ExtensionLineRepository.find({});

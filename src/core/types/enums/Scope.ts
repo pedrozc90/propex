@@ -6,7 +6,6 @@ export class Scope {
     public static readonly ADMIN = new Scope("ADMIN", "administrador", 100);
 
     public static readonly COORDENATOR = new Scope("COORDENATOR", "coordenador", 75);
-    public static readonly PROFESSOR = new Scope("PROFESSOR", "professor", 50);
     public static readonly STUDENT = new Scope("STUDENT", "estudante", 25);
     public static readonly COLLABORATOR = new Scope("COLLABORATOR", "colaborador", 25);
 

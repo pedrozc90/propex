@@ -4,7 +4,7 @@ import { GenericRepository } from "./generics/GenericRepository";
 import { Evaluation } from "../entities";
 
 import { StringUtils } from "../core/utils";
-import { IOptions } from "src/core/types";
+import { IOptions } from "../core/types";
 
 interface EvaluationOptions extends IOptions {
     id?: number;

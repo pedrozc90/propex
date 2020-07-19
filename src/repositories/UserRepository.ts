@@ -3,9 +3,11 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { User, UserCredentials, Project } from "../entities";
-import { IOptions } from "../core/types";
+import { IOptions, Scope } from "../core/types";
 
 import { StringUtils } from "../core/utils";
+import { BadRequest } from "@tsed/exceptions";
+import { $log } from "@tsed/common";
 
 interface UserOptions extends IOptions {
     id?: number;
@@ -13,7 +15,9 @@ interface UserOptions extends IOptions {
     password?: string;
     active?: boolean;
     code?: string;
-    registry?: string;
+    affiliation?: string;
+    role?: Scope;
+    period?: string;
     project?: Project;
     projectId?: number;
 }
@@ -25,18 +29,21 @@ export class UserRepository extends GenericRepository<User> {
         const page = params.page;
         const rpp = params.rpp;
 
-        const query = this.createQueryBuilder("usr")
-            .leftJoinAndSelect("usr.student", "std")
-            .leftJoinAndSelect("usr.collaborator", "clb");
+        const query = this.createQueryBuilder("usr");
 
         if (params.project || params.projectId) {
             const projectId = params.projectId || params.project?.id;
             query.innerJoin("usr.projectHumanResources", "phr", "phr.project_id = :projectId", { projectId });
         }
 
+        if (params.role) {
+            query.andWhere("usr.role = :role", { role: params.role.key });
+        }
+
         if (StringUtils.isNotEmpty(params.q)) {
             query.where("usr.email LIKE :email", { email: `%${params.q}%` })
-                .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
+                .orWhere("usr.name LIKE :name", { name: `%${params.q}%` })
+                .orWhere("user.code LIKE :code", { code: `%${params.q}%` });
         }
         
         if (page && rpp) {
@@ -60,9 +67,7 @@ export class UserRepository extends GenericRepository<User> {
      * @param options                       -- query options.
      */
     public async findUserInfo(params: UserOptions): Promise<User | undefined> {
-        const query = this.createQueryBuilder("usr")
-            .leftJoinAndSelect("usr.collaborator", "clb")
-            .leftJoinAndSelect("usr.student", "std");
+        const query = this.createQueryBuilder("usr");
 
         if (params.id) {
             query.where("usr.id = :id", { id: params.id });
@@ -77,14 +82,43 @@ export class UserRepository extends GenericRepository<User> {
         }
 
         if (StringUtils.isNotEmpty(params.code)) {
-            query.andWhere("std.code = :code", { code: params.code });
-        }
-
-        if (StringUtils.isNotEmpty(params.registry)) {
-            query.andWhere("clb.professional_registry = :registry", { registry: params.registry });
+            query.andWhere("usr.code = :code", { code: params.code });
         }
             
         return query.getOne();
+    }
+
+    public async register(data: User): Promise<User> {
+        let user = await this.findUserInfo({ email: data.email, code: data.code });
+        if (user) {
+            throw new BadRequest(`Email ${user.email} already in use.`);
+        }
+
+        // generate a random password for a new user.
+        if (!data.password) {
+            data.password = this.generateRandomPassword();
+        }
+
+        // save new user.
+        user = this.create(data);
+        
+        // save collaborator or student data.
+        if (user.role === Scope.COLLABORATOR) {
+            user.scholarship = false;
+            user.period = null;
+        } else if (user.role === Scope.STUDENT) {
+            user.academicFunction = null;
+            user.affiliation = null;
+        }
+
+        user = await this.save(user);
+
+        // send email to user to informe the new password
+        $log.warn("--------------------------------------------------");
+        $log.warn("SEND EMAIL WITH PASSWORD TO THE NEW USER.");
+        $log.warn("--------------------------------------------------");
+
+        return user;
     }
 
     /**

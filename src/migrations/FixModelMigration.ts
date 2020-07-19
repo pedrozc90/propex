@@ -6,7 +6,6 @@ export class FixModelMigration1589001000000 implements MigrationInterface {
         const tables = [
             "activities",
             "attachments",
-            "collaborators",
             "demands",
             "disclosure_medias",
             "evaluations",
@@ -22,7 +21,6 @@ export class FixModelMigration1589001000000 implements MigrationInterface {
             "projects",
             "publications",
             "publics",
-            "students",
             "theme_areas",
             "users"
         ];

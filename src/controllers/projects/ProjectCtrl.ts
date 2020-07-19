@@ -65,9 +65,7 @@ export class ProjectCtrl {
     ): Promise<Page<Project>> {
         const query = this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.projectHumanResources", "phr")
-            .leftJoinAndSelect("phr.user", "usr")
-            .leftJoin("usr.collaborator", "clb")
-            .leftJoin("usr.student", "std");
+            .leftJoinAndSelect("phr.user", "usr");
 
         if (context.scope !== Scope.ADMIN) {
             query.where((qb) => {
@@ -104,7 +102,11 @@ export class ProjectCtrl {
         
         const user = await this.UserRepository.findUserInfo({ id: coordinator.id, email: coordinator.email });
         if (!user) {
-            throw new Exception(404, "Please, coodinator user is not registed.");
+            throw new BadRequest("Please, coodinator user is not registed.");
+        }
+
+        if (user.role !== Scope.COLLABORATOR) {
+            throw new BadRequest("A project coordinator need to be a collaborator.");
         }
 
         // create a new project
@@ -207,11 +209,9 @@ export class ProjectCtrl {
             .leftJoinAndSelect("p.publications", "pb")
             .leftJoinAndSelect("pb.attachment", "pba")
             
-            // load human resouces (collaborators and students)
+            // load human resouces
             .leftJoinAndSelect("p.projectHumanResources", "phr")
             .leftJoinAndSelect("phr.user", "usr")
-            .leftJoinAndSelect("usr.collaborator", "clb")
-            .leftJoinAndSelect("usr.student", "std")
             .where("p.id = :id", { id });
 
         return query.getOne();

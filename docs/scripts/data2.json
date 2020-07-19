@@ -1,29 +1,26 @@
 {
     "users": [
-        { "name": "kenny", "email": "kenny@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
-        { "name": "john" , "email": "john@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
-        { "name": "josh" , "email": "josh@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
-        { "name": "mary" , "email": "mary@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR" },
-        { "name": "kevin", "email": "kevin@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
-        { "name": "billy", "email": "billy@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
-        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT" },
+        { "name": "kenny", "email": "kenny@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR", "code": "x0000000a"   , "academic_function": "Professor",  "affiliation": "none" },
+        { "name": "john" , "email": "john@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT"     , "code": "000001"      , "course": "Course A", "period": "5 period", "scholarship": false },
+        { "name": "josh" , "email": "josh@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR", "code": "x0000000b"   , "academic_function": "Professor",  "affiliation": "none" },
+        { "name": "mary" , "email": "mary@propex.com" , "password": "123456", "phone": "(48) 00000-0000", "role": "COLLABORATOR", "code": "x0000000c"   , "academic_function": "Professor",  "affiliation": "none" },
+        { "name": "kevin", "email": "kevin@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT"     , "code": "000002"      , "course": "Course B", "period": "6 period", "scholarship": true  },
+        { "name": "billy", "email": "billy@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT"     , "code": "000003"      , "course": "Course C", "period": "6 period", "scholarship": true  },
+        { "name": "louis", "email": "louis@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "STUDENT"     , "code": "000004"      , "course": "Course D", "period": "7 period", "scholarship": false },
 
-        { "name": "test", "email": "test@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "UNKNOWN" }
-    ],
-    "collaborators": [
-        { "academicFunction": "Professor", "profissionalRegistry": "x0000000a", "affiliation": "none", "userId": 2 },
-        { "academicFunction": "Professor", "profissionalRegistry": "x0000000b", "affiliation": "none", "userId": 4 },
-        { "academicFunction": "Professor", "profissionalRegistry": "x0000000c", "affiliation": "none", "userId": 5 }
-    ],
-    "students": [
-        { "code": "000001", "course": "Course A", "period": "5 period", "scholarship": false, "userId": 3 },
-        { "code": "000002", "course": "Course B", "period": "6 period", "scholarship": true , "userId": 6 },
-        { "code": "000003", "course": "Course C", "period": "6 period", "scholarship": true , "userId": 7 },
-        { "code": "000004", "course": "Course D", "period": "7 period", "scholarship": false, "userId": 8 },
-        { "code": "00000X", "course": "DEVELOPMENT", "period": "X", "scholarship": false, "userId": 9 }
+        { "name": "test", "email": "test@propex.com", "password": "123456", "phone": "(48) 00000-0000", "role": "UNKNOWN", "code": "development" }
     ],
     "projects": [
         { "title": "Project 1", "program": "Atividade Avaliativa" },
         { "title": "Project 2", "program": "Programming" }
+    ],
+    "project_human_resources": [
+        { "project_id": 1, "user_id": 2, "coordinate": true , "exclusive": true , "workload": 24, "dt_admission": "2020-01-01" },
+        { "project_id": 1, "user_id": 3, "coordinate": false, "exclusive": false, "workload":  8, "dt_admission": "2020-01-01" },
+        { "project_id": 1, "user_id": 4, "coordinate": true , "exclusive": true , "workload": 24, "dt_admission": "2020-01-01" },
+        { "project_id": 2, "user_id": 5, "coordinate": true , "exclusive": true , "workload": 24, "dt_admission": "2020-01-01" },
+        { "project_id": 2, "user_id": 6, "coordinate": false, "exclusive": false, "workload":  8, "dt_admission": "2020-01-01" },
+        { "project_id": 2, "user_id": 7, "coordinate": false, "exclusive": false, "workload":  8, "dt_admission": "2020-01-01" },
+        { "project_id": 2, "user_id": 8, "coordinate": false, "exclusive": false, "workload":  8, "dt_admission": "2020-01-01" }
     ]
 }
