@@ -5,10 +5,17 @@ import { projectService } from "../../core/services";
 import { Project } from "../../core/types";
 import { requiredInput } from "../../core/utils";
 
-@Component({ name: "ProjectPage" })
+import General from "./form/General.vue";
+
+@Component({
+    name: "ProjectPage",
+    components: { "general-form": General }
+})
 export default class ProjectPage extends Vue {
     
-    public id: number | undefined;
+    public step = 1;
+
+    public id?: number;
     public project: Project = {};
 
     public requiredInput = requiredInput;
@@ -28,6 +35,8 @@ export default class ProjectPage extends Vue {
     }
 
     public async mounted() {
+        this.id = parseInt(this.$route.params.id);
+        console.log("PROJECT ID:", this.id);
         await this.load();
     }
 

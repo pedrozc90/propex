@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Vue, Component, Watch, Prop } from "vue-property-decorator";
+import { Vue, Component, Watch } from "vue-property-decorator";
 
 import { requiredInput, StringUtils } from "../../../core/utils";
 import { userService } from "../../../core/services";
@@ -9,13 +9,11 @@ import { User, RoleEnum } from "../../../core/types";
 export default class UserRegistration extends Vue {
 
     private readonly student: RoleEnum = RoleEnum.STUDENT;
-    private readonly collaborator: RoleEnum = RoleEnum.COLLABORATOR;
 
     public id: number | undefined;
-
     public user: User = {};
 
-    public role = this.student
+    public role: RoleEnum | undefined = this.student
     public isPassword = true;
 
     public requiredInput = requiredInput;
@@ -26,14 +24,14 @@ export default class UserRegistration extends Vue {
         if (newValue) {
             this.user.role = { key: newValue };
         }
-        if (newValue === RoleEnum.STUDENT) {
-            this.user.academicFunction = undefined;
-            this.user.affiliation = undefined;
-        } else if (newValue === RoleEnum.COLLABORATOR) {
-            this.user.course = undefined;
-            this.user.period = undefined;
-            this.user.scholarship = false;
-        }
+        // if (newValue === RoleEnum.STUDENT) {
+        //     this.user.academicFunction = undefined;
+        //     this.user.affiliation = undefined;
+        // } else if (newValue === RoleEnum.COLLABORATOR) {
+        //     this.user.course = undefined;
+        //     this.user.period = undefined;
+        //     this.user.scholarship = false;
+        // }
     }
 
     public get ready(): boolean {
@@ -82,28 +80,31 @@ export default class UserRegistration extends Vue {
         }
     }
 
-    public reset(): void {
-        console.log("USER:", this.user);
-        if (!this.user.id) {
+    public async reset(): Promise<void> {
+        if (!this.id) {
             this.user = {
                 scholarship: false,
                 role: { key: RoleEnum.STUDENT }
             };
-        // } else {
-        //     // this.user = null;
+        } else {
+            await this.load(this.id);
         }
+        (this.$refs.form1 as any).resetValidation();
+        (this.$refs.form2 as any).resetValidation();
+        (this.$refs.form3 as any).resetValidation();
+    }
+
+    public async load(id?: number): Promise<void> {
+        if (!id) return;
+        this.user = await userService.get(id);
+        this.role = this.user.role?.key;
     }
 
     public async mounted(): Promise<void> {
         if (StringUtils.isNotEmpty(this.$route.params.id)) {
             this.id = parseInt(this.$route.params.id);
-            this.user = await userService.get(this.id);
         }
-        // this.reset();
-        // avoid inputs to display error message on page load
-        (this.$refs.form1 as any).resetValidation();
-        (this.$refs.form2 as any).resetValidation();
-        (this.$refs.form3 as any).resetValidation();
+        await this.reset();
     }
 
 }

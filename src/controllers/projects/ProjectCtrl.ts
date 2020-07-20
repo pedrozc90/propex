@@ -61,11 +61,14 @@ export class ProjectCtrl {
     public async fetch(@Locals("context") context: Context,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("extension-line") extensionLineId?: number,
+        @QueryParams("knowlegde-area") knowledgeAreaId?: number
     ): Promise<Page<Project>> {
         const query = this.ProjectRepository.createQueryBuilder("p")
             .leftJoinAndSelect("p.projectHumanResources", "phr")
-            .leftJoinAndSelect("phr.user", "usr");
+            .leftJoinAndSelect("phr.user", "usr")
+            .where("phr.coordinate = 1");
 
         if (context.scope !== Scope.ADMIN) {
             query.where((qb) => {
@@ -74,6 +77,14 @@ export class ProjectCtrl {
                     .getQuery();
                 return `p.id IN ${subquery}`;
             });
+        }
+
+        if (extensionLineId) {
+            query.innerJoin("p.extensionLines", "el", "el.id = :extensionLineId", { extensionLineId });
+        }
+
+        if (knowledgeAreaId) {
+            query.innerJoin("p.knowledgeAreas", "ka", "ka.id = :knowledgeAreaId", { knowledgeAreaId });
         }
 
         if (StringUtils.isNotEmpty(q)) {

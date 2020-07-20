@@ -1,29 +1,36 @@
 <template>
-    <q-layout id="user-registration" color="grey-2">
+    <q-layout id="project-layout" color="grey-2">
         <q-page-container>
-            <q-page class="row justify-center items-center">
-                <span>{{ project.title }}</span>
-                <q-card class="full-width" :bordered="true" flat square>
-                    <q-card-section class="header text-white" color="primary">
-                        <h3 class="bg-primary text-h4">{{ project.title }}</h3>
-                    </q-card-section>
+            <q-page>
+                
+                <q-stepper v-model="step" ref="stepper" color="primary" header-nav animated flat bordered>
+                    <q-step :name="1" title="General" icon="settings" :done="step > 1">
+                        <general-form :project="project" />
+                    </q-step>
+                    <q-step :name="2" title="Human Resources" icon="settings" :done="step > 2">
+                        STEP 2
+                    </q-step>
+                    <q-step :name="3" title="Atividades" icon="settings" :done="step > 3">
+                        STEP 3
+                    </q-step>
+                    <q-step :name="4" title="Público" icon="settings" :done="step > 4">
+                        STEP 4
+                    </q-step>
+                    <q-step :name="5" title="Parceiros" icon="settings" :done="step > 5">
+                        STEP 5
+                    </q-step>
+                    <q-step :name="6" title="Avaliação" icon="settings" :done="step > 6">
+                        STEP 6
+                    </q-step>
 
-                    <q-card-section class="content">
-                        <q-form ref="form1">
-                            <!-- USER -->
-                            <q-input label="Título" v-model="project.title" type="text" lazy-rules :rules="[ requiredInput ]" autofocus dense filled square />
+                    <template v-slot:navigation>
+                        <q-stepper-navigation>
+                        <q-btn @click="$refs.stepper.next()" color="primary" :label="step === 3 ? 'Finish' : 'Continue'" unelevated />
+                        <q-btn v-if="step > 1" flat color="primary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" unelevated/>
+                        </q-stepper-navigation>
+                    </template>
+                </q-stepper>
 
-                            <q-input label="Programa" v-model="project.program" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
-
-                            <q-input label="Cursos Inclídos" v-model="project.includedCourses" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
-                        </q-form>
-                    </q-card-section>
-
-                    <q-card-actions class="wrapper">
-                        <q-btn class="box" color="grey-4" label="Reset" @click="reset" unelevated/>
-                        <q-btn class="box" color="primary" label="Save" @click="submit" unelevated/>
-                    </q-card-actions>
-                </q-card>
             </q-page>
         </q-page-container>
     </q-layout>
@@ -35,4 +42,18 @@ export default ProjectPage;
 </script>
 
 <style lang="scss" scoped>
+$spacing: 16px;
+
+.q-page {
+    width: 80%;
+    max-width: 1280px;
+    padding: 16px;
+    margin: 0 auto;
+}
+
+.q-stepper__step-content {
+    .q-stepper__step-inner {
+        padding: 16px !important;
+    }
+}
 </style>

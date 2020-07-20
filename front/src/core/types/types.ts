@@ -74,6 +74,20 @@ export interface Project extends Audit {
     // projectThemeAreas?: ProjectThemeArea[];
     // activities?: Activity[];
     // extensionLines?: ExtensionLine[];
-    // knowledgeAreas?: KnowledgeArea[];
+    knowledgeAreas?: KnowledgeArea[];
     // attachments?: Attachment[];
+}
+
+export interface ExtensionLine extends Audit {
+    id?: number;
+    number?: number;
+    name?: string;
+    operation?: string;
+    projects?: Project[];
+}
+
+export interface KnowledgeArea extends Audit {
+    id?: number;
+    name?: string;
+    projects?: Project[];
 }

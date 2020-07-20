@@ -4,7 +4,6 @@ import { Vue, Component, Watch } from "vue-property-decorator";
 import { User } from "../../core/types";
 import { userService } from "../../core/services";
 import { Page } from "../../core/models";
-import { StringUtils } from "src/core/utils";
 
 @Component({ name: "UsersPage" })
 export default class UsersPage extends Vue {
@@ -44,7 +43,7 @@ export default class UsersPage extends Vue {
 
     public async open(event: any, user: User): Promise<void> {
         if (user && user.id) {
-            await this.$router.replace({ name: "user:registration", params: { id: `${user.id}` } });
+            await this.$router.replace({ name: "user:edit", params: { id: `${user.id}` } });
         }
     }
 

@@ -1,25 +1,26 @@
-// import * as dtfilters from "@core/utils/helpers/DateHelper";
+/* eslint-disable @typescript-eslint/unbound-method */
+import Vue from "vue";
 
-// // initialize global filters
-// export default async ({ Vue }) => {
+import { DateUtils, StringUtils } from "../core/utils";
 
-//     // date
-//     Vue.filter("toDate", dtfilters.toDate);
-//     Vue.filter("toBRString", dtfilters.toBRString);
-//     Vue.filter("toISOString", dtfilters.toISOString);
-//     Vue.filter("toDateString", dtfilters.toDateString);
-//     Vue.filter("toDateTimeString", dtfilters.toDateTimeString);
-//     Vue.filter("isValid", dtfilters.isValid);
-//     Vue.filter("formatDate", dtfilters.formatDate);
-//     Vue.filter("compareDate", dtfilters.compareDate);
-//     Vue.filter("convertDate", dtfilters.convertDate);
+// initialize global filters
 
-//     // string
-//     Vue.filter("uppercase", (value: string) => (value) ? value.toUpperCase() : null);
-//     Vue.filter("lowercase", (value: string) => (value) ? value.toLowerCase() : null);
-//     Vue.filter("reverse", (value: string) => (value) ? value.split("").reverse().join("") : null);
-//     Vue.filter("capitalize", (value: string) => (value) ? value.split(" ").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ") : null);
+// date
+Vue.filter("toDate", DateUtils.toDate);
+Vue.filter("toBRString", DateUtils.toBRString);
+Vue.filter("toISOString", DateUtils.toISOString);
+Vue.filter("toDateString", DateUtils.toDateString);
+Vue.filter("toDateTimeString", DateUtils.toDateTimeString);
+Vue.filter("isValid", DateUtils.isValid);
+Vue.filter("formatDate", DateUtils.formatDate);
+Vue.filter("compareDate", DateUtils.compareDate);
+Vue.filter("convertDate", DateUtils.convertDate);
+
+// string
+Vue.filter("uppercase", StringUtils.uppercase);
+Vue.filter("lowercase", StringUtils.lowercase);
+Vue.filter("reverse", StringUtils.reverse);
+Vue.filter("capitalize", StringUtils.captalize);
 
 //     // Vue.prototype.$filters = Vue.prototype.$options.filters;
-
 // };

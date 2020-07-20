@@ -10,7 +10,7 @@ export default class BasicService<T> {
             .then((response: AxiosResponse) => (response) ? response.data : null);
     }
 
-    public async get(id: number): Promise<T> {
+    public async get(id?: number): Promise<T> {
         if (!id) {
             throw new Error("Invalid id");
         }

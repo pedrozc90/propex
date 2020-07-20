@@ -2,11 +2,15 @@ import { axiosInstance } from "../../boot/axios";
 import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { Project, IOptions, User } from "../types";
+import { Project, IOptions, User, ExtensionLine, KnowledgeArea } from "../types";
 import { Page } from "../models";
 
 export interface ProjectOptions extends IOptions {
     program?: string;
+    extensionLine?: ExtensionLine;
+    extensionLineId?: number;
+    knowledgeArea?: KnowledgeArea;
+    knowledgeAreaId?: number;
 }
 
 export class ProjectService extends BasicService<Project> {
@@ -24,13 +28,23 @@ export class ProjectService extends BasicService<Project> {
         return ProjectService.instance;
     }
 
-    public async fetch(params: ProjectOptions): Promise<Page<Project>> {
+    public async fetch(options: ProjectOptions): Promise<Page<Project>> {
+        const params: any = {};
+        params.page = options.page;
+        params.rpp = options.rpp;
+        params.q = options.q;
+        params["extension-line"] = options.extensionLine?.id || options.extensionLineId;
+        params["knowledge-area"] = options.knowledgeArea?.id || options.knowledgeAreaId;
         return await axiosInstance.get<Project>(this.url, { params: params })
             .then((response: AxiosResponse) => response.data.content);
     }
 
     public async create(project: Project, coordinator: User): Promise<unknown> {
         return axiosInstance.post(this.url, { project, coordinator });
+    }
+
+    public async save(project: Project): Promise<unknown> {
+        return axiosInstance.put(this.url, { project });
     }
 
 }

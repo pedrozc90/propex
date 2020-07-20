@@ -3,8 +3,8 @@
         <q-page-container>
             <q-page class="row justify-center items-center">
                 <q-card :bordered="true" flat square>
-                    <q-card-section class="header text-white" color="primary">
-                        <h3 class="bg-primary text-h4">{{ $t('user.registration')}}</h3>
+                    <q-card-section class="header">
+                        <h3 class="text-h4">{{ $t('user.registration')}}</h3>
                     </q-card-section>
 
                     <q-card-section class="content">
@@ -75,6 +75,20 @@ export default UserRegistration;
             width: 80%;
             border: 1px solid $primary;
 
+            .header {
+                margin: 0;
+                padding: 8px;
+                width: 100%;
+                text-align: center;
+                font-weight: bold;
+                background-color: $primary;
+                color: white;
+
+                h3 {
+                    margin: 0;
+                }
+            }
+
             .content {
                 .q-form {
                     & > * {
@@ -117,18 +131,6 @@ export default UserRegistration;
                     margin: 0;
                 }
             }
-        }
-    }
-
-    .header {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        text-align: center;
-        font-weight: bold;
-
-        h3 {
-            margin: 0;
         }
     }
 </style>

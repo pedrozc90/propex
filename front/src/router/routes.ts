@@ -16,10 +16,23 @@ const routes: RouteConfig[] = [
         component: () => import("layouts/Layout.vue"),
         children: [
             { path: "", name: "index", component: () => import("pages/index/Index.vue") },
-            { path: "/users", name: "users", component: () => import("pages/users/Users.vue") },
-            { path: "/users/registration", name: "user:registration", component: () => import("pages/users/registration/UserRegistration.vue"), props: true },
-            { path: "/project/registration", name: "project:registration", component: () => import("pages/projects/registration/ProjectRegistration.vue") },
-            { path: "/project/:id", name: "project", component: () => import("pages/projects/Project.vue") }
+            {
+                path: "/users",
+                component: () => import("layouts/EmptyLayout.vue"),
+                children: [
+                    { path: "/", name: "users", component: () => import("pages/users/Users.vue") },
+                    { path: ":id", name: "user:edit", component: () => import("pages/users/registration/UserRegistration.vue") },
+                    { path: "registration", name: "user:registration", component: () => import("pages/users/registration/UserRegistration.vue") }
+                ]
+            },
+            {
+                path: "/projects",
+                component: () => import("layouts/EmptyLayout.vue"),
+                children: [
+                    { path: ":id", name: "project", component: () => import("pages/projects/Project.vue") },
+                    { path: "registration", name: "project:registration", component: () => import("pages/projects/registration/ProjectRegistration.vue") }
+                ]
+            }
         ]
     },
 

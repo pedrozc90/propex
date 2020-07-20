@@ -41,6 +41,9 @@ export class UserService extends BasicService<User> {
     }
 
     public async save(user: User): Promise<unknown> {
+        if (user.id) {
+            return axiosInstance.put(this.url, { user });
+        }
         return axiosInstance.post(this.url, { user });
     }
     

@@ -29,6 +29,19 @@ export class StringUtils {
      */
     public static captalize(s: string): string {
         return s.split(" ").map((w) => w.substring(0, 1).concat(w.substring(1).toLowerCase())).join(" ");
+        // return s.split(" ").map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ")
+    }
+
+    public static uppercase(s: string): string {
+        return s.toUpperCase();
+    }
+
+    public static lowercase(s: string) {
+        return s.toLowerCase();
+    }
+    
+    public static reverse(s: string) {
+        return s.split("").reverse().join("");
     }
 
     /**

@@ -14,7 +14,7 @@
 
                             <q-input :label="$t('project.program')" v-model="project.program" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
-                            <q-select :label="$t('coordenator')"
+                            <q-select :label="$t('coordinator')"
                                 v-model="coordinator"
                                 use-input
                                 hide-selected
