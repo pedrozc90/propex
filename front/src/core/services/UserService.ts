@@ -8,6 +8,7 @@ import { StringUtils } from "../utils";
 
 export interface UserOptions extends IOptions {
     role?: RoleEnum;
+    project?: number;
 }
 
 export class UserService extends BasicService<User> {

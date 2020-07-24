@@ -1,9 +1,9 @@
 import { ActionTree } from "vuex";
 
 import { RootState } from "../index";
-import { AuthState } from "./state";
+import state, { AuthState } from "./state";
 
-import { UserCredentials, RoleEnum } from "../../core/types";
+import { UserCredentials } from "../../core/types";
 import { authenticationService } from "../../core/services";
 
 const actions: ActionTree<AuthState, RootState> = {
@@ -18,24 +18,19 @@ const actions: ActionTree<AuthState, RootState> = {
         if (!response) {
             throw new Error("Authentication failed.");
         }
+        console.log("login", response);
 
         // retrieve token and scope from response
         if (!response.token) {
             throw new Error("Token not found.");
         }
 
-        // save it on browser local storage
+        // keep token saved on browser local storage
         authenticationService.setToken(response.token);
 
-        // store it on vuex store
+        // mutate vuex state
         commit("authenticate", { token: response.token, user: response.user });
 
-        // // request context from backend
-        // const context: Context = await authenticationService.context();
-
-        // // save it on vuex store
-        // commit("context", { context });
-        
         // redirect depending on user role
         await dispatch("redirect");
     },
@@ -46,13 +41,13 @@ const actions: ActionTree<AuthState, RootState> = {
      */
     async logout({ commit }): Promise<void> {
         // clear browser local storage
-        await authenticationService.logout();
+        // await authenticationService.logout();
         
         // clear vuex store
         commit("logout");
 
         // send back to login
-        await this.$router.replace({ name: "login" });
+        await this.$router.push({ name: "login" });
     },
 
     /**
@@ -60,10 +55,12 @@ const actions: ActionTree<AuthState, RootState> = {
      * @param param                         -- action params.
      */
     async redirect({ dispatch, state }): Promise<void> {
-        if (state.user?.role?.key !== RoleEnum.UNKOWN) {
-            await this.$router.push({ name: "index" });
-        } else {
+        const role = state.user?.role;
+        if (!role) {
             await dispatch("logout");
+        } else {
+            // await this.$router.push({ name: "index" });
+            await this.$router.push({ name: "project", params: { id: "1" } });
         }
     },
 
@@ -71,22 +68,20 @@ const actions: ActionTree<AuthState, RootState> = {
      * Verify local storage when page reloads.
      * @param param                         -- action params.
      */
-    async autoLogin({ state, commit, dispatch }): Promise<void> {
-        // check if user is already authenticated
+    async autoLogin({ commit, dispatch }): Promise<void> {
         if (state.token) return;
 
         // retrieve token and role from browser local storage
         const token: string | null = authenticationService.getToken();
 
-        // check if user was logged in
+        // return to the router guard
         if (!token) return;
-
-        // request context from backend
+        
         const user = await authenticationService.context();
-
+        
         // store it on vuex store
         commit("authenticate", { token, user: user });
-
+        
         // redirect depending on user role
         await dispatch("redirect");
     },

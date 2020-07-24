@@ -10,7 +10,6 @@ export class PopulateTwoMigrationl1589006000000 implements MigrationInterface {
         for (const table in data) {
             const query = MigrationUtils.buildInsertQuery(table, (data as any)[table]);
             for (const q of query) {
-                console.log(q);
                 await queryRunner.query(q);
             }
         }

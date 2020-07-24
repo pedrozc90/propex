@@ -7,21 +7,25 @@ import { requiredInput } from "../../../core/utils";
 @Component({ name: "General" })
 export default class GeneralCtrl extends Vue {
 
-    @Prop({ type: Object, required: true, default: undefined }) public project!: Project;
+    @Prop({ type: Number, required: true, default: undefined }) public id!: number;
+
+    public project: Project = {};
 
     public requiredInput = requiredInput
 
     public async submit(): Promise<void> {
-        // nothing
+        const valid = await (this.$refs["form-general"] as any).validate();
+        if (!valid) return;
+
         await projectService.save(this.project);
     }
 
     public async reset(): Promise<void> {
-        // nothing
+        this.project = await projectService.get(this.id);
     }
 
-    public mounted(): void {
-        console.log("GENERAL:", this.project);
+    public async mounted(): Promise<void> {
+        this.project = await projectService.get(this.id);
     }
 
 }

@@ -7,6 +7,7 @@ import { ProjectRepository, ProjectHumanResourceRepository, UserRepository } fro
 import { Page, ProjectHumanResource, ResultContent, User } from "../../entities";
 import { Context } from "../../core/models";
 import { Scope } from "../../core/types";
+import { ScopeEnumTransformer } from "../../core/utils";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/human-resources")
@@ -35,11 +36,15 @@ export class ProjectHumanResourcesCtrl {
         @QueryParams("exclusive") exclusive?: boolean,
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
-        @QueryParams("q") q?: string
+        @QueryParams("q") q?: string,
+        @QueryParams("role") role?: Scope | string
     ): Promise<Page<ProjectHumanResource>> {
+        if (typeof role === "string") {
+            role = ScopeEnumTransformer.from(role);
+        }
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-        const phrs = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive });
+        const phrs = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role });
         return Page.of<ProjectHumanResource>(phrs, page, rpp);
     }
 

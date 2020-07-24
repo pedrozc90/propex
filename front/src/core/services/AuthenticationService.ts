@@ -2,6 +2,7 @@ import { AxiosResponse, AxiosError } from "axios";
 import { axiosInstance } from "../../boot/axios";
 
 import { IAuth, UserCredentials, User } from "../types";
+import { debug } from "console";
 
 const TOKEN = "token";
 
@@ -54,8 +55,8 @@ export class AuthenticationService {
     }
 
     public async context(): Promise<User> {
-        return await axiosInstance.get<User>(`${this.url}/context`)
-            .then((response: AxiosResponse) => response.data.content.user)
+        return axiosInstance.get<User>(`${this.url}/context`)
+            .then((response: AxiosResponse) => response.data.content)
             .catch((error: AxiosError) => {
                 throw new Error(error.message);
             });

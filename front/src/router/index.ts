@@ -24,14 +24,14 @@ export default route<RootState>(({ Vue, store }: any) => {
         base: process.env.VUE_ROUTER_BASE
     });
 
-    Router.beforeEach(async (to, from, next) => {
+    Router.beforeEach(async (to: any, from: any, next) => {
         // retrieve token from local storage to auto login
         await store.dispatch("authentication/autoLogin");
 
         const role: Role | undefined = store.getters["authentication/scope"];
         
-        const isPublic: boolean = (!to.meta) || (!to.meta.authorize) || (to.meta.authorize.length === 0);
-        const requiredAuth: boolean | undefined = to.meta?.authorize?.includes(role);
+        const isPublic: boolean = (!to.meta) || (!to.meta.scope) || (to.meta.scope.length === 0);
+        const requiredAuth: boolean | undefined = to.meta?.scope?.includes(role);
         
         if (!isPublic && !requiredAuth) {
             next({ name: "login" });

@@ -1,15 +1,15 @@
 <template>
     <q-layout id="login">
         <q-page-container>
-            <q-page class="row justify-center items-center bg-primary">
-                <q-card class="full-width" :bordered="true" flat square>
+            <q-page>
+                <q-card :bordered="true" flat square>
                     <q-form ref="form" @submit="login">
-                        <q-card-section class="logo">
+                        <q-card-section class="logo" style="padding: 0;">
                             <!-- <img src="~assets/quasar-logo-full.svg" alt="Logo"> -->
-                            <h2 class="text-h4 text-primary" style="margin: 0; font-weight: bold;">Propex</h2>
+                            <h3>Propex</h3>
                         </q-card-section>
 
-                        <q-card-section class="q-gutter-y-md" style="margin-left: 0;">
+                        <q-card-section class="content" style="padding: 0;">
                             <q-input  label="Email"
                             v-model="credentials.email"
                             lazy-rules :rules="[ requiredInput ]"
@@ -36,8 +36,8 @@
                             <q-checkbox v-model="rememberMe" label="Remember Me" dense />
                         </q-card-section>
 
-                        <q-card-actions class="full-width q-pa-md" style="margin: 0; padding-top: 0">
-                            <q-btn class="full-width" color="primary" label="Sing In" type="submit" unelevated/>
+                        <q-card-actions class="actions" style="padding: 0;">
+                            <q-btn color="primary" label="Sing In" type="submit" unelevated/>
                         </q-card-actions>
                     </q-form>
                 </q-card>
@@ -52,21 +52,51 @@ export default Login;
 </script>
 
 <style lang="scss" scoped>
+$spacing: 16px;
+
+.q-layout {
+    background-color: $primary;
+
     .q-page {
-        height: 100%;
+        display: grid;
+        place-items: center;
 
         .q-card {
-            max-width: 500px;
-        }
-    }
+            width: 500px;
+            min-width: 100px;
+            max-width: 80%;
+            border: 1px solid #ddd;
+            padding: $spacing;
 
-    .logo {
-        margin: 0;
-        width: 100%;
-        text-align: center;
-        
-        img {
-            height: 100px;
+            // .q-form {
+            //     position: unset;
+            // }
+
+            .logo {
+                margin-bottom: $spacing;
+                text-align: center;
+                color: $primary;
+                font-weight: bolder;
+
+                h1, h2, h3 {
+                    margin: 0;
+                }
+            }
+
+            .content {
+                margin-bottom: $spacing;
+
+                .q-input {
+                    margin-bottom: $spacing;
+                }
+            }
+
+            .actions {
+                .q-btn {
+                    width: 100%;
+                }
+            }
         }
     }
+}
 </style>

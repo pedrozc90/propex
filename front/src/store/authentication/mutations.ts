@@ -1,7 +1,7 @@
 import { MutationTree } from "vuex";
 
 import { AuthState } from "./state";
-import { User, Role } from "../../core/types";
+import { User } from "../../core/types";
 
 const mutations: MutationTree<AuthState> = {
     
@@ -10,9 +10,10 @@ const mutations: MutationTree<AuthState> = {
      * @param state                         -- module state.
      * @param payload                       -- mutation payload.
      */
-    authenticate(state: AuthState, payload: { token: string; scope: Role }): void {
+    authenticate(state: AuthState, payload: { token: string; user: User }): void {
         state.token = payload.token;
-        state.scope = payload.scope;
+        state.user = payload.user;
+        state.scope = payload.user?.role;
     },
 
     /**
@@ -22,6 +23,7 @@ const mutations: MutationTree<AuthState> = {
      */
     context(state: AuthState, payload: { user: User }): void {
         state.user = payload.user;
+        state.scope = payload.user?.role;
     },
 
     /**

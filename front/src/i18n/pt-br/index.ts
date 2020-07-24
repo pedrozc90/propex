@@ -24,7 +24,17 @@ export default {
         requiredCoursesCredits: "Créditos previstos na matriz curricular",
         infrastructure: "Espaço físico e equipamentos utilizados para o desencolvimento das atividades",
         publicParticipation: "Forma na qual o público participou das atividades",
-        accompanimentAndEvaluation: "Acompanhamento e avalização pelo coordenador do projeto"
+        accompanimentAndEvaluation: "Acompanhamento e avalização pelo coordenador do projeto",
+        general: "Geral",
+        humanResources: "Recursos Humanos",
+        activities: "Atividades",
+        public: "Público",
+        partners: "Parceiros",
+        avaliation: "Avaliação",
+        attachments: "Anexos",
+        publications: "Publicações",
+        disclosureMedia: "Media de Divulgação",
+        demands: "Demandas"
     },
     user: {
         label: "Usuário",

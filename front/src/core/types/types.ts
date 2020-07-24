@@ -78,6 +78,17 @@ export interface Project extends Audit {
     // attachments?: Attachment[];
 }
 
+export interface ProjectHumanResource {
+    projectId?: number;
+    project?: Project;
+    userId?: number;
+    user?: User;
+    coordinate?: boolean;
+    exclusive?: boolean;
+    workload?: number;
+    dateAdmission?: string;
+}
+
 export interface ExtensionLine extends Audit {
     id?: number;
     number?: number;

@@ -2,7 +2,7 @@ import { axiosInstance } from "../../boot/axios";
 import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { Project, IOptions, User, ExtensionLine, KnowledgeArea } from "../types";
+import { Project, IOptions, User, ExtensionLine, KnowledgeArea, ProjectHumanResource, RoleEnumKey, RoleEnum } from "../types";
 import { Page } from "../models";
 
 export interface ProjectOptions extends IOptions {
@@ -11,6 +11,13 @@ export interface ProjectOptions extends IOptions {
     extensionLineId?: number;
     knowledgeArea?: KnowledgeArea;
     knowledgeAreaId?: number;
+}
+
+export interface ProjectHumanResourcesOptions extends IOptions {
+    projectId?: number;
+    coordinate?: boolean;
+    exclusive?: boolean;
+    role?: RoleEnum;
 }
 
 export class ProjectService extends BasicService<Project> {
@@ -45,6 +52,14 @@ export class ProjectService extends BasicService<Project> {
 
     public async save(project: Project): Promise<unknown> {
         return axiosInstance.put(this.url, { project });
+    }
+
+    // --------------------------------------------------
+    // HUMAN RESOURCES
+    // --------------------------------------------------
+    public async fetchHumanResources(projectId: number, params: ProjectHumanResourcesOptions): Promise<Page<ProjectHumanResource>> {
+        return axiosInstance.get(`${this.url}/${projectId}/human-resources`, { params })
+            .then((response: AxiosResponse) => response.data.content);
     }
 
 }

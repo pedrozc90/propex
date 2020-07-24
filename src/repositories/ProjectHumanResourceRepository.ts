@@ -3,7 +3,7 @@ import { EntityRepository } from "@tsed/typeorm";
 
 import { GenericRepository } from "./generics/GenericRepository";
 import { ProjectHumanResource, Project, User } from "../entities";
-import { IOptions } from "../core/types";
+import { IOptions, Scope } from "../core/types";
 
 import { StringUtils } from "../core/utils";
 
@@ -14,6 +14,7 @@ interface HumanResourcesOptions extends IOptions {
     projectId?: number;
     user?: User;
     userId?: number;
+    role?: Scope;
 }
 
 @EntityRepository(ProjectHumanResource)
@@ -42,6 +43,10 @@ export class ProjectHumanResourceRepository extends GenericRepository<ProjectHum
 
         if (isBoolean(params.exclusive)) {
             query.where("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
+        }
+
+        if (params.role) {
+            query.andWhere("usr.role = :role", { role: params.role.key });
         }
 
         if (StringUtils.isNotEmpty(params.q)) {
