@@ -9,9 +9,9 @@ import { Page } from "../../core/models";
 export default class UsersPage extends Vue {
 
     public users: User[] = [];
-    public page: number | undefined = 1;
-    public rpp: number | undefined = 15;
-    public q: string | undefined = "";
+
+    public q?: string = "";
+    public loading = false;
 
     public columns: any[] = [
         { name: "name", label: "name", field: "name", sortable: false },
@@ -24,21 +24,36 @@ export default class UsersPage extends Vue {
     public pagination = {
         sortBy: "desc",
         descending: false,
-        page: this.page,
-        rowsPerPage: this.rpp
+        page: 1,
+        rowsPerPage: 15,
+        rowsNumber: 0
     };
 
     @Watch("q")
     public async onSearchChange(newValue: string, oldValue?: string) {
         if (newValue === oldValue) return;
-        await this.load();
+        await this.onRequest({ pagination: this.pagination, filter: undefined });
     }
 
-    public async onUpdatePagination(newPagination: any) {
-        console.log(newPagination);
-        this.page = newPagination.page;
-        this.rpp = newPagination.rowsPerPage;
-        await this.load();
+    public async onRequest(props: any): Promise<void> {
+        const { page, rowsPerPage } = props.pagination;
+
+        this.loading = true;
+
+        const result: Page<User> = await userService.fetch({
+            page: page,
+            rpp: rowsPerPage,
+            q: this.q
+        });
+
+        if (result) {
+            this.users.splice(0, this.users.length, ...result.list);
+            this.pagination.page = page;
+            this.pagination.rowsPerPage = rowsPerPage;
+            this.pagination.rowsNumber = result.total || 0;
+        }
+
+        this.loading = false;
     }
 
     public async open(event: any, user: User): Promise<void> {
@@ -47,13 +62,8 @@ export default class UsersPage extends Vue {
         }
     }
 
-    public async load(): Promise<void> {
-        this.users = await userService.fetch({ page: this.page, rpp: this.rpp, q: this.q })
-            .then((res: Page<User> | null) => (res) ? res.list : []);
-    }
-
     public async mounted(): Promise<void> {
-        await this.load();
+        await this.onRequest({ pagination: this.pagination, filter: undefined });
     }
 
 }

@@ -45,7 +45,7 @@
                             <!-- COLLABORATOR -->
                             <q-input :label="$t('user.collaborator_code')" v-model="user.code" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
-                            <q-input :label="$t('user.academic_function')" v-model="user.academicFunction" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
+                            <q-input :label="$t('user.academicFunction')" v-model="user.academicFunction" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
 
                             <q-input :label="$t('user.affiliation')" v-model="user.affiliation" type="text" lazy-rules :rules="[ requiredInput ]" dense filled square />
                         </q-form>

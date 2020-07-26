@@ -1,8 +1,9 @@
-import { Vue, Component, Prop } from "vue-property-decorator";
+import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 
-import { ProjectHumanResource, RoleEnum } from "../../../core/types";
+import { ProjectHumanResource, IPagination } from "../../../core/types";
 import { projectService } from "../../../core/services";
 import { requiredInput } from "../../../core/utils";
+import { Page } from "src/core/models";
 
 @Component({ name: "HumanResources" })
 export default class HumanResourcesCtrl extends Vue {
@@ -14,31 +15,47 @@ export default class HumanResourcesCtrl extends Vue {
     public collaborators: ProjectHumanResource[] = [];
     public students: ProjectHumanResource[] = [];
 
-    public page = 1;
-    public rpp = 15;
-    public q: string | null = null;
+    public collaboratorSearch?: string = "";
+    public studentSearch?: string = "";
 
-    public columns: any[] = [
-        { name: "name", label: "name", field: (row: any) => row.workload, sortable: false },
-        { name: "email", label: "email", field: (row: any) => row.coordinate, sortable: false },
-        { name: "role", label: "role", field: (row: any) => row.exclusive, sortable: false },
+    public collaboratorColumns: any[] = [
+        { name: "name", label: "name", field: (row: any) => row.user.name, sortable: false },
+        { name: "academicFunction", label: "academicFunction", field: (row: any) => row.user.academicFunction, sortable: false },
         { name: "code", label: "code", field: (row: any) => row.user.code, sortable: false },
-        { name: "phone", label: "phone", field: (row: any) => row.user.phone, sortable: false }
+        { name: "affiliation", label: "affiliation", field: (row: any) => row.user.affiliation, sortable: false },
+        { name: "exclusive", label: "exclusive", field: (row: any) => row.exclusive, sortable: false },
+        { name: "workload", label: "workload", field: (row: any) => row.workload, sortable: false },
+        { name: "dateAdmission", label: "dateAdmission", field: (row: any) => row.user.dateAdmission, sortable: false }
     ];
 
-    public pagination = {
+    public collaboratorPagination: IPagination = {
         sortBy: "desc",
         descending: false,
-        page: this.page,
-        rowsPerPage: this.rpp
+        page: 1,
+        rowsPerPage: 15,
+        rowsNumber: 0
     };
 
-    public onUpdatePagination(newPagination: any) {
-        console.log(newPagination);
-        this.page = newPagination.page;
-        this.rpp = newPagination.rowsPerPage;
-        // await this.load();
-    }
+    public loadingCollaborators = false;
+
+    public studentColumns: any[] = [
+        { name: "name", label: "name", field: "name", sortable: false },
+        { name: "code", label: "code", field: "code", sortable: false },
+        { name: "course", label: "course", field: "course", sortable: false },
+        { name: "period", label: "period", field: "period", sortable: false },
+        { name: "workload", label: "workload", field: "workload", sortable: false },
+        { name: "contact", label: "contact", field: "contact", sortable: false }
+    ];
+
+    public studentPagination: IPagination = {
+        sortBy: "desc",
+        descending: false,
+        page: 1,
+        rowsPerPage: 15,
+        rowsNumber: 0
+    };
+
+    public loadingStudents = false;
 
     public async submit(): Promise<void> {
         // nothing
@@ -48,11 +65,63 @@ export default class HumanResourcesCtrl extends Vue {
         // nothing
     }
 
+    @Watch("collaboratorSearch")
+    public async searchCollaborator(newValue: string, oldValue?: string) {
+        if (newValue === oldValue) return;
+        await this.onRequestCollaborators({ pagination: this.collaboratorPagination, filter: undefined });
+    }
+
+    @Watch("studentSearch")
+    public async searchStudent(newValue: string, oldValue?: string) {
+        if (newValue === oldValue) return;
+        await this.onRequestStudents({ pagination: this.studentPagination, filter: undefined });
+    }
+
+    public async onRequestCollaborators(props: any): Promise<void> {
+        const { page, rowsPerPage /* sortBy, descending */ } = props.pagination;
+        
+        this.loadingCollaborators = true;
+
+        const result: Page<ProjectHumanResource> = await projectService.fetchHumanResourcesCollaborators(this.id, {
+            page: page,
+            rpp: rowsPerPage,
+            q: this.collaboratorSearch
+        });
+
+        if (result) {
+            this.collaborators.splice(0, this.collaborators.length, ...result.list);
+            this.collaboratorPagination.page = result.page || 1;
+            this.collaboratorPagination.rowsPerPage = result.rpp || 15;
+            this.collaboratorPagination.rowsNumber = result.total || 0;
+        }
+
+        this.loadingCollaborators = false;
+    }
+
+    public async onRequestStudents(props: any): Promise<void> {
+        const { page, rowsPerPage /* sortBy, descending */ } = props.pagination;
+        
+        this.loadingStudents = true;
+
+        const result: Page<ProjectHumanResource> = await projectService.fetchHumanResourcesStudents(this.id, {
+            page: page,
+            rpp: rowsPerPage,
+            q: this.studentSearch
+        });
+
+        if (result) {
+            this.students.splice(0, this.students.length, ...result.list);
+            this.studentPagination.page = result.page || 1;
+            this.studentPagination.rowsPerPage = result.rpp || 15;
+            this.studentPagination.rowsNumber = result.total || 0;
+        }
+
+        this.loadingStudents = false;
+    }
+
     public async mounted(): Promise<void> {
-        this.collaborators = await projectService.fetchHumanResources(this.id, { page: 1, rpp: 15, role: RoleEnum.COLLABORATOR }).then((page) => page.list);
-        this.students = await projectService.fetchHumanResources(this.id, { page: 1, rpp: 15, role: RoleEnum.STUDENT }).then((page) => page.list);
-        console.log(this.collaborators);
-        console.log(this.students);
+        await this.onRequestCollaborators({ pagination: this.collaboratorPagination, filter: undefined });
+        await this.onRequestStudents({ pagination: this.studentPagination, filter: undefined });
     }
 
 }

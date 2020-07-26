@@ -2,7 +2,6 @@ import { AxiosResponse, AxiosError } from "axios";
 import { axiosInstance } from "../../boot/axios";
 
 import { IAuth, UserCredentials, User } from "../types";
-import { debug } from "console";
 
 const TOKEN = "token";
 

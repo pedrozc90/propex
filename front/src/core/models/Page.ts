@@ -3,6 +3,7 @@ export class Page<T> {
     public page?: number;
     public rpp?: number;
     public length?: number;
+    public total?: number;
     public more?: boolean;
     public list: T[] = [];
 

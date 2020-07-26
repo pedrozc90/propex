@@ -7,7 +7,8 @@
                     :title="$t('user.label')" :data="users" :columns="columns" row-key="id"
                     hide-selected-banner
                     :pagination="pagination"
-                    @update:pagination = "onUpdatePagination"
+                    :loading="loading"
+                    @request="onRequest"
                     bordered flat square>
                     <template v-slot:top>
                         <q-space />

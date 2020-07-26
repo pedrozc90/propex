@@ -26,6 +26,7 @@ export default class GeneralCtrl extends Vue {
 
     public async mounted(): Promise<void> {
         this.project = await projectService.get(this.id);
+        console.log("ID:", this.id, this.project);
     }
 
 }

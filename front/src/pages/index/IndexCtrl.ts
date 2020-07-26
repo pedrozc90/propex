@@ -46,7 +46,7 @@ export default class IndexCtrl extends Vue {
     }
 
     public async edit(projectId: string): Promise<void> {
-        await this.$router.push({ name: "project", params: { id: projectId } });
+        await this.$router.push({ name: "project:edit", params: { id: projectId } });
     }
 
     public async mounted() {

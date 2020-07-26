@@ -2,6 +2,7 @@ import { Vue, Component } from "vue-property-decorator";
 
 import General from "./form/General.vue";
 import HumanResources from "./form/HumanResources.vue";
+import Public from "./form/Public.vue";
 import OutOfOrder from "./form/OutOfOrder.vue";
 
 @Component({
@@ -9,18 +10,18 @@ import OutOfOrder from "./form/OutOfOrder.vue";
     components: {
         "general-form": General,
         "human-resources": HumanResources,
+        "publics-component": Public,
         "out-of-order": OutOfOrder
     }
 })
 export default class ProjectPage extends Vue {
     
-    public step = 1;
+    public step = 2;
 
     public id?: number;
     
-    public mounted() {
+    public created() {
         this.id = parseInt(this.$route.params.id);
-        console.log("PROJECT ID:", this.id);
     }
 
 }

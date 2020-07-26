@@ -23,7 +23,7 @@ export default class ProjectRegistration extends Vue {
                 if (StringUtils.isNotEmpty(value)) {
                     await this.loadOptions(value);
                 } else {
-                    await this.loadOptions();
+                    // await this.loadOptions();
                     abort();
                 }
             });

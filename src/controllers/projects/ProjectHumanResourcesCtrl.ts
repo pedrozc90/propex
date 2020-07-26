@@ -44,8 +44,8 @@ export class ProjectHumanResourcesCtrl {
         }
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-        const phrs = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role });
-        return Page.of<ProjectHumanResource>(phrs, page, rpp);
+        const { list, count } = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role });
+        return Page.of<ProjectHumanResource>(list, page, rpp, count);
     }
 
     /**
@@ -118,11 +118,11 @@ export class ProjectHumanResourcesCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
-    ): Promise<Page<User>> {
+    ): Promise<Page<ProjectHumanResource>> {
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-        const users = await this.userRepository.fetch({ page, rpp, q, projectId: project.id, exclusive, period, scholarship, role: Scope.STUDENT });
-        return Page.of<User>(users, page, rpp);
+        const { list, count } = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, exclusive, period, scholarship, role: Scope.STUDENT });
+        return Page.of<ProjectHumanResource>(list, page, rpp, count);
     }
 
     /**
@@ -141,11 +141,11 @@ export class ProjectHumanResourcesCtrl {
         @QueryParams("page") page: number = 1,
         @QueryParams("rpp") rpp: number = 15,
         @QueryParams("q") q?: string
-    ): Promise<Page<User>> {
+    ): Promise<Page<ProjectHumanResource>> {
         // check if user is part of the current project
         const project = await this.projectRepository.findByContext(projectId, context);
-        const users = await this.userRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role: Scope.COLLABORATOR });
-        return Page.of<User>(users, page, rpp);
+        const { list, count } = await this.projectHumanResourcesRepository.fetch({ page, rpp, q, projectId: project.id, coordinate, exclusive, role: Scope.COLLABORATOR });
+        return Page.of<ProjectHumanResource>(list, page, rpp, count);
     }
 
     /**

@@ -19,6 +19,7 @@ const rootDir: string = __dirname;
 const uploadDir: string = process.env.TEMP_DIR || path.join(process.cwd(), ".temp");
 
 @ServerSettings({
+    converter: { additionalProperties: true },
     rootDir,
     uploadDir: uploadDir,
     acceptMimes: [ "application/json", "multipart/form-data" ],

@@ -2,8 +2,9 @@ import { axiosInstance } from "../../boot/axios";
 import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { Project, IOptions, User, ExtensionLine, KnowledgeArea, ProjectHumanResource, RoleEnumKey, RoleEnum } from "../types";
+import { Project, IOptions, User, ExtensionLine, KnowledgeArea, ProjectHumanResource, RoleEnum } from "../types";
 import { Page } from "../models";
+import { StringUtils } from "../utils";
 
 export interface ProjectOptions extends IOptions {
     program?: string;
@@ -58,7 +59,26 @@ export class ProjectService extends BasicService<Project> {
     // HUMAN RESOURCES
     // --------------------------------------------------
     public async fetchHumanResources(projectId: number, params: ProjectHumanResourcesOptions): Promise<Page<ProjectHumanResource>> {
+        if (StringUtils.isEmpty(params.q)) {
+            params.q = undefined;
+        }
         return axiosInstance.get(`${this.url}/${projectId}/human-resources`, { params })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async fetchHumanResourcesCollaborators(projectId: number, params: ProjectHumanResourcesOptions): Promise<Page<ProjectHumanResource>> {
+        if (StringUtils.isEmpty(params.q)) {
+            params.q = undefined;
+        }
+        return axiosInstance.get(`${this.url}/${projectId}/human-resources/collaborators`, { params })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async fetchHumanResourcesStudents(projectId: number, params: ProjectHumanResourcesOptions): Promise<Page<ProjectHumanResource>> {
+        if (StringUtils.isEmpty(params.q)) {
+            params.q = undefined;
+        }
+        return axiosInstance.get(`${this.url}/${projectId}/human-resources/students`, { params })
             .then((response: AxiosResponse) => response.data.content);
     }
 

@@ -17,7 +17,7 @@ export default {
         email: "Email",
         phone: "Phone",
         course: "Course",
-        academic_function: "Academic Function / Post",
+        academicFunction: "Academic Function / Post",
         affiliation: "Affiliation (CLT, Service, etc.)",
         password: "Password"
     },

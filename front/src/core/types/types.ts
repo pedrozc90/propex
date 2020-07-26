@@ -14,6 +14,14 @@ export interface IOptions {
     q?: string;
 }
 
+export interface IPagination {
+    sortBy?: string;
+    descending?: boolean;
+    page?: number;
+    rowsPerPage?: number;
+    rowsNumber?: number;
+}
+
 // --------------------------------------------------
 // ENTITY
 // --------------------------------------------------
@@ -24,6 +32,11 @@ export interface Audit {
 
 export interface Role {
     key?: RoleEnum;
+    description?: string;
+}
+
+export interface AgeRange {
+    key?: string;
     description?: string;
 }
 
@@ -101,4 +114,31 @@ export interface KnowledgeArea extends Audit {
     id?: number;
     name?: string;
     projects?: Project[];
+}
+
+export interface ProjectPublic extends Audit {
+    projectId?: number;
+    project?: Project;
+    publicId?: number;
+    public?: Public;
+    directly?: boolean;
+    otherPublicTitle?: string;
+    otherPublicCras?: string;
+}
+
+export interface Public extends Audit {
+    id?: number;
+    name?: string;
+    customizable?: boolean;
+    cras?: string;
+    deletedAt?: Date;
+    projectPublics?: ProjectPublic[];
+}
+
+export interface Target extends Audit {
+    id?: number;
+    menNumber?: number;
+    womenNumber?: number;
+    ageRange?: AgeRange;
+    project?: Project;
 }

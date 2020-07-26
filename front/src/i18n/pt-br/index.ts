@@ -34,7 +34,8 @@ export default {
         attachments: "Anexos",
         publications: "Publicações",
         disclosureMedia: "Media de Divulgação",
-        demands: "Demandas"
+        demands: "Demandas",
+        coordenator_professors: "Coordenador e Professores"
     },
     user: {
         label: "Usuário",
@@ -48,17 +49,27 @@ export default {
         email: "Email",
         phone: "Telefone",
         course: "Curso",
-        academic_function: "Formação/Função Acadêmica",
+        academicFunction: "Formação/Função Acadêmica",
         affiliation: "Vínculo (CLT, Pres. Serviço, etc.)",
         password: "Senha",
         student_code: "Código de Matrícula",
-        scholarship: "Bolsista"
+        scholarship: "Bolsista",
+        exclusive: "Dedicação Exclusiva",
+        dateAdmission: "Data de Admissão",
+        workload: "Carha Horária",
+        contact: "Contato (Telefone / Email)"
+    },
+    target: {
+        ageRange: "Faixa Etária",
+        menNumber: "Nº Homens",
+        womenNumber: "Nº Mulheres"
     },
     "knowledge-area": { label: "Areas do Conhecimento" },
     "extension-line": { label: "Linhas de Extensão" },
     // ROLE
     admin: "Administrador",
     student: "Estudante",
+    students: "Estudantes",
     collaborator: "Colaborador",
     coordinator: "Coordenador",
     unknown: "Desconhecido"

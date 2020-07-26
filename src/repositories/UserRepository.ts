@@ -25,7 +25,7 @@ interface UserOptions extends IOptions {
 @EntityRepository(User)
 export class UserRepository extends GenericRepository<User> {
 
-    public async fetch(params: UserOptions): Promise<User[]> {
+    public async fetch(params: UserOptions): Promise<{ list: User[], count?: number }> {
         const page = params.page;
         const rpp = params.rpp;
 
@@ -43,12 +43,14 @@ export class UserRepository extends GenericRepository<User> {
         if (StringUtils.isNotEmpty(params.q)) {
             query.andWhere("(usr.email LIKE :email OR usr.name LIKE :name OR usr.code LIKE :code)", { email: `%${params.q}%`, name: `%${params.q}%`, code: `%${params.q}%` });
         }
+
+        const count = await query.getCount();
         
         if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 
-        return query.getMany();
+        return { list: await query.getMany(), count };
     }
 
     /**

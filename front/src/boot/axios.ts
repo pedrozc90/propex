@@ -26,7 +26,7 @@ function filterResponseMessage(data: any): any {
     return data;
 }
 
-console.log(process.env.VUE_APP_ROOT_API);
+console.log("ROOT_API", process.env.VUE_APP_ROOT_API);
 
 /**
  * Create a new axios instance with default configuration.

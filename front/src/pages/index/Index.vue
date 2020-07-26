@@ -103,7 +103,8 @@ $spacing: 16px;
 
         .box {
             max-width: 500px;
-            max-height: 200px;
+            // max-height: 200px;
+            max-height: 50vh;
             border: 1px solid $primary;
 
             .header {

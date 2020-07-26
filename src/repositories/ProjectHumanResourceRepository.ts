@@ -15,12 +15,13 @@ interface HumanResourcesOptions extends IOptions {
     user?: User;
     userId?: number;
     role?: Scope;
+    scholarship?: boolean;
 }
 
 @EntityRepository(ProjectHumanResource)
 export class ProjectHumanResourceRepository extends GenericRepository<ProjectHumanResource> {
 
-    public async fetch(params: HumanResourcesOptions): Promise<ProjectHumanResource[]> {
+    public async fetch(params: HumanResourcesOptions): Promise<{ list: ProjectHumanResource[], count: number }> {
         const page = params.page;
         const rpp = params.rpp;
 
@@ -29,37 +30,47 @@ export class ProjectHumanResourceRepository extends GenericRepository<ProjectHum
             
         if (params.project || params.projectId) {
             const projectId = params.projectId || params.project?.id;
-            query.where("phr.project_id = :projectId", { projectId });
+            query.andWhere("phr.project_id = :projectId", { projectId });
         }
 
         if (params.user || params.userId) {
             const userId = params.userId || params.user?.id;
-            query.where("phr.user_id = :userId", { userId });
+            query.andWhere("phr.user_id = :userId", { userId });
         }
         
         if (isBoolean(params.coordinate)) {
-            query.where("phr.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
+            query.andWhere("phr.coordinate = :coordinate", { coordinate: (params.coordinate) ? 1 : 0 });
         }
 
         if (isBoolean(params.exclusive)) {
-            query.where("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
+            query.andWhere("phr.exclusive = :exclusive", { exclusive: (params.exclusive) ? 1 : 0 });
         }
 
         if (params.role) {
             query.andWhere("usr.role = :role", { role: params.role.key });
         }
 
-        if (StringUtils.isNotEmpty(params.q)) {
-            query.where("usr.code LIKE :code", { code: `%${params.q}%` })
-                .orWhere("user.email LIKE :email", { email: `%${params.q}%` })
-                .orWhere("usr.name LIKE :name", { name: `%${params.q}%` });
+        if (isBoolean(params.scholarship)) {
+            query.andWhere("phr.scholarship = :scholarship", { scholarship: (params.scholarship) ? 1 : 0 });
         }
+
+        if (StringUtils.isNotEmpty(params.q)) {
+            query.andWhere("(usr.code LIKE :code OR usr.email LIKE :email OR usr.name LIKE :name)", {
+                code: `%${params.q}%`,
+                email: `%${params.q}%`,
+                name: `%${params.q}%`
+            });
+        }
+
+        query.orderBy("phr.coordinate", "ASC");
+
+        const count = await query.getCount();
 
         if (page && rpp) {
             query.skip((page - 1) * rpp).take(rpp);
         }
 
-        return query.getMany();
+        return { list: await query.getMany(), count };
     }
 
 }

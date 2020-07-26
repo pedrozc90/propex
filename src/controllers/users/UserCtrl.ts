@@ -33,8 +33,8 @@ export class UserCtrl {
             role = ScopeEnumTransformer.from(role);
         }
 
-        const users = await this.userRepository.fetch({ page, rpp, q, projectId, role: role });
-        return Page.of(users, page, rpp);
+        const { list, count } = await this.userRepository.fetch({ page, rpp, q, projectId, role: role });
+        return Page.of(list, page, rpp, count);
     }
 
     /**

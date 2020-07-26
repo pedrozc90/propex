@@ -18,7 +18,6 @@ const actions: ActionTree<AuthState, RootState> = {
         if (!response) {
             throw new Error("Authentication failed.");
         }
-        console.log("login", response);
 
         // retrieve token and scope from response
         if (!response.token) {
@@ -60,7 +59,7 @@ const actions: ActionTree<AuthState, RootState> = {
             await dispatch("logout");
         } else {
             // await this.$router.push({ name: "index" });
-            await this.$router.push({ name: "project", params: { id: "1" } });
+            await this.$router.push({ name: "project:edit", params: { id: "1" } });
         }
     },
 

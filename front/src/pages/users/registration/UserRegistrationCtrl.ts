@@ -9,6 +9,7 @@ import { User, RoleEnum } from "../../../core/types";
 export default class UserRegistration extends Vue {
 
     private readonly student: RoleEnum = RoleEnum.STUDENT;
+    private readonly collaborator: RoleEnum = RoleEnum.COLLABORATOR;
 
     public id: number | undefined;
     public user: User = {};

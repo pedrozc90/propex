@@ -60,8 +60,8 @@ export default ProjectRegistration;
         height: 100%;
 
         .q-card {
-            // max-width: 1280px;
-            // width: 80%;
+            max-width: 1280px;
+            width: 80%;
 
             .header {
                 margin: 0;
