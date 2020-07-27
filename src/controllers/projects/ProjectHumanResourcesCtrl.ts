@@ -4,7 +4,7 @@ import { BadRequest, NotFound } from "@tsed/exceptions";
 import { ProjectValidationMiddleware } from "../../middlewares";
 import { Authenticated } from "../../core/services";
 import { ProjectRepository, ProjectHumanResourceRepository, UserRepository } from "../../repositories";
-import { Page, ProjectHumanResource, ResultContent, User } from "../../entities";
+import { Page, ProjectHumanResource, ResultContent } from "../../entities";
 import { Context } from "../../core/models";
 import { Scope } from "../../core/types";
 import { ScopeEnumTransformer } from "../../core/utils";

@@ -5,7 +5,6 @@ import { Authenticated } from "../../core/services";
 import { ProjectRepository, TargetRepository } from "../../repositories";
 import { Target, ResultContent } from "../../entities";
 import { Context } from "../../core/models";
-import { Exception } from "@tsed/exceptions";
 
 @UseBeforeEach(ProjectValidationMiddleware)
 @Controller("/:projectId/targets")
@@ -55,7 +54,7 @@ export class ProjectTargetCtrl {
         // select project if user is part of it.
         const project = await this.projectRepository.findByContext(projectId, context);
 
-        for (let target of targets) {
+        const result = await Promise.all(targets.map(async (target) => {
             let t = await this.targetRepository.createQueryBuilder("t")
                 .innerJoin("t.project", "p", "p.id = :projectId", { projectId: project.id })
                 .where("t.id = :id OR t.age_range = :ageRange", { id: target.id, ageRange: target.ageRange.key })
@@ -66,16 +65,18 @@ export class ProjectTargetCtrl {
                 t.project = project;
             } else {
                 if (target.id && target.id !== t.id) {
-                    throw new Exception(500, `A target with ${t.ageRange.key} already exists with the id ${t.id}`);
+                    // throw new Exception(500, `A target with ${t.ageRange.key} already exists with the id ${t.id}`);
+                    delete target.id;
                 }
                 t = this.targetRepository.merge(t, target);
             }
             t = await this.targetRepository.save(t);
 
-            target = t;
-        }
+            // target = t;
+            return t;
+        }));
 
-        return ResultContent.of<Target[]>(targets).withMessage("Target successfully saved.");
+        return ResultContent.of<Target[]>(result).withMessage("Target successfully saved.");
     }
 
 }

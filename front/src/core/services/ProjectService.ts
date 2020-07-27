@@ -2,7 +2,8 @@ import { axiosInstance } from "../../boot/axios";
 import { AxiosResponse } from "axios";
 
 import BasicService from "./BasicService";
-import { Project, IOptions, User, ExtensionLine, KnowledgeArea, ProjectHumanResource, RoleEnum } from "../types";
+import { Project, IOptions, User, ExtensionLine, KnowledgeArea,
+    ProjectHumanResource, RoleEnum, Target, ProjectPublic } from "../types";
 import { Page } from "../models";
 import { StringUtils } from "../utils";
 
@@ -19,6 +20,10 @@ export interface ProjectHumanResourcesOptions extends IOptions {
     coordinate?: boolean;
     exclusive?: boolean;
     role?: RoleEnum;
+}
+
+export interface ProjectPublicOptions extends IOptions {
+    projectId?: number;
 }
 
 export class ProjectService extends BasicService<Project> {
@@ -79,6 +84,32 @@ export class ProjectService extends BasicService<Project> {
             params.q = undefined;
         }
         return axiosInstance.get(`${this.url}/${projectId}/human-resources/students`, { params })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    // --------------------------------------------------
+    // TARGETS
+    // --------------------------------------------------
+    public async fetchTargets(projectId: number): Promise<{ targets: Target[], total: number, totalNumberOfMen: number, totalNumberOfWomen: number }> {
+        return axiosInstance.get(`${this.url}/${projectId}/targets`)
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async saveTargets(projectId: number, targets: Target[]): Promise<Target[]> {
+        return axiosInstance.post(`${this.url}/${projectId}/targets`, { targets })
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    // --------------------------------------------------
+    // PUBLICS
+    // --------------------------------------------------
+    public async fetchPublics(projectId: number): Promise<ProjectPublic[]> {
+        return axiosInstance.get(`${this.url}/${projectId}/publics`)
+            .then((response: AxiosResponse) => response.data.content);
+    }
+
+    public async savePublics(projectId: number, projectPublics: ProjectPublic[]): Promise<unknown> {
+        return axiosInstance.post(`${this.url}/${projectId}/publics`, { projectPublics })
             .then((response: AxiosResponse) => response.data.content);
     }
 

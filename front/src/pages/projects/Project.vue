@@ -10,38 +10,30 @@
                     <q-step :name="2" :title="$t('project.humanResources')" icon="settings" :done="step > 2">
                         <human-resources :id="id" />
                     </q-step>
-                    <q-step :name="3" :title="$t('project.activities')" icon="settings" :done="step > 3">
-                        <!-- <out-of-order /> -->
+                    <!-- <q-step :name="3" :title="$t('project.activities')" icon="settings" :done="step > 3">
                         <p>IN DEVELOPMENT</p>
-                    </q-step>
+                    </q-step> -->
                     <q-step :name="4" :title="$t('project.public')" icon="settings" :done="step > 4">
-                        <!-- <out-of-order /> -->
                         <publics-component :id="id" />
                     </q-step>
-                    <q-step :name="5" :title="$t('project.partners')" icon="settings" :done="step > 5">
-                        <!-- <out-of-order /> -->
+                    <!-- <q-step :name="5" :title="$t('project.partners')" icon="settings" :done="step > 5">
                         <p>IN DEVELOPMENT</p>
                     </q-step>
                     <q-step :name="6" :title="$t('project.avaliation')" icon="settings" :done="step > 6">
-                        <!-- <out-of-order /> -->
                         <p>IN DEVELOPMENT</p>
                     </q-step>
                     <q-step :name="7" :title="$t('project.demands')" icon="settings" :done="step > 7">
-                        <!-- <out-of-order /> -->
                         <p>IN DEVELOPMENT</p>
                     </q-step>
                     <q-step :name="8" :title="$t('project.disclosureMedia')" icon="settings" :done="step > 8">
-                        <!-- <out-of-order /> -->
                         <p>IN DEVELOPMENT</p>
                     </q-step>
                     <q-step :name="9" :title="$t('project.publications')" icon="settings" :done="step > 9">
-                        <!-- <out-of-order /> -->
                         <p>IN DEVELOPMENT</p>
                     </q-step>
                     <q-step :name="10" :title="$t('project.attachments')" icon="settings" :done="step > 10">
-                        <!-- <out-of-order /> -->
                         <p>IN DEVELOPMENT</p>
-                    </q-step>
+                    </q-step> -->
 
                     <!-- <template v-slot:navigation>
                         <q-stepper-navigation>

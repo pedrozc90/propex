@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Vue, Component, Prop, Watch } from "vue-property-decorator";
 
 import { ProjectHumanResource, IPagination } from "../../../core/types";
 import { projectService } from "../../../core/services";
 import { requiredInput } from "../../../core/utils";
-import { Page } from "src/core/models";
+import { Page } from "../../../core/models";
 
 @Component({ name: "HumanResources" })
 export default class HumanResourcesCtrl extends Vue {

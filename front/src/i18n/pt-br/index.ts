@@ -60,6 +60,7 @@ export default {
         contact: "Contato (Telefone / Email)"
     },
     target: {
+        label: "Targets",
         ageRange: "Faixa Etária",
         menNumber: "Nº Homens",
         womenNumber: "Nº Mulheres"

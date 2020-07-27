@@ -1,4 +1,4 @@
-import { RoleEnum } from "./enum";
+import { RoleEnum, AgeRangeEnum } from "./enum";
 
 // --------------------------------------------------
 // GENERIC
@@ -36,8 +36,9 @@ export interface Role {
 }
 
 export interface AgeRange {
-    key?: string;
+    key: AgeRangeEnum;
     description?: string;
+    order?: number;
 }
 
 export interface UserCredentials {
@@ -124,6 +125,10 @@ export interface ProjectPublic extends Audit {
     directly?: boolean;
     otherPublicTitle?: string;
     otherPublicCras?: string;
+    // only on frontend
+    direct?: boolean;
+    indirect?: boolean;
+    value?: number;
 }
 
 export interface Public extends Audit {

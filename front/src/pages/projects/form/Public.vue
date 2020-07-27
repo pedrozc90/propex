@@ -1,8 +1,9 @@
 <template>
     <q-form ref="form-general" @submit="submit" @reset="reset">
-        <div class="fields">
+        <div class="targets">
             <!-- TARGET -->
             <q-table
+                class="target-table q-mb-md"
                 :title="$t('user.label')"
                 :data="targets"
                 :columns="columns"
@@ -15,7 +16,7 @@
                 square
             >
                 <template v-slot:top>
-                    <p class="text-h6 text-primary">{{ $t("targets") }}</p>
+                    <p class="text-h6 text-primary">{{ $t("target.label") }}</p>
                     <q-space />
                 </template>
                 <template v-slot:header="props">
@@ -50,6 +51,13 @@
                 </template>
             </q-table>
         </div>
+        <div class="publics">
+            <span>Informe o(s) público(s), mais representativo, do projeto. Onde opção (1) Diretamente (2) Indiretamente</span>
+            <div v-for="pp in projectPublics" :key="pp.public.id" class="row">
+                <!-- <q-input v-model="p.value" type="number" dense filled square/>{{ p. public.name }} -->
+                <project-public-checkbox  :projectPublic="pp" />
+            </div>
+        </div>
         <div class="grid">
             <!-- <q-space /> -->
             <q-btn class="box" color="grey-4" :label="$t('buttons.reset')" @click="reset" unelevated />
@@ -66,9 +74,30 @@ export default Public;
 <style lang="scss" scoped>
 $spacing: 16px;
 
-.fields {
-    & > * {
-        margin-bottom: $spacing;
+// .fields {
+//     & > * {
+//         margin-bottom: $spacing;
+//     }
+// }
+
+.target-table {
+    th, td {
+        text-align: center;
+
+        &:first-of-type {
+            text-align: left;
+        }
+    }
+}
+
+.publics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+
+    & > span {
+        grid-column: 1 / span 2;
     }
 }
 

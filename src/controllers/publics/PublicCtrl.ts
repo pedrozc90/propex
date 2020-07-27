@@ -25,7 +25,7 @@ export class PublicCtrl {
         @QueryParams("q") q?: string
     ): Promise<Page<Public>> {
         const params: any = {};
-        if (rpp > 0) {
+        if (page && rpp) {
             params.skip = (page - 1) * rpp;
             params.take = rpp;
         }
