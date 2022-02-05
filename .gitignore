@@ -5,6 +5,7 @@
 node_modules
 dist
 .temp
+package-lock.json
 
 # configuration files
 config/dev.env
